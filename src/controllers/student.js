@@ -101,6 +101,7 @@ export const updateReviewerStudent = async (req, res) => {
       },
       { multi: true }
     );
+    console.log()
     res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -112,8 +113,8 @@ export const updateStatusStudent = async (req, res) => {
   const { listIdStudent, status } = req.body;
   const listIdStudents = await listIdStudent.map((id) => ObjectId(id));
   try {
-    const data = await Student.updateMany(
-      { _id: { $in: listIdStudents } },
+     await Student.updateMany(
+      { _id: { $in: listIdStudents } , support:0},
       {
         $set: {
           statusCheck: status,
@@ -125,7 +126,8 @@ export const updateStatusStudent = async (req, res) => {
       _id: { $in: listIdStudent },
       statusCheck: status,
     });
-    return res.json({ listStudentChangeStatus, status });
+
+    return res.status(200).json({ message:"update status successfully" ,listStudentChangeStatus});
   } catch (error) {
     console.log(error);
   }
