@@ -28,9 +28,9 @@ const swaggerDocument = YAML.load("./src/docs/swagger_datn.yaml");
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
-app.use("*", (req, res) => {
-  res.redirect("/api-docs");
-});
+// app.use("*", (req, res) => {
+//   res.redirect("/api-docs");
+// });
 
 let i = 0;
 let y = 2021;

@@ -106,6 +106,7 @@ export const readOneStudent = async (req, res) => {
     .populate("smester_id")
     .populate("business")
     .populate("majors")
+    .populate("narrow")
     .exec();
   res.json(student);
 };

@@ -17,7 +17,8 @@ export const signUpCVForSupport = async (req, res) => {
     numberEnterprise,
     emailEnterprise,
     business,
-    _id
+    _id,
+    narrow
   } = req.body;
   try {
     const ms = req.body.user_code.toLowerCase();
@@ -78,6 +79,7 @@ export const signUpCVForSupport = async (req, res) => {
       phoneNumberCompany: numberEnterprise,
       emailEnterprise: emailEnterprise,
       business: business,
+      narrow: narrow
     };
 
     // if (findStudent.statusCheck === 1 && findStudent.support === 0) {

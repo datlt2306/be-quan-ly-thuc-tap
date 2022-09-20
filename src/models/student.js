@@ -22,6 +22,10 @@ const studentSchema = mongoose.Schema(
       type: ObjectId,
       ref: "NarrowSpecialization",
     },
+    dream: {
+      type: String,
+      default: null
+    },
     email: {
       type: String,
       require: true,
