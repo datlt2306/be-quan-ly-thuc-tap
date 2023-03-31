@@ -1,0 +1,31 @@
+components:
+    schemas:
+        HttpError:
+            type: object
+            properties:
+                statusCode:
+                    type: number
+                message:
+                    type: string
+        Narrowspecialization:
+            type: object
+            properties:
+                _id:
+                    type: ObjectId
+                name:
+                    type: string
+                    required: true
+                    unique: true
+                    description: Tên ngành hẹp
+                major:
+                    type: ObjectId
+                    required: true
+                    description: id ngành lớn
+                campus:
+                    type: ObjectId
+                    required: true
+                    description: id cơ sở
+                createdAt:
+                    type: Date
+                updatedAt:
+                    type: Date

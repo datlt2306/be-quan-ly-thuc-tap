@@ -1,0 +1,184 @@
+paths:
+    /narrows:
+        get:
+            tags:
+                - Narrowspecializations
+
+            description: Api lấy chuyên ngành hẹp
+            summary: Đăng nhập
+
+            responses:
+                200:
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Narrowspecialization'
+                            example:
+                                [
+                                    {
+                                        '_id': '64269d27a6303ea76af67727',
+                                        'name': 'frontend',
+                                        'id_majors': '640abe8d4ed73d86530a5ee7',
+                                        'campus': '63eef716c9ef6d077f1f1deb',
+                                        'createAt': '2023-03-31T08:42:11.091Z',
+                                        '__v': 0,
+                                    },
+                                ]
+
+    /narrow:
+        post:
+            tags:
+                - Narrowspecializations
+            description: Api tạo mới 1 ngành hẹp
+            summary: Đăng nhập với vai trò dev (2)
+
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                    minLength: 3
+                                    maxLength: 150
+                                    required: true
+                                major:
+                                    type: string
+                                    required: true
+
+                        example: { 'name': 'FrontEnd dev', 'id_majors': '640abe8d4ed73d86530a5ee7' }
+
+            responses:
+                201:
+                    description: Tạo mới thành công
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Narrowspecialization'
+                            example:
+                                {
+                                    'name': 'frontend dev 1',
+                                    'major': '640abe8d4ed73d86530a5ee7',
+                                    'campus': '63eef716c9ef6d077f1f1deb',
+                                    '_id': '6426abb421f0f1d571910f0e',
+                                    'createdAt': '2023-03-31T09:45:24.192Z',
+                                    'updatedAt': '2023-03-31T09:45:24.192Z',
+                                }
+
+                204:
+                    description: Data gửi lên rỗng
+
+                400:
+                    description: Data gửi lên không thỏa mãn validate
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
+                            example: { 'statusCode': 400, 'message': '"major" is required' }
+
+                409:
+                    description: Ngành hẹp đã tồn tại
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
+                            example:
+                                {
+                                    'statusCode': 409,
+                                    'message': 'Tên chuyên ngành hẹp đã tồn tại, vui lòng đặt tên khác',
+                                }
+
+    /narrow/:id:
+        put:
+            tags:
+                - Narrowspecializations
+            description: Api sửa chuyên ngành hẹp
+            summary: Đăng nhập với vai tròn dev (role 2) của cơ sở
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                    minLength: 3
+                                    maxLength: 150
+                                major:
+                                    type: objectId
+                        example: { 'major': '640abe8d4ed73d86530a5ee7' }
+
+            responses:
+                201:
+                    description: Cập nhập thành công
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Narrowspecialization'
+                            example:
+                                {
+                                    '_id': '64269d27a6303ea76af67727',
+                                    'name': 'frontend',
+                                    'id_majors': '640abe8d4ed73d86530a5ee7',
+                                    'campus': '63eef716c9ef6d077f1f1deb',
+                                    'createAt': '2023-03-31T08:42:11.091Z',
+                                    '__v': 0,
+                                }
+
+                400:
+                    description: id không phải type objectId hoặc không thỏa mã validate
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
+                            example: { 'statusCode': 400, 'message': 'id không phải type ObjectId' }
+
+                404:
+                    description: ngành hẹp không tồn tại ở cơ sở
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
+                            example:
+                                {
+                                    'statusCode': 404,
+                                    'message': 'Cơ sở hiện tại không tồn tại ngành hẹp bạn muốn sửa!',
+                                }
+
+        delete:
+            tags:
+                - Narrowspecializations
+            description: Xóa vĩnh viễn 1 ngành hẹp ở cơ sở
+            summary: Đăng nhập với vai trò quản lý cơ sở
+            responses:
+                200:
+                    description: Xóa thành công
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                            example: { message: Xóa ngành hẹp thành công }
+                400:
+                    description: id không phải type ObjectId
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
+                            example: { 'statusCode': 400, 'message': 'id không phải type ObjectId' }
+
+                409:
+                    description: Cơ sở hiện tại không tồn tại ngành hẹp muốn sửa!
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
+                            example:
+                                {
+                                    'statusCode': 409,
+                                    'message': 'Cơ sở hiện tại không tồn tại ngành hẹp bạn muốn sửa!',
+                                }
