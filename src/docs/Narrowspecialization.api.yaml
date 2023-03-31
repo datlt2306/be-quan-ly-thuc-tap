@@ -44,7 +44,7 @@ paths:
                                     minLength: 3
                                     maxLength: 150
                                     required: true
-                                major:
+                                id_majors:
                                     type: string
                                     required: true
 
@@ -60,7 +60,7 @@ paths:
                             example:
                                 {
                                     'name': 'frontend dev 1',
-                                    'major': '640abe8d4ed73d86530a5ee7',
+                                    'id_majors': '640abe8d4ed73d86530a5ee7',
                                     'campus': '63eef716c9ef6d077f1f1deb',
                                     '_id': '6426abb421f0f1d571910f0e',
                                     'createdAt': '2023-03-31T09:45:24.192Z',

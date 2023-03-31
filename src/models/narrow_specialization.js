@@ -9,7 +9,7 @@ const NarrowSpecializationSchema = mongoose.Schema(
 			lowercase: true,
 			unique: true,
 		},
-		major: {
+		id_majors: {
 			type: ObjectId,
 			require,
 			ref: 'Major',

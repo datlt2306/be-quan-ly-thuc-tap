@@ -14,7 +14,7 @@ export const getNarrow = async (req, res) => {
 		const data = await NarrowModel.find({
 			campus: campus,
 		})
-			.populate('major')
+			.populate('id_majors')
 			.sort({ createAt: -1 });
 		res.status(200).json(data);
 	} catch (error) {
@@ -103,7 +103,7 @@ export const updateNarrow = async (req, res) => {
 			{
 				new: true,
 			}
-		).populate('major');
+		).populate('id_majors');
 
 		return res.status(201).json(newNarrow);
 	} catch (error) {
