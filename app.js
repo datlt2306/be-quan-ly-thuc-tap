@@ -55,6 +55,6 @@ setInterval(() => {
   }
 }, 86400000);
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 9998;
 
 app.listen(port, () => console.log("server is listening port: ", port));
