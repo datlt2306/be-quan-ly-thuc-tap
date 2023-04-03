@@ -10,9 +10,7 @@ import {
 	updateReviewerStudent,
 	updateStatusStudent,
 	updateStudent,
-	readStudentById,
 	updateBusinessStudent,
-	resetStatusStudent,
 } from '../controllers/student';
 import { authorizeRoles, isAuthenticateUser } from '../middlewares/CheckAuth';
 import student from '../models/student';
@@ -26,7 +24,6 @@ router.get(
 	listStudentReviewCV
 );
 router.get('/student/:id', isAuthenticateUser, readOneStudent);
-router.get('/student/manager/:id', readStudentById);
 router.post('/student', isAuthenticateUser, authorizeRoles([role.manager]), insertStudent);
 router.patch('/student', isAuthenticateUser, authorizeRoles([role.manager]), updateReviewerStudent);
 
@@ -44,6 +41,8 @@ router.patch(
 );
 router.patch('/student/:id', isAuthenticateUser, authorizeRoles([role.manager]), updateStudent);
 router.delete('/student/:id', isAuthenticateUser, authorizeRoles(role.manager), removeStudent);
+
+// fake data
 router.post('/generate-fake-data', () => {
 	for (let i = 0; i <= 30; i++) {
 		student.create({

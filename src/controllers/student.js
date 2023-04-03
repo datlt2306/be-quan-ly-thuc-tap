@@ -1,6 +1,9 @@
-import Student from '../models/student';
+import StudentModel from '../models/student';
 import { sendMail } from './emailController';
 import semester from '../models/semester';
+import { getCurrentSemester } from './semesterController';
+import createHttpError from 'http-errors';
+import { checkStudentExist } from '../services/student.service';
 
 const ObjectId = require('mongodb').ObjectID;
 
@@ -19,7 +22,7 @@ export const listStudent = async (req, res) => {
 		});
 
 		// lấy ra các học sinh thỏa mãn đăng ký kỳ hiện tại và thuộc cơ sở của manger đăng nhập
-		const students = await Student.paginate(
+		const students = await StudentModel.paginate(
 			{
 				...req.query,
 				smester_id: dataDefault._id,
@@ -39,64 +42,87 @@ export const listStudent = async (req, res) => {
 
 		return res.status(200).json(students);
 	} catch (error) {
-		return res.status(500).json(error);
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
 	}
 };
 
-//updateStudent
+// [PATCH] /api/student/:id
 export const updateStudent = async (req, res) => {
 	try {
-		const student = await Student.findOneAndUpdate({ _id: req.params.id }, req.body, {
+		const data = req.body;
+		const id = req.params.id;
+		const campus = req.campusManager;
+
+		const student = await checkStudentExist(id, campus);
+
+		const result = await StudentModel.findOneAndUpdate({ _id: id }, data, {
 			new: true,
 		});
-		return res.status(200).json(student);
+		return res.status(201).json(result);
 	} catch (error) {
-		return res.status(400).json(error);
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
 	}
 };
 
-//removeStudent
+// [DELETE] /api/student/:id
 export const removeStudent = async (req, res) => {
 	try {
-		const student = await Student.findOneAndDelete({ id: req.params.id });
-		res.json(student);
+		const id = req.params.id;
+		const campus = req.campusManager;
+
+		const student = await checkStudentExist(id, campus);
+
+		const result = await StudentModel.findOneAndDelete({ _id: id });
+		return res.status(200).json(result);
 	} catch (error) {
-		res.json('lỗi');
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
 	}
 };
 
-//readOneStudent
+// [GET] /api/student/:id
 export const readOneStudent = async (req, res) => {
-	const student = await Student.findOne({ _id: req.params.id })
-		.populate('campus_id')
-		.populate('smester_id')
-		.populate('business')
-		.populate('majors')
-		.populate('narrow')
-		.exec();
-	res.json(student);
+	try {
+		const id = req.params.id;
+
+		const student = await StudentModel.findOne({ _id: id })
+			.populate('campus_id')
+			.populate('smester_id')
+			.populate('business')
+			.populate('majors')
+			.populate('narrow');
+
+		if (!student) {
+			throw createHttpError(404, 'Học sinh không tồn tại');
+		}
+
+		return res.status(200).json(student);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
-export const readStudentById = async (req, res) => {
-	const student = await Student.findOne({ _id: req.params.id })
-		.populate('campus_id')
-		.populate('smester_id')
-		.populate('business')
-		.populate('majors')
-		.exec();
-	res.json(student);
-};
-
-//insertStudent
+// [POST] /api/student
 export const insertStudent = async (req, res) => {
 	const { data, smester_id, majors, campus_id } = req.body;
 	try {
-		const checkStudent = await Student.find({}).limit(3);
+		const checkStudent = await StudentModel.find({}).limit(3);
 
 		if (checkStudent.length > 0) {
-			const listMSSV = await Student.find({ smester_id, majors, campus_id });
+			const listMSSV = await StudentModel.find({ smester_id, majors, campus_id });
 			if (listMSSV.length === 0) {
-				await Student.insertMany(data);
+				await StudentModel.insertMany(data);
 			} else {
 				const listMS = [];
 				listMSSV.forEach((item) => {
@@ -107,7 +133,7 @@ export const insertStudent = async (req, res) => {
 					listNew.push(item.mssv);
 				});
 
-				await Student.updateMany(
+				await StudentModel.updateMany(
 					{ smester_id, majors, campus_id },
 					{
 						$set: {
@@ -118,7 +144,7 @@ export const insertStudent = async (req, res) => {
 					{ multi: true }
 				);
 
-				await Student.updateMany(
+				await StudentModel.updateMany(
 					{
 						$and: [{ mssv: { $in: listNew } }, { smester_id, majors, campus_id }],
 					},
@@ -131,7 +157,7 @@ export const insertStudent = async (req, res) => {
 					{ multi: true }
 				);
 
-				await Student.updateMany(
+				await StudentModel.updateMany(
 					{ $and: [{ checkUpdate: false }, { smester_id, majors, campus_id }] },
 					{
 						$set: {
@@ -143,9 +169,9 @@ export const insertStudent = async (req, res) => {
 					{ multi: true }
 				);
 
-				await Student.insertMany(data);
+				await StudentModel.insertMany(data);
 
-				await Student.updateMany(
+				await StudentModel.updateMany(
 					{
 						$and: [{ mssv: { $nin: listMS } }, { smester_id, majors, campus_id }],
 					},
@@ -157,12 +183,12 @@ export const insertStudent = async (req, res) => {
 					{ multi: true }
 				);
 
-				await Student.deleteMany({
+				await StudentModel.deleteMany({
 					$and: [{ checkMulti: false }, { smester_id, majors, campus_id }],
 				});
 			}
 
-			await Student.find({ smester_id })
+			await StudentModel.find({ smester_id })
 				.populate('campus_id')
 				.populate('smester_id')
 				.populate('business')
@@ -171,27 +197,26 @@ export const insertStudent = async (req, res) => {
 				.sort({ statusCheck: 1 })
 				.exec((err, doc) => {
 					if (err) {
-						res.status(400).json(err);
+						throw err;
 					} else {
-						Student.find({ smester_id, majors, campus_id })
+						StudentModel.find({ smester_id, majors, campus_id })
 							.countDocuments({})
 							.exec((count_error, count) => {
 								if (err) {
 									res.json(count_error);
 									return;
 								} else {
-									res.status(200).json({
+									return res.status(200).json({
 										total: count,
 										list: doc,
 									});
-									return;
 								}
 							});
 					}
 				});
 		} else {
-			await Student.insertMany(req.body.data);
-			await Student.find({ smester_id })
+			await StudentModel.insertMany(req.body.data);
+			await StudentModel.find({ smester_id })
 				.populate('campus_id')
 				.populate('smester_id')
 				.populate('business')
@@ -202,7 +227,7 @@ export const insertStudent = async (req, res) => {
 					if (err) {
 						res.status(400).json(err);
 					} else {
-						Student.find({ smester_id, majors, campus_id })
+						StudentModel.find({ smester_id, majors, campus_id })
 							.countDocuments({})
 							.exec((count_error, count) => {
 								if (err) {
@@ -220,18 +245,39 @@ export const insertStudent = async (req, res) => {
 				});
 		}
 	} catch (error) {
-		res.status(400).json({
-			error: 'Create Student failed',
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
 		});
-		return;
 	}
 };
 
-//updateReviewerStudent
+// [PATCH] /api/student (thêm người review cho student)
 export const updateReviewerStudent = async (req, res) => {
 	const { listIdStudent, email } = req.body;
+	const campus = req.campusManager;
 	try {
-		const data = await Student.updateMany(
+		// check xem admin có quyền sửa các học sinh không
+		const studentNotExist = [];
+		const checkStudentListExist = await StudentModel.find({
+			_id: { $in: listIdStudent },
+			campus_id: campus,
+		});
+
+		if (checkStudentListExist.length < listIdStudent.length) {
+			listIdStudent.forEach((idStudent) => {
+				let check = checkStudentListExist.find(
+					(student) => student._id.toString() === idStudent.toString()
+				);
+				if (!check) {
+					studentNotExist.push(idStudent);
+				}
+			});
+
+			throw createHttpError(404, 'Học sinh không tồn tại', { error: studentNotExist });
+		}
+
+		const data = await StudentModel.updateMany(
 			{ _id: { $in: listIdStudent } },
 			{
 				$set: {
@@ -240,17 +286,23 @@ export const updateReviewerStudent = async (req, res) => {
 			},
 			{ multi: true }
 		);
-		res.status(200).json({ listIdStudent, email });
+		return res.status(201).json({ listIdStudent, email });
 	} catch (error) {
-		res.json('Lỗi');
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
 	}
 };
 
+// [PATCH] /api/student/business
 export const updateBusinessStudent = async (req, res) => {
 	const { listIdStudent, business } = req.body;
+	const campus = req.campusManager;
 	try {
-		const data = await Student.updateMany(
-			{ _id: { $in: listIdStudent } },
+		const semester = await getCurrentSemester(campus);
+		const data = await StudentModel.updateMany(
+			{ _id: { $in: listIdStudent }, campus_id: campus, smester_id: semester._id },
 			{
 				$set: {
 					business: business,
@@ -258,15 +310,19 @@ export const updateBusinessStudent = async (req, res) => {
 			},
 			{ multi: true }
 		);
-		res.status(200).json({ listIdStudent, business });
+		return res.status(201).json({ listIdStudent, business });
 	} catch (error) {
-		res.json('Lỗi');
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
 	}
 };
 
-//updateStatusStudent
+// [PATCH] /api/student/status (update trạng thái sinh viên)
 export const updateStatusStudent = async (req, res) => {
 	const { listIdStudent, status, listEmailStudent, textNote } = req.body;
+	const campus = req.campusManager;
 	const dataEmail = {};
 	const hostname = req.get('host');
 	const listIdStudents = await listIdStudent.map((id) => ObjectId(id));
@@ -279,7 +335,29 @@ export const updateStatusStudent = async (req, res) => {
 	dataEmail.mail = newArr;
 
 	try {
-		await Student.updateMany(
+		const semester = await getCurrentSemester(campus);
+		// check xem admin có quyền sửa các học sinh không
+		const studentNotExist = [];
+		const checkStudentListExist = await StudentModel.find({
+			_id: { $in: listIdStudent },
+			campus_id: campus,
+			smester_id: semester._id,
+		});
+
+		if (checkStudentListExist.length < listIdStudent.length) {
+			listIdStudent.forEach((idStudent) => {
+				let check = checkStudentListExist.find(
+					(student) => student._id.toString() === idStudent.toString()
+				);
+				if (!check) {
+					studentNotExist.push(idStudent);
+				}
+			});
+
+			throw createHttpError(404, 'Học sinh không tồn tại', { error: studentNotExist });
+		}
+
+		await StudentModel.updateMany(
 			{
 				_id: { $in: listIdStudents },
 			},
@@ -291,7 +369,7 @@ export const updateStatusStudent = async (req, res) => {
 			},
 			{ multi: true, new: true }
 		);
-		const listStudentChangeStatus = await Student.find({
+		const listStudentChangeStatus = await StudentModel.find({
 			_id: { $in: listIdStudent },
 			statusCheck: status,
 			note: textNote,
@@ -540,59 +618,64 @@ export const updateStatusStudent = async (req, res) => {
       `;
 			await sendMail(dataEmail);
 		}
-		return res.json({ listStudentChangeStatus, status });
+		return res.status(201).json({ listStudentChangeStatus, status });
 	} catch (error) {
-		res.json('Lỗi');
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
 	}
 };
-
-//listStudentAssReviewer
-// export const listStudentAssReviewer = async (req, res) => {
-//   const { emailReviewer } = req.query;
-//   try {
-//     const listStudentAssReviewer = await Student.find({
-//       reviewer: emailReviewer,
-//     });
-//     res.status(200).json(listStudentAssReviewer);
-//   } catch (error) {
-//     res.status(400).json(error);
-//   }
-// };
 
 //listStudentReviewForm
 export const listStudentReviewForm = async (req, res) => {
 	try {
-		const listStudentReviewForm = await Student.find({
+		const campus = req.campusManager;
+		const semester = await getCurrentSemester(campus);
+
+		const listStudentReviewForm = await StudentModel.find({
 			CV: { $ne: null },
 			statusCheck: 2,
+			campus_id: campus,
+			smester_id: semester._id,
 		})
 			.populate('campus_id')
 			.populate('smester_id')
 			.populate('business')
 			.populate('majors');
 
-		res.status(200).json(listStudentReviewForm);
+		return res.status(200).json(listStudentReviewForm);
 	} catch (error) {
-		res.status(400).json(error);
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
 	}
 };
 
-//listStudentReviewCV
+// [GET] /api/student/reviewcv
 export const listStudentReviewCV = async (req, res) => {
 	try {
-		const listStudentReviewCV = await Student.find({
+		const campus = req.campusManager;
+		const semester = await getCurrentSemester(campus);
+		const listStudentReviewCV = await StudentModel.find({
 			CV: { $ne: null },
 			form: null,
 			report: null,
 			statusCheck: { $in: [0, 1] },
+			campus_id: campus,
+			smester_id: semester._id,
 		})
 			.populate('campus_id')
 			.populate('smester_id')
 			.populate('business')
 			.populate('majors');
 
-		res.status(200).json(listStudentReviewCV);
+		return res.status(200).json(listStudentReviewCV);
 	} catch (error) {
-		res.status(400).json(error);
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
 	}
 };
