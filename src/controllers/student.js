@@ -21,6 +21,7 @@ export const listStudent = async (req, res) => {
 		// lấy ra các học sinh thỏa mãn đăng ký kỳ hiện tại và thuộc cơ sở của manger đăng nhập
 		const students = await Student.paginate(
 			{
+				...req.query,
 				smester_id: dataDefault._id,
 				campus_id: campusManager,
 			},

@@ -1,274 +1,262 @@
-import business, { findByIdAndUpdate, insertMany } from "../models/business";
-import Student from "../models/student";
-import semester from "../models/semester";
+import BusinessModel from '../models/business';
+import Student from '../models/student';
+import { getCurrentSemester } from './semesterController';
+import createHttpError from 'http-errors';
 
-//insertBusiness
+// [POST] /api/business
 export const insertBusiness = async (req, res) => {
-  try {
-    await business.insertMany(req.body);
-    await business
-      .find(req.query)
-      .populate("campus_id")
-      .populate("smester_id")
-      .populate("majors")
-      .sort({ createdAt: -1 })
-      .exec((err, doc) => {
-        if (err) {
-          res.status(400).json(err);
-        } else {
-          business
-            .find(req.query)
-            .countDocuments({})
-            .exec((count_error, count) => {
-              if (err) {
-                res.json(count_error);
-                return;
-              } else {
-                res.status(200).json({
-                  total: count,
-                  list: doc,
-                });
-                return;
-              }
-            });
-        }
-      });
-  } catch (error) {
-    res.status(400).json({
-      error: "Create business failed",
-    });
-    return;
-  }
+	const data = req.body.data;
+	const campus = req.campusManager || req.campusStudent;
+	try {
+		if (!Array.isArray(data)) {
+			throw createHttpError(400, 'Body data type không phải là array');
+		}
+
+		if (data.length) throw createHttpError(204);
+
+		// lấy ra kỳ học hiện tại
+		const semester = await getCurrentSemester(campus);
+
+		// check xem doanh nghiệp đã tồn tại trong db chưa
+		const businessExists = [];
+		const codeRequestList = data.map((item) => item.code_request);
+		const businessExistDb = await BusinessModel.find({
+			code_request: { $in: codeRequestList },
+			campus_id: campus,
+		}).select('name code_request');
+
+		businessExistDb.forEach((item) => {
+			let check = codeRequestList.includes(item.code_request);
+			if (check) {
+				businessExists.push({ name: item.name, code_request: item.code_request });
+			}
+		});
+
+		if ((businessExists, length > 0)) {
+			throw createHttpError(409, 'Doanh nghiệp đã tồn tại (có thể ở kỳ trước)', {
+				error: businessExists,
+			});
+		}
+
+		// thêm kỳ học và cơ sở vào data
+		const dataCreate = data.map((item) => ({
+			...item,
+			campus_id: campus,
+			smester_id: semester._id,
+		}));
+
+		const result = await BusinessModel.insertMany(dataCreate);
+		return res.status(201).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+			error: error.error,
+		});
+	}
 };
 
+// [GET] /api/business
 export const listBusiness = async (req, res) => {
-  const { limit, page } = req.query;
-  try {
-    if (page && limit) {
-      //getPage
-      let perPage = parseInt(page);
-      let current = parseInt(limit);
-      if (perPage < 1 || perPage == undefined || current == undefined) {
-        perPage = 1;
-        current = 9;
-      }
-      const skipNumber = (perPage - 1) * current;
-      try {
-        await business
-          .find(req.query)
-          .populate("campus_id")
-          .populate("majors")
-          .skip(skipNumber)
-          .limit(current)
-          .exec((err, doc) => {
-            if (err) {
-              res.status(400).json(err);
-            } else {
-              business
-                .find(req.query)
-                .countDocuments({})
-                .exec((count_error, count) => {
-                  if (err) {
-                    res.json(count_error);
-                    return;
-                  } else {
-                    res.status(200).json({
-                      total: count,
-                      list: doc,
-                    });
-                    return;
-                  }
-                });
-            }
-          });
-      } catch (error) {
-        res.status(400).json(error);
-      }
-    } else {
-      const listBusiness = await business
-        .find(req.query)
-        .populate("campus_id")
-        .populate("majors");
-      res.status(200).json({
-        total: listBusiness.length,
-        list: listBusiness,
-      });
-    }
-  } catch (error) {
-    res.status(500).json(error);
-  }
+	const page = req.query.page || 1;
+	const limit = req.query.limit || 10;
+	const campus = req.campusManager || req.campusStudent;
+	try {
+		// lấy ra học kỳ hiện tại
+		const semester = await getCurrentSemester(campus);
+		const result = await BusinessModel.paginate(
+			{
+				...req.query,
+				campus_id: campus,
+				smester_id: semester._id,
+			},
+			{
+				page: Number(page),
+				limit: Number(limit),
+				sort: { createAt: 'desc' },
+				populate: ['majors', 'campus_id'],
+				customLabels: {
+					totalDocs: 'total',
+					docs: 'list',
+				},
+			}
+		);
+
+		return res.status(200).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
-//delete business
+// [DELETE] /api/business/:id
 export const removeBusiness = async (req, res) => {
-  try {
-    const Business = await business.findById(req.params.id);
-    const isStudentOfBusiness = await Student.findOne({
-      business: req.params.id,
-      campus_id: Business.campus_id,
-      smester_id: Business.smester_id,
-    });
-    if (isStudentOfBusiness) {
-      return res.status(200).json({
-        message: "Doanh nghiệp đang được sinh viên đăng ký không thể xóa.",
-        success: false,
-      });
-    } else {
-      const itemDelete = await business.findByIdAndRemove(req.params.id);
-      return res.status(200).json({
-        itemDelete,
-        message: "Xóa doanh nghiệp thành công",
-        success: true,
-      });
-    }
-  } catch (error) {
-    return res.json({
-      error,
-      success: false,
-    });
-  }
+	const campus = req.campusManager || req.campusStudent;
+	const id = req.params.id;
+	try {
+		// lấy ra học kỳ hiện tại
+		const semester = await getCurrentSemester(campus);
+		const business = await BusinessModel.findOne({
+			_id: id,
+			campus_id: campus,
+			smester_id: semester._id,
+		});
+
+		if (!business) {
+			throw createHttpError(404, 'Doanh nghiệp này không tồn tại!');
+		}
+
+		// kiểm tra có học sinh nào còn đăng ký doanh nghiệp không
+		const isStudentOfBusiness = await Student.findOne({
+			business: id,
+			campus_id: business.campus_id,
+			smester_id: business.smester_id,
+		});
+
+		if (isStudentOfBusiness) {
+			throw createHttpError(403, 'Doanh nghiệp đang được sinh viên đăng ký không thể xóa.');
+		}
+
+		// Xóa
+		const businessDelete = await BusinessModel.findByIdAndRemove(id);
+
+		return res.status(200).json(businessDelete);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
-//create business
-
+// [POST] /api/business/new
 export const createbusiness = async (req, res) => {
-  const { code_request, campus_id } = req.body;
-  try {
-    const defaultSemester = await semester.findOne({
-      $and: [
-        { start_time: { $lte: new Date() } },
-        { date_time: { $gte: new Date() } },
-      ],
-    });
-    const Business = await business.find({
-      smester_id: defaultSemester._id,
-      campus_id: campus_id,
-    });
+	const { code_request } = req.body;
+	const data = req.body;
+	const campus = req.campusManager || req.campusStudent;
+	try {
+		// lấy ra học kỳ hiện tại
+		const semester = await getCurrentSemester(campus);
 
-    const isBusinessCodeRequest = Business.some((item) => {
-      if (item.code_request) {
-        return item.code_request.toUpperCase() === code_request.toUpperCase();
-      }
-    });
+		// check xem đã tồn tại chưa
+		const business = await BusinessModel.findOne({
+			code_request: code_request,
+			campus_id: campus,
+		});
 
-    if (isBusinessCodeRequest) {
-      return res.status(200).json({
-        message: "Mã doanh nghiệp đã tồn tại không thể tạo mới",
-        success: false,
-      });
-    } else {
-      const newBusiness = await business.create({
-        ...req.body,
-        smester_id: defaultSemester._id,
-      });
-      return res.status(200).json({
-        newBusiness,
-        message: "Tạo doanh nghiệp thành công",
-        success: true,
-      });
-    }
-  } catch (error) {
-    return res.json({
-      error,
-      success: false,
-    });
-  }
+		if (business) {
+			throw createHttpError(409, 'Doanh nghiệp đã tồn tại');
+		}
+
+		const newBusiness = await new BusinessModel({
+			...data,
+			campus_id: campus,
+			smester_id: semester._id,
+		}).save();
+
+		return res.status(201).json(newBusiness);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
-//update Business
-
+// [PATCH] /api/business/:id
 export const updateBusiness = async (req, res) => {
-  const { code_request, smester_id, campus_id } = req.body;
-  try {
-    const defaultSemester = await semester.findOne({
-      $and: [
-        { start_time: { $lte: new Date() } },
-        { date_time: { $gte: new Date() } },
-      ],
-    });
+	const data = req.body;
+	const id = req.params.id;
+	const campus = req.campusManager || req.campusStudent;
+	try {
+		const semester = await getCurrentSemester(campus);
 
-    const Business = await business.find({
-      smester_id: smester_id,
-      campus_id: campus_id,
-    });
+		const business = await BusinessModel.findOne({
+			_id: id,
+			smester_id: semester._id,
+			campus_id: campus,
+		});
 
-    if (defaultSemester._id.toString() !== smester_id) {
-      return res.status(200).json({
-        message: "Không thể sửa doanh nghiệp do không ở kỳ hiện tại",
-        success: false,
-      });
-    }
+		if (!business) {
+			throw createHttpError(404, 'Doanh nghiệp không tồn tại');
+		}
 
-    const listBusiness = Business.filter((item) => {
-      return item._id.toString() !== req.params.id;
-    });
+		const itemBusinessUpdate = await BusinessModel.findByIdAndUpdate(id, data, {
+			new: true,
+		});
 
-    const isBusinessCodeRequest = listBusiness.some((item) => {
-      if (item.code_request) {
-        return item.code_request.toUpperCase() === code_request.toUpperCase();
-      }
-    });
-
-    if (isBusinessCodeRequest) {
-      return res.status(200).json({
-        message: "Mã doanh nghiệp đã tồn tại không thể tạo sửa",
-        success: false,
-      });
-    } else {
-      const itemBusinessUpdate = await business.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true }
-      );
-      return res.status(200).json({
-        itemBusinessUpdate,
-        message: "Sửa doanh nghiệp thành công",
-        success: true,
-      });
-    }
-  } catch (error) {
-    return res.json({
-      error,
-      success: false,
-    });
-  }
+		return res.status(201).json(itemBusinessUpdate);
+	} catch (error) {
+		if (error.code === 11000) {
+			return res.status(409).json({
+				statusCode: 409,
+				message: 'Mã doanh nghiệp đã tồn tại',
+			});
+		}
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
+// [GET] /api/business/:id
 export const getBusiness = async (req, res) => {
-  try {
-    const itemBusiness = await business.findById(req.params.id);
-    return res.status(200).json({
-      itemBusiness,
-      success: true,
-    });
-  } catch (error) {
-    return res.status(200).json({
-      error,
-      success: false,
-    });
-  }
+	try {
+		const id = req.params.id;
+		const result = await BusinessModel.findOne({
+			_id: id,
+		});
+
+		if (!result) {
+			throw createHttpError(404, 'Doanh nghiệp cần tìm không tồn tại');
+		}
+
+		return res.status(200).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
+// [PATCH] /api/business (Tái sử dụng lại dữ liệu doanh nghiệp từ kỳ cũ)
 export const updateMany = async (req, res) => {
-  try {
-    const { listIdBusiness } = req.body;
-    const { smester_id } = req.body.smester_id;
-    await business.updateMany(
-      { _id: { $in: listIdBusiness } },
-      {
-        $set: {
-          smester_id: smester_id,
-          status: 1,
-        },
-      },
-      { multi: true }
-    );
+	try {
+		const data = req.body;
+		const campus = req.campusManager || req.campusStudent;
 
-    res.status(200).json({ listIdStudent, smester_id });
-  } catch (error) {
-    return res.status(200).json({
-      error,
-      success: false,
-    });
-  }
+		if (!Array.isArray(data)) {
+			throw createHttpError(400, 'Data body gửi lên không phải type array');
+		}
+
+		if (data.length === 0) {
+			throw createHttpError(204);
+		}
+
+		const semester = await getCurrentSemester(campus);
+
+		await BusinessModel.updateMany(
+			{ _id: { $in: data } },
+			{
+				$set: {
+					smester_id: semester._id,
+					status: 1,
+				},
+			},
+			{ multi: true }
+		);
+
+		return res.status(201).json({
+			message: `Đã chuyển doanh nghiệp sang kỳ học ${semester.name}!`,
+		});
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
