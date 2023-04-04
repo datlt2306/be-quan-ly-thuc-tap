@@ -79,3 +79,140 @@ components:
                 createAt:
                     type: Date
                     description: 'Thời gian doanh nghiệp được tạo'
+
+        Student:
+            type: object
+            properties:
+                name:
+                    type: string
+                    required: true
+                    description: Tên sinh viên
+                mssv:
+                    type: string
+                    required: true
+                    description: Mã số sinh viên
+                course:
+                    type: string
+                    description: Khóa học của học sinh
+                majors:
+                    type: objectId
+                    description: Ngành của học sinh
+                narrow:
+                    type: objectId
+                    description: Ngành hẹp học sinh
+                dream:
+                    type: string
+                    default: null
+                email:
+                    type: string
+                    required: true
+                    description: Email học sinh
+                checkUpdate:
+                    type: boolean
+                    default: true
+                checkMulti:
+                    type: boolean
+                    default: false
+                supplement:
+                    type: string
+                    default: null
+                statusCheck:
+                    type: number
+                    default: 10
+                statusStudent:
+                    type: string
+                support:
+                    type: number
+                    default: null
+                phoneNumber:
+                    type: number
+                    required: true
+                    default: null
+                    description: Số điện thoại học sinh
+                address:
+                    type: string
+                    default: null
+                    description: Địa chỉ sinh viên
+                CV:
+                    type: string
+                    default: null
+                    description: Link cv học sinh
+                campus_id:
+                    type: objectId
+                    description: Cơ sở học sinh đang học
+                business:
+                    type: objectId
+                    description: Công ty học sinh đăng ký
+                smester_id:
+                    type: objectId
+                    description: Kỳ học hiện tại học sinh
+                reviewer:
+                    type: string
+                    default: null
+                form:
+                    type: string
+                    default: null
+                report:
+                    type: string
+                    default: null
+                numberOfTime:
+                    type: number
+                    default: 0
+                nameCompany:
+                    type: string
+                    default: null
+                    description: Tên công ty sv đang làm việc ( th tự tìm )
+                addressCompany:
+                    type: string
+                    default: null
+                    description: Địa chỉ công ty đang làm việc
+                taxCode:
+                    type: number
+                    default: null
+                position:
+                    type: string
+                    default: null
+                    description: Vị trí làm việc
+                phoneNumberCompany:
+                    type: string
+                    default: null
+                    description: Số điện thoại liên hệ công ty
+                emailEnterprise:
+                    type: string
+                    default: null
+                    description: Email của công ty
+                internshipTime:
+                    type: Date
+                    default: null
+                endInternShipTime:
+                    type: Date
+                    default: null
+                attitudePoint:
+                    type: number
+                    default: null
+                note:
+                    type: string
+                    default: null
+                resultScore:
+                    type: number
+                    default: null
+                listTimeForm:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            typeNumber:
+                                type: number
+                            typeName:
+                                type: string
+                                default: ''
+                            startTime:
+                                type: number
+                            endTime:
+                                type: number
+                signTheContract:
+                    type: number
+                    default: null
+                createdAt:
+                    type: Date
+                    default: 'Thời gian hiện tại'

@@ -5,14 +5,14 @@ import createHttpError from 'http-errors';
 
 // [POST] /api/business
 export const insertBusiness = async (req, res) => {
-	const data = req.body.data;
+	const data = req.body;
 	const campus = req.campusManager || req.campusStudent;
 	try {
 		if (!Array.isArray(data)) {
 			throw createHttpError(400, 'Body data type không phải là array');
 		}
 
-		if (data.length) throw createHttpError(204);
+		if (data.length === 0) throw createHttpError(204);
 
 		// lấy ra kỳ học hiện tại
 		const semester = await getCurrentSemester(campus);
@@ -32,7 +32,7 @@ export const insertBusiness = async (req, res) => {
 			}
 		});
 
-		if ((businessExists, length > 0)) {
+		if (businessExists.length > 0) {
 			throw createHttpError(409, 'Doanh nghiệp đã tồn tại (có thể ở kỳ trước)', {
 				error: businessExists,
 			});

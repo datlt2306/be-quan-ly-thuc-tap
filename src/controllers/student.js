@@ -1,4 +1,5 @@
 import StudentModel from '../models/student';
+import BusinessModel from '../models/business';
 import { sendMail } from './emailController';
 import semester from '../models/semester';
 import { getCurrentSemester } from './semesterController';
@@ -301,6 +302,15 @@ export const updateBusinessStudent = async (req, res) => {
 	const campus = req.campusManager;
 	try {
 		const semester = await getCurrentSemester(campus);
+		// check xem doanh nghiệp có tồn tại không
+		const businessCheck = await BusinessModel.findOne({
+			_id: business,
+			campus_id: campus,
+			smester_id: semester._id,
+		});
+
+		if (!businessCheck) throw createHttpError(404, 'Công ty không tồn tại!');
+
 		const data = await StudentModel.updateMany(
 			{ _id: { $in: listIdStudent }, campus_id: campus, smester_id: semester._id },
 			{
@@ -373,7 +383,7 @@ export const updateStatusStudent = async (req, res) => {
 			_id: { $in: listIdStudent },
 			statusCheck: status,
 			note: textNote,
-		});
+		}).select('name');
 
 		if (status === 1) {
 			dataEmail.subject = 'Thông báo sửa CV thực tập doanh nghiệp';

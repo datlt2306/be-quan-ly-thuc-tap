@@ -40,7 +40,7 @@ router.patch(
 	updateStatusStudent
 );
 router.patch('/student/:id', isAuthenticateUser, authorizeRoles([role.manager]), updateStudent);
-router.delete('/student/:id', isAuthenticateUser, authorizeRoles(role.manager), removeStudent);
+router.delete('/student/:id', isAuthenticateUser, authorizeRoles([role.manager]), removeStudent);
 
 // fake data
 router.post('/generate-fake-data', () => {
