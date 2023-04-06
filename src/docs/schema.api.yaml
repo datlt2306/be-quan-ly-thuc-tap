@@ -216,3 +216,18 @@ components:
                 createdAt:
                     type: Date
                     default: 'Thời gian hiện tại'
+
+        StatusStudent:
+            type: object
+            properties:
+                _id:
+                    type: objectId
+                value:
+                    type: number
+                    required: true
+                    unique: true
+                    description: Mã trạng thái
+                title:
+                    type: string
+                    required: true
+                    description: Tiêu đề của trạng thái
