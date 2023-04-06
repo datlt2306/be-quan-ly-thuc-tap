@@ -637,32 +637,6 @@ export const updateStatusStudent = async (req, res) => {
 	}
 };
 
-//listStudentReviewForm
-export const listStudentReviewForm = async (req, res) => {
-	try {
-		const campus = req.campusManager;
-		const semester = await getCurrentSemester(campus);
-
-		const listStudentReviewForm = await StudentModel.find({
-			CV: { $ne: null },
-			statusCheck: 2,
-			campus_id: campus,
-			smester_id: semester._id,
-		})
-			.populate('campus_id')
-			.populate('smester_id')
-			.populate('business')
-			.populate('majors');
-
-		return res.status(200).json(listStudentReviewForm);
-	} catch (error) {
-		return res.status(error.statusCode || 500).json({
-			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
-		});
-	}
-};
-
 // [GET] /api/student/reviewcv
 export const listStudentReviewCV = async (req, res) => {
 	try {
