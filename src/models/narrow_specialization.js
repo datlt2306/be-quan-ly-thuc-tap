@@ -1,22 +1,28 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema;
-const NarrowSpecializationSchema = mongoose.Schema({
-  name: {
-    type: String,
-    require: true,
-    lowercase: true,
-  },
-  id_majors: {
-    type: ObjectId,
-    ref: "Major",
-  },
-  createAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
 
-module.exports = mongoose.model(
-  "NarrowSpecialization",
-  NarrowSpecializationSchema
+const NarrowSpecializationSchema = mongoose.Schema(
+	{
+		name: {
+			type: String,
+			require: true,
+			lowercase: true,
+			unique: true,
+		},
+		id_majors: {
+			type: ObjectId,
+			require,
+			ref: 'Major',
+		},
+		campus: {
+			type: String,
+			require: true,
+			ref: 'Cumpus',
+		},
+	},
+	{
+		timestamps: true,
+	}
 );
+
+module.exports = mongoose.model('NarrowSpecialization', NarrowSpecializationSchema);

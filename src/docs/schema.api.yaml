@@ -1,0 +1,218 @@
+components:
+    schemas:
+        HttpError:
+            type: object
+            properties:
+                statusCode:
+                    type: number
+                message:
+                    type: string
+        Narrowspecialization:
+            type: object
+            properties:
+                _id:
+                    type: ObjectId
+                name:
+                    type: string
+                    required: true
+                    unique: true
+                    description: Tên ngành hẹp
+                id_majors:
+                    type: ObjectId
+                    required: true
+                    description: id ngành lớn
+                campus:
+                    type: ObjectId
+                    required: true
+                    description: id cơ sở
+                createdAt:
+                    type: Date
+                updatedAt:
+                    type: Date
+
+        Business:
+            type: object
+            properties:
+                name:
+                    type: string
+                    required: true
+                    description: 'Tên công ty'
+                internshipPosition:
+                    type: string
+                    required: true
+                    description: 'Vị trí cần tuyển'
+                majors:
+                    type: ObjectId
+                    required: true
+                    description: 'Chuyên ngành cần tuyển'
+                amount:
+                    type: number
+                    default: 0
+                    description: 'Số lượng muôn tuyển'
+                address:
+                    type: string
+                    description: 'Địa chỉ công ty'
+                smester_id:
+                    type: objectId
+                    description: 'Kỳ học, server lấy là kỳ học hiện tại'
+                campus_id:
+                    type: objectId
+                    description: 'Cơ sở, mặc định lấy cơ sở của manager'
+                code_request:
+                    type: string
+                    unique: true
+                    required: true
+                    description: 'Mã doanh nghiệp'
+                request:
+                    type: string
+                    description: 'Yêu cầu vị trí của doanh nghiệp'
+                description:
+                    type: string
+                    description: 'Mô tả công việc'
+                benefish:
+                    type: string
+                    description: 'Quyền lợi khi làm tại doanh nghiệp'
+                status:
+                    type: number
+                    default: 1
+                    description: 'Trạng thái của doanh nghiệp'
+                createAt:
+                    type: Date
+                    description: 'Thời gian doanh nghiệp được tạo'
+
+        Student:
+            type: object
+            properties:
+                name:
+                    type: string
+                    required: true
+                    description: Tên sinh viên
+                mssv:
+                    type: string
+                    required: true
+                    description: Mã số sinh viên
+                course:
+                    type: string
+                    description: Khóa học của học sinh
+                majors:
+                    type: objectId
+                    description: Ngành của học sinh
+                narrow:
+                    type: objectId
+                    description: Ngành hẹp học sinh
+                dream:
+                    type: string
+                    default: null
+                email:
+                    type: string
+                    required: true
+                    description: Email học sinh
+                checkUpdate:
+                    type: boolean
+                    default: true
+                checkMulti:
+                    type: boolean
+                    default: false
+                supplement:
+                    type: string
+                    default: null
+                statusCheck:
+                    type: number
+                    default: 10
+                statusStudent:
+                    type: string
+                support:
+                    type: number
+                    default: null
+                phoneNumber:
+                    type: number
+                    required: true
+                    default: null
+                    description: Số điện thoại học sinh
+                address:
+                    type: string
+                    default: null
+                    description: Địa chỉ sinh viên
+                CV:
+                    type: string
+                    default: null
+                    description: Link cv học sinh
+                campus_id:
+                    type: objectId
+                    description: Cơ sở học sinh đang học
+                business:
+                    type: objectId
+                    description: Công ty học sinh đăng ký
+                smester_id:
+                    type: objectId
+                    description: Kỳ học hiện tại học sinh
+                reviewer:
+                    type: string
+                    default: null
+                form:
+                    type: string
+                    default: null
+                report:
+                    type: string
+                    default: null
+                numberOfTime:
+                    type: number
+                    default: 0
+                nameCompany:
+                    type: string
+                    default: null
+                    description: Tên công ty sv đang làm việc ( th tự tìm )
+                addressCompany:
+                    type: string
+                    default: null
+                    description: Địa chỉ công ty đang làm việc
+                taxCode:
+                    type: number
+                    default: null
+                position:
+                    type: string
+                    default: null
+                    description: Vị trí làm việc
+                phoneNumberCompany:
+                    type: string
+                    default: null
+                    description: Số điện thoại liên hệ công ty
+                emailEnterprise:
+                    type: string
+                    default: null
+                    description: Email của công ty
+                internshipTime:
+                    type: Date
+                    default: null
+                endInternShipTime:
+                    type: Date
+                    default: null
+                attitudePoint:
+                    type: number
+                    default: null
+                note:
+                    type: string
+                    default: null
+                resultScore:
+                    type: number
+                    default: null
+                listTimeForm:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            typeNumber:
+                                type: number
+                            typeName:
+                                type: string
+                                default: ''
+                            startTime:
+                                type: number
+                            endTime:
+                                type: number
+                signTheContract:
+                    type: number
+                    default: null
+                createdAt:
+                    type: Date
+                    default: 'Thời gian hiện tại'
