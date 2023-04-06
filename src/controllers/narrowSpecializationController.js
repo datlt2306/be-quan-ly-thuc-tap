@@ -16,7 +16,7 @@ export const getNarrow = async (req, res) => {
 		})
 			.populate('id_majors')
 			.sort({ createAt: -1 });
-		res.status(200).json(data);
+		return res.status(200).json(data);
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
