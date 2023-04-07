@@ -1,6 +1,7 @@
 import createHttpError from 'http-errors';
 import { getCurrentSemester } from '../controllers/semesterController';
 import StudentModel from '../models/student';
+import { validateDataCreateStudentList } from '../validation/student.validation';
 
 // check xem học sinh có tồn tại ở cơ sở và kỳ hiện tại không
 export const checkStudentExist = async (id, campus) => {
@@ -19,6 +20,24 @@ export const checkStudentExist = async (id, campus) => {
 		}
 
 		return student;
+	} catch (error) {
+		throw error;
+	}
+};
+
+// thêm học sinh thực tập
+export const createListStudent = async (data, campus) => {
+	try {
+		const { _id: semesterId } = await getCurrentSemester(campus);
+
+		// validate list data
+		const { error } = validateDataCreateStudentList(data);
+
+		if (error) {
+			throw createHttpError(400, error.message);
+		}
+
+		return data;
 	} catch (error) {
 		throw error;
 	}

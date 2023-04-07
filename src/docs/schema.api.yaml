@@ -231,3 +231,22 @@ components:
                     type: string
                     required: true
                     description: Tiêu đề của trạng thái
+
+        Major:
+            type: object
+            properties:
+                _id:
+                    type: objectId
+                name:
+                    type: string
+                    required: true
+                    description: Tên ngành học
+                majorCode:
+                    type: string
+                    required: true
+                    unique: true
+                    description: Mã code của ngành học
+                campus:
+                    type: objectId
+                    required: true
+                    description: Cơ sở tạo ra ngành học
