@@ -1,92 +1,93 @@
-import Major from '../models/major';
+import * as majorServices from '../services/majors.service';
 
+// [GET] /api/major
 export const getListMajor = async (req, res) => {
-  try {
-    const majors = await Major.find().sort({ createdAt: -1 });
-    res.status(200).json({
-      majors,
-      success: true,
-    });
-  } catch (error) {
-    res.json(error);
-  }
+	try {
+		const campus = req.campusManager || req.campusStudent;
+
+		const result = await majorServices.getAllMajors(campus);
+
+		return res.status(200).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
+// [GET] /api/major/:id
 export const getMajor = async (req, res) => {
-  try {
-    const major = await Major.findById(req.params.id);
-    res.status(200).json({
-      major,
-      success: true,
-    });
-  } catch (error) {
-    res.json(error);
-  }
+	try {
+		const id = req.params.id;
+		const campus = req.campusManager || req.campusStudent;
+
+		const major = await majorServices.getOneMajor(id, campus);
+
+		return res.status(200).json(major);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
+// [POST] /api/major
 export const createMajor = async (req, res) => {
-  const duplicate = await Major.findOne({
-    $and: [
-      {
-        "name": req.body.name,
-      },
-      {
-        "majorCode": req.body.majorCode,
-      },
-    ],
-  });
-  try {
-    if (duplicate !== null) {
-      res.status(201).json({
-        status: 'error',
-        success: false,
-        msg: 'Trùng tên',
-      });
-      return;
-    } else {
-      const major = await Major.create(req.body);
-      res.status(200).json({
-        status: 'ok',
-        success: true,
-        data: major,
-        msg: 'Thành công',
-      });
-      return;
-    }
-  } catch (error) {
-    error;
-  }
+	try {
+		const data = req.body;
+		const campus = req.campusManager;
+
+		let result = null;
+
+		if (Array.isArray(data)) {
+			result = await majorServices.createMajorList(data, campus);
+		} else {
+			result = await majorServices.createOneMajor(data, campus);
+		}
+
+		return res.status(201).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+			error: error.error,
+		});
+	}
 };
 
+// [PATCH] /api/major/:id
 export const updateMajor = async (req, res) => {
-  try {
-    const major = await Major.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json({
-      status: 'ok',
-      success: true,
-      data: major,
-      message: 'Sửa ngành học thành công',
-    });
-  } catch (error) {
-    res.status(400).json({
-      status: 'error',
-      success: false,
-      msg: 'Thất bại',
-      data: {},
-    });
-  }
+	try {
+		const data = req.body;
+		const id = req.params.id;
+		const campus = req.campusManager;
+
+		const result = await majorServices.updateMajor(id, data, campus);
+
+		return result.status(201).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
+// [DELETE] /api/major/:id
 export const removeMajor = async (req, res) => {
-  try {
-    const major = await Major.findByIdAndRemove(req.params.id);
-    res.status(200).json({
-      major,
-      message: 'Xóa ngành học thành công',
-    });
-  } catch (error) {
-    res.json({
-      error,
-    });
-  }
+	try {
+		const id = req.params.id;
+		const campus = req.campusManager;
+
+		const result = await majorServices.deleteMajor(id, campus);
+
+		return result.status(200).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
