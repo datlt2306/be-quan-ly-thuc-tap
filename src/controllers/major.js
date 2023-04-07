@@ -66,7 +66,7 @@ export const updateMajor = async (req, res) => {
 
 		const result = await majorServices.updateMajor(id, data, campus);
 
-		return result.status(201).json(result);
+		return res.status(201).json(result);
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
@@ -83,7 +83,7 @@ export const removeMajor = async (req, res) => {
 
 		const result = await majorServices.deleteMajor(id, campus);
 
-		return result.status(200).json(result);
+		return res.status(200).json(result);
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
