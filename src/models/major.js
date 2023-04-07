@@ -8,7 +8,6 @@ const majorSchema = mongoose.Schema({
 	majorCode: {
 		type: String,
 		require: true,
-		unique: true,
 	},
 	campus: {
 		type: ObjectId,
