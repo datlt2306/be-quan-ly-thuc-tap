@@ -7,8 +7,8 @@ export const validateDataCreateStudentList = (data) => {
 				mssv: Joi.string().required(),
 				name: Joi.string().required(),
 				course: Joi.number().required(),
-				majors: Joi.string().required(),
-				email: Joi.string().required(),
+				majorCode: Joi.string().required(),
+				email: Joi.string().email().required(),
 			})
 		);
 

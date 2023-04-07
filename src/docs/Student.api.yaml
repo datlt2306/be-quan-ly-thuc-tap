@@ -114,11 +114,85 @@ paths:
             tags:
                 - Students
             summary: Đăng nhập với vai trò manager
-            description: Thêm mới nhiều học sinh
+            description: Thêm mới nhiều học sinh (nếu kỳ hiện tại đã nhập thì chỉ nhập những học sinh chưa tồn tại)
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    mssv:
+                                        type: string
+                                        required: true
+                                        description: Mã số sinh viên
+                                    name:
+                                        type: string
+                                        required: true
+                                        description: Họ tên đầy đủ của sinh viên
+                                    course:
+                                        type: number
+                                        required: true
+                                        description: Khóa của sinh viên
+                                    majorCode:
+                                        type: string
+                                        required: true
+                                        description: Mã chuyên ngành của sinh viên
+                                    email:
+                                        type: string
+                                        required: true
+                                        description: email sinh viên
+                        example:
+                            [
+                                {
+                                    'mssv': 'PH24870',
+                                    'name': 'Lê Ngọc Đức',
+                                    'course': 2021,
+                                    'majorCode': 'UDPM',
+                                    'email': 'duclnph24870@fpt.edu.vn',
+                                },
+                            ]
 
             responses:
-                200:
-                    description: Thêm thành công
+                201:
+                    description: Import sinh viên thành công
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                            example:
+                                {
+                                    message: '1 sinh viên đã được thêm vào hệ thống, 1 sinh viên đã tồn tại',
+                                }
+
+                204:
+                    description: Data gửi lên rỗng
+
+                400:
+                    description: Data gửi lên type không phải là array hoặc không thỏa mãn validate
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
+                            example:
+                                { 'statusCode': 400, 'message': 'Body data type phải là array' }
+
+                404:
+                    description: Chuyên ngành gửi lên có chuyên ngành không tồn tại
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
+                            example:
+                                {
+                                    'statusCode': 404,
+                                    'message': 'Chuyên ngành không tồn tại',
+                                    'error': ['TKW1'],
+                                }
 
         patch:
             tags:
