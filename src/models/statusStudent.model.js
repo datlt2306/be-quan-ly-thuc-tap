@@ -5,7 +5,6 @@ const StatusSchema = Schema(
 	{
 		value: {
 			type: Number,
-			unique: true,
 			require: true,
 		},
 		title: {

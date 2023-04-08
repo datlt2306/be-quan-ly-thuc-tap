@@ -49,6 +49,13 @@ paths:
 
                 204:
                     description: Data gửi lên rỗng
+                409:
+                    description: Status đã tồn tại
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
+                            example: { 'statusCode': 409, 'message': 'Status đã tồn tại' }
                 400:
                     description: Không thỏa mãn validate
                     content:
