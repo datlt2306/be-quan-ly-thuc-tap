@@ -33,12 +33,12 @@ export const isAuthenticateUser = async (req, res, next) => {
 			req.role = 0;
 			next();
 		} else {
-			res.status(401).json({
+			return res.status(401).json({
 				msg: 'Không có quyền truy cập',
 			});
 		}
 	} catch (error) {
-		res.json({
+		return res.json({
 			message: error,
 		});
 	}

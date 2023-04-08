@@ -10,9 +10,23 @@ export const selectStatusAll = async (campus) => {
 	try {
 		const statusList = await StatusStudentModel.find({
 			campus: campus,
-		});
+		}).select('-contentMail -titleMail');
 
 		return statusList;
+	} catch (error) {
+		throw error;
+	}
+};
+
+// check xem 1 status đã tồn tại ở cơ sở chưa
+export const selectOneStatus = async (value, campus) => {
+	try {
+		const status = await StatusStudentModel.findOne({
+			value: value,
+			campus: campus,
+		});
+
+		return status;
 	} catch (error) {
 		throw error;
 	}
@@ -29,6 +43,13 @@ export const createStatus = async (campus, data) => {
 		const { error } = statusStudentValidate(data);
 		if (error) {
 			throw createHttpError(400, error.message);
+		}
+
+		// check xem đã tồn tại chưa
+		const status = await selectOneStatus(data.value, campus);
+
+		if (status) {
+			throw createHttpError(409, 'Status đã tồn tại');
 		}
 
 		const statusResult = await new StatusStudentModel({

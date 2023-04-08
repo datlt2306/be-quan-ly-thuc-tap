@@ -45,7 +45,6 @@ const studentSchema = mongoose.Schema(
 		},
 		statusCheck: {
 			type: Number,
-			default: 10,
 		},
 		statusStudent: {
 			type: String,
@@ -136,10 +135,6 @@ const studentSchema = mongoose.Schema(
 		},
 		attitudePoint: {
 			type: Number,
-			default: null,
-		},
-		note: {
-			type: String,
 			default: null,
 		},
 		resultScore: {

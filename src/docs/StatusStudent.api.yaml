@@ -21,7 +21,7 @@ paths:
             tags:
                 - StatusStudents
             summary: Đăng nhập với vai trò manager (role = 1)
-            description: Api tạo trạng thái sinh viên
+            description: 'Api tạo trạng thái sinh viên; Lưu ý các keyword đặc biệt sau: ${note},${statusTitle},${hostname} với ý nghĩa lần lượt là note cho sinh viên, tên trạng thái sinh viên hiện tại và domain hiện tại'
             requestBody:
                 content:
                     application/json:
@@ -37,6 +37,14 @@ paths:
                                     type: string
                                     required: true
                                     description: Tiêu đề trạng thái sinh viên
+                                contentMail:
+                                    type: string
+                                    required: true
+                                    description: Nội dung dùng để gửi mail
+                                titleMail:
+                                    type: string
+                                    required: true
+                                    description: Title dùng để gửi mail
 
             responses:
                 201:
@@ -45,10 +53,22 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/StatusStudent'
-                            example: { value: 0, title: 'Chờ kiểm tra CV' }
+                            example:
+                                {
+                                    value: 0,
+                                    title: 'Chờ kiểm tra CV',
+                                    contentMail: 'Chào em <br/> Trạng thái CV hiện tại của em là: ${statusTitle}, Lý do trượt là: ${note}, Để biết thêm chi tiết em vào <a href="${hostname}">${hostname}</a> để biết thêm thông tin chi tiết',
+                                }
 
                 204:
                     description: Data gửi lên rỗng
+                409:
+                    description: Status đã tồn tại
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
+                            example: { 'statusCode': 409, 'message': 'Status đã tồn tại' }
                 400:
                     description: Không thỏa mãn validate
                     content:
@@ -77,6 +97,14 @@ paths:
                                 title:
                                     type: string
                                     description: Tiêu đề trạng thái sinh viên
+                                contentMail:
+                                    type: string
+                                    required: true
+                                    description: Nội dung dùng để gửi mail
+                                titleMail:
+                                    type: string
+                                    required: true
+                                    description: Title dùng để gửi mail
 
             responses:
                 201:

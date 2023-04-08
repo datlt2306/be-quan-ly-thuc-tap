@@ -5,10 +5,17 @@ const StatusSchema = Schema(
 	{
 		value: {
 			type: Number,
-			unique: true,
 			require: true,
 		},
 		title: {
+			type: String,
+			require: true,
+		},
+		contentMail: {
+			type: String,
+			require: true,
+		},
+		titleMail: {
 			type: String,
 			require: true,
 		},
