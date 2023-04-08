@@ -17,3 +17,17 @@ export const validateDataCreateStudentList = (data) => {
 		throw error;
 	}
 };
+
+export const validateUpdateStatus = (data) => {
+	try {
+		const schema = Joi.object({
+			listIdStudent: Joi.array().items(Joi.string()).required(),
+			status: Joi.number().required(),
+			textNote: Joi.string().optional(),
+		});
+
+		return schema.validate(data);
+	} catch (error) {
+		throw error;
+	}
+};

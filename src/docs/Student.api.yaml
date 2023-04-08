@@ -610,22 +610,11 @@ paths:
                                         description: id student cần chuyển trạng thái
                                 status:
                                     type: number
-                                    description: Mã trạng thái cần chuyển (status này được định nghĩa dưới client)
-                                listEmailStudent:
-                                    type: array
-                                    items:
-                                        type: string
-                                        description: Email các học sinh chuyển trạng thái (để gửi mail thông báo)
+                                    description: Mã trạng thái cần chuyển
                                 textNote:
                                     type: string
-                                    description: Note cho student
-                        example:
-                            {
-                                listIdStudent: [],
-                                status: 9,
-                                listEmailStudent: ['duclnph24870@fpt.edu.vn'],
-                                textNote: 'Test node',
-                            }
+                                    description: Note cho student (ví dụ như lý do cần sửa cv hoặc lý do trượt)
+                        example: { listIdStudent: [], status: 9, textNote: 'Test node' }
 
             responses:
                 201:
@@ -635,28 +624,39 @@ paths:
                             schema:
                                 type: object
                                 properties:
-                                    listStudentChangeStatus:
-                                        type: array
-                                        items:
-                                            type: object
-                                            properties:
-                                                _id:
-                                                    type: objectId
-                                                name:
-                                                    type: string
-                                    status:
-                                        type: number
+                                    message:
+                                        type: string
 
+                            example: { message: Thay đổi trạng thái sinh viên thành công }
+
+                204:
+                    description: listIdStudent rỗng
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
                             example:
                                 {
-                                    listIdStudent: ['640abe7e4ed73d86530a5ed3'],
-                                    status: 9,
-                                    listEmailStudent: ['duclnph24870@fpt.edu.vn'],
-                                    textNote: 'Test node',
+                                    statusCode: 204,
+                                    message: 'Học sinh không tồn tại',
+                                    error: ['640abe7e4ed73d86530a5ed3'],
+                                }
+
+                400:
+                    description: listIdStudent không phải type array hoặc lỗi validate
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpError'
+                            example:
+                                {
+                                    statusCode: 400,
+                                    message: 'Học sinh không tồn tại',
+                                    error: ['640abe7e4ed73d86530a5ed3'],
                                 }
 
                 404:
-                    description: Học sinh không tồn tại hoặc admin k có quyền sửa trạng thái của học sinh
+                    description: Học sinh không tồn tại ở cơ sở hoặc trạng thái cần chuyển chưa tồn tại trên server
                     content:
                         application/json:
                             schema:

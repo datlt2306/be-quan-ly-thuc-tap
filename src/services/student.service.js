@@ -1,8 +1,16 @@
 import createHttpError from 'http-errors';
+require('dotenv').config();
 import { getCurrentSemester } from '../controllers/semesterController';
 import StudentModel from '../models/student';
 import MajorModel from '../models/major';
-import { validateDataCreateStudentList } from '../validation/student.validation';
+import {
+	validateDataCreateStudentList,
+	validateUpdateStatus,
+} from '../validation/student.validation';
+import { selectOneStatus } from './statusStudent.service';
+import { transporter } from '../controllers/emailController';
+import { replaceContentMail } from '../utils/toolkit';
+const apiKey = 'cc126cffe46824f121e00226099067e3-us21';
 
 // check xem học sinh có tồn tại ở cơ sở và kỳ hiện tại không
 export const checkStudentExist = async (id, campus) => {
@@ -136,8 +144,84 @@ export const createListStudent = async (data, campus) => {
 };
 
 // thay đổi trạng thái sinh viên
-export const updateStatusStudent = async (idStudents, statusValue) => {
+export const updateStatusStudent = async (data, hostname, campus) => {
 	try {
+		const { listIdStudent, status: statusValue, textNote } = data;
+		if (!Array.isArray(listIdStudent)) {
+			throw createHttpError(400, 'listIdStudent type phải là array');
+		}
+		if (listIdStudent.length === 0) {
+			throw createHttpError(204);
+		}
+
+		// validate
+		const { error } = validateUpdateStatus(data);
+
+		if (error) {
+			throw createHttpError(400, error.message);
+		}
+
+		// check statusValue đã được tạo ra chưa
+		const statusStudent = await selectOneStatus(statusValue, campus);
+
+		if (!statusStudent) {
+			throw createHttpError(404, 'Trạng thái không tồn tại');
+		}
+		const semester = await getCurrentSemester(campus);
+		// check xem các học sinh có tồn tại ở cơ sở không
+		const studentNotExist = [];
+		const checkStudentListExist = await StudentModel.find({
+			_id: { $in: listIdStudent },
+			campus_id: campus,
+			smester_id: semester._id,
+		}).lean();
+
+		if (checkStudentListExist.length < listIdStudent.length) {
+			listIdStudent.forEach((idStudent) => {
+				let check = checkStudentListExist.find(
+					(student) => student._id.toString() === idStudent.toString()
+				);
+				if (!check) {
+					studentNotExist.push(idStudent);
+				}
+			});
+
+			throw createHttpError(404, 'Sinh viên không tồn tại', { error: studentNotExist });
+		}
+
+		// thay đổi trạng thái của student
+		await StudentModel.updateMany(
+			{
+				_id: { $in: listIdStudent },
+				campus_id: campus,
+			},
+			{
+				statusCheck: statusValue,
+				note: textNote,
+			},
+			{
+				multi: true,
+			}
+		);
+
+		// gửi mail thông báo
+		let content = replaceContentMail(statusStudent.contentMail, {
+			hostname,
+			note: textNote,
+			statusTitle: statusStudent.title,
+		});
+		const listEmailStudent = checkStudentListExist.map((student) => student.email);
+
+		await transporter.sendMail({
+			from: '"Phòng QHDN" <' + process.env.USER_EMAIL + '>',
+			to: listEmailStudent,
+			html: content,
+			subject: statusStudent.titleMail,
+		});
+
+		return {
+			message: 'Thay đổi trạng thái sinh viên thành công',
+		};
 	} catch (error) {
 		throw error;
 	}
