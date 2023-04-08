@@ -231,6 +231,10 @@ components:
                     type: string
                     required: true
                     description: Tiêu đề của trạng thái
+                contentMail:
+                    type: string
+                    required: true
+                    description: Là một đoạn text HTML (dùng để làm content để gửi mail khi thay đổi status)
 
         Major:
             type: object

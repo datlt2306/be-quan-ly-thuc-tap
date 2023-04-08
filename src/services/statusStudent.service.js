@@ -10,7 +10,7 @@ export const selectStatusAll = async (campus) => {
 	try {
 		const statusList = await StatusStudentModel.find({
 			campus: campus,
-		});
+		}).select('-contentMail');
 
 		return statusList;
 	} catch (error) {

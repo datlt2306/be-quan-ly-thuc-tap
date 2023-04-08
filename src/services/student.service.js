@@ -134,3 +134,11 @@ export const createListStudent = async (data, campus) => {
 		throw error;
 	}
 };
+
+// thay đổi trạng thái sinh viên
+export const updateStatusStudent = async (idStudents, statusValue) => {
+	try {
+	} catch (error) {
+		throw error;
+	}
+};

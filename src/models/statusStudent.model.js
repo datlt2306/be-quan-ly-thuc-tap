@@ -12,6 +12,10 @@ const StatusSchema = Schema(
 			type: String,
 			require: true,
 		},
+		contentMail: {
+			type: String,
+			require: true,
+		},
 		campus: {
 			type: ObjectId,
 			require: true,

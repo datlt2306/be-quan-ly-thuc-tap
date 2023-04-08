@@ -5,6 +5,7 @@ export const statusStudentValidate = (data) => {
 		const schema = Joi.object({
 			value: Joi.number().required(),
 			title: Joi.string().required(),
+			contentMail: Joi.string().required(),
 		});
 
 		return schema.validate(data);
@@ -18,6 +19,7 @@ export const statusUpdateValidate = (data) => {
 		const schema = Joi.object({
 			value: Joi.number().required().optional(),
 			title: Joi.string().required().optional(),
+			contentMail: Joi.string().required().optional(),
 		});
 
 		return schema.validate(data);
