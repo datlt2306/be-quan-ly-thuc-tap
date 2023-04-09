@@ -18,8 +18,6 @@ tags:
       description: 'Quản lý (Nhân viên)'
     - name: 'Campus'
       description: 'Cơ sở'
-    - name: 'Configtimes'
-      description: 'Đặt thời gin mở form chọn doanh nghiệp, nộp CV, nộp biên bản, nộp báo cáo'
 
 schemes:
     - http
@@ -353,90 +351,6 @@ paths:
                     description: 'successful operation'
                 '400':
                     description: 'Invalid manager'
-    /settime:
-        post:
-            security:
-                - Bearer: []
-            tags:
-                - 'Configtimes'
-            summary: 'Thêm time form đăng ký'
-            description: ''
-            produces:
-                - 'application/json'
-            parameters:
-                - name: 'body'
-                  in: 'body'
-                  description: 'Tham số key/value,Đinh nghĩa typeNumber-typeName: 1-Form đăng ký nhờ nhà trường hỗ trợ, 0-Form đăng ký sinh viên tự tìm, 2-Form nộp biểu mẫu, 3-Form nộp báo cáo, 4-Form hiển thị thông tin doanh nghiệp'
-                  required: true
-                  schema:
-                      type: 'object'
-                      properties:
-                          endTime:
-                              type: 'integer'
-                              default: '1659884093240'
-                          startTime:
-                              type: 'integer'
-                              default: '1656946493240'
-                          semester_id:
-                              type: 'string'
-                              default: '62cf870f4858743781d08b27'
-                          typeName:
-                              type: 'string'
-                              default: 'Form đăng ký nhờ nhà trường hỗ trợ'
-                          typeNumber:
-                              type: 'integer'
-                              default: '1'
-            responses:
-                '201':
-                    description: 'successful operation'
-                '202':
-                    description: 'Already exit narrow'
-                '400':
-                    description: 'Invalid manager'
-    /settime/find-one:
-        get:
-            security:
-                - Bearer: []
-            tags:
-                - 'Configtimes'
-            summary: 'Find thời gian theo typeNumber và semester_id'
-            description: ''
-            produces:
-                - 'application/json'
-            parameters:
-                - in: 'query'
-                  name: 'typeNumber'
-                  default: '0'
-                - in: 'query'
-                  name: 'semester_id'
-                  default: '62cf870f4858743781d08b27'
-            responses:
-                '200':
-                    description: 'successful operation'
-                '400':
-                    description: 'Invalid status value'
-    /settime?semester_id={id}:
-        get:
-            security:
-                - Bearer: []
-            tags:
-                - 'Configtimes'
-            summary: 'Find thời gian theo typeNumber và semester_id'
-            description: ''
-            produces:
-                - 'application/json'
-            parameters:
-                - name: 'semester_id'
-                  default: '62cf870f4858743781d08b27'
-                  in: 'path'
-                  description: 'ID của kỳ học'
-                  required: true
-                  type: 'string'
-            responses:
-                '200':
-                    description: 'successful operation'
-                '400':
-                    description: 'Invalid status value'
 definitions:
     students:
         type: 'object'

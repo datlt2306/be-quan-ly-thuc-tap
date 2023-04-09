@@ -258,3 +258,27 @@ components:
                     type: objectId
                     required: true
                     description: Cơ sở tạo ra ngành học
+
+        ConfigTime:
+            type: object
+            properties:
+                _id:
+                    type: objectId
+                typeName:
+                    type: string
+                    required: true
+                    description: ' Tiêu đề của thời gian mở form (VD: Nhờ nhà trường hỗ trợ)'
+                startTime:
+                    type: number
+                    required: true
+                    description: Thời gian bắt đầu ( cách lấy date.getTime() )
+                endTime:
+                    type: number
+                    required: true
+                    description: Thời gian kết thúc ( cách lấy date.getTime() )
+                semester_id:
+                    type: objectId
+                    description: Id kỳ học (được lấy tự động là kỳ hiện tại)
+                campus_id:
+                    type: objectId
+                    description: Id cơ sở (được lấy tự động là cơ sở manager tạo time)
