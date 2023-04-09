@@ -282,3 +282,18 @@ components:
                 campus_id:
                     type: objectId
                     description: Id cơ sở (được lấy tự động là cơ sở manager tạo time)
+
+        Manager:
+            type: object
+            properties:
+                _id:
+                    type: objectId
+                name:
+                    type: string
+                    required: true
+                email:
+                    type: string
+                    required: true
+                role:
+                    type: number
+                    required: true
