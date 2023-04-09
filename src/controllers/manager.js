@@ -1,89 +1,83 @@
-import Manager from '../models/manager';
+import * as ManagerServices from '../services/manager.service';
 
+// [GET] /api/manager
 export const getListManager = async (req, res) => {
-  try {
-    const manager = await Manager.find().populate('campus_id').sort({ createdAt: -1 }).exec();
-    res.status(200).json({
-      manager,
-      success: true,
-    });
-  } catch (error) {
-    res.json(error);
-  }
+	try {
+		const campus = req.campusManager;
+		const result = await ManagerServices.getListManager(campus);
+
+		return res.status(200).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
+// [GET] /api/manager/:id
 export const getManager = async (req, res) => {
-  try {
-    const manager = await Manager.findById(req.params.id).populate('campus_id').exec();
-    res.status(200).json({
-      manager,
-      success: true,
-    });
-  } catch (error) {
-    res.json(error);
-  }
+	try {
+		const campus = req.campusManager;
+		const id = req.params.id;
+
+		const result = await ManagerServices.getOneManager(id, campus);
+
+		return res.status(200).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
+// [POST] /api/manager
 export const createManager = async (req, res) => {
-  const emailVali = await Manager.findOne({
-    $and: [
-      {
-        email: req.body.email,
-      },
-      {
-        campus_id: req.body.campus_id,
-      },
-    ],
-  });
+	const campus = req.campusManager;
+	const data = req.body;
+	try {
+		const result = await ManagerServices.createManager(data, campus);
 
-  try {
-    if (emailVali !== null) {
-      res.status(202).json({
-        message: 'Nhân viên đã tồn tại vui lòng xem lại email hoặc cơ sở',
-        success: false,
-      });
-    } else {
-      const manager = await Manager.create(req.body);
-      res.status(201).json({
-        manager,
-        message: 'Tạo nhân viên quản lý sinh viên thực tập thành công',
-        success: true,
-      });
-    }
-  } catch (error) {
-    res.json({
-      error,
-    });
-  }
+		return res.status(201).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
+// [PATCH] /api/manager/:id
 export const updateManager = async (req, res) => {
-  try {
-    const manager = await Manager.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json({
-      manager,
-      success: true,
-      message: 'Sửa thông tin nhân viên quản lý sinh viên thực tập thành công',
-    });
-    return;
-  } catch (error) {
-    res.json({
-      error,
-    });
-  }
+	const campus = req.campusManager;
+	const data = req.body;
+	const id = req.params.id;
+	try {
+		const result = await ManagerServices.updateManager(id, data, campus);
+
+		return res.status(201).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
 
+// [DELETE] /api/manager/:id
 export const removeManager = async (req, res) => {
-  try {
-    const manager = await Manager.findByIdAndRemove(req.params.id);
-    res.status(200).json({
-      manager,
-      success: true,
-      message: 'Xóa nhân viên quản lý sinh viên thực tập thành công',
-    });
-  } catch (error) {
-    res.json({
-      error,
-    });
-  }
+	try {
+		const campus = req.campusManager;
+		const id = req.params.id;
+
+		const result = await ManagerServices.deleteManager(id, campus);
+
+		return res.status(200).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
 };
