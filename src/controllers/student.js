@@ -117,26 +117,36 @@ export const readOneStudent = async (req, res) => {
 
 // [POST] /api/student
 export const insertStudent = async (req, res) => {
-	const { data, smester_id, majors, campus_id } = req.body;
+	const { data, smester_id, campus_id } = req.body;
+
+	const updatedData = data.map((student) => {
+		student.smester_id = smester_id;
+		student.campus_id = campus_id;
+		return student;
+	});
+
 	try {
 		const checkStudent = await StudentModel.find({}).limit(3);
 
+		//Tìm 3 SV đầu tiên trong DB, tìm thấy -> thêm mới & cập nhật SV cũ, không tìm thấy -> thêm mới
 		if (checkStudent.length > 0) {
-			const listMSSV = await StudentModel.find({ smester_id, majors, campus_id });
-			if (listMSSV.length === 0) {
-				await StudentModel.insertMany(data);
+			const existingStudents = await StudentModel.find({ smester_id, campus_id });
+			//Tìm SV cùng kỳ & cùng cơ sở, ko tìm thấy -> thêm mới, tìm thấy -> update
+			if (existingStudents.length === 0) {
+				await StudentModel.insertMany(updatedData);
 			} else {
-				const listMS = [];
-				listMSSV.forEach((item) => {
-					listMS.push(item.mssv);
+				const listOldStudentID = [];
+				existingStudents.forEach((item) => {
+					listOldStudentID.push(item.mssv);
 				});
-				const listNew = [];
-				await data.forEach((item) => {
-					listNew.push(item.mssv);
+				const listNewStudentID = [];
+				data.forEach((item) => {
+					listNewStudentID.push(item.mssv);
 				});
 
+				// Update SV trong DB dựa theo 2 array trên
 				await StudentModel.updateMany(
-					{ smester_id, majors, campus_id },
+					{ smester_id, campus_id },
 					{
 						$set: {
 							checkUpdate: false,
@@ -148,7 +158,7 @@ export const insertStudent = async (req, res) => {
 
 				await StudentModel.updateMany(
 					{
-						$and: [{ mssv: { $in: listNew } }, { smester_id, majors, campus_id }],
+						$and: [{ mssv: { $in: listNewStudentID } }, { smester_id, campus_id }],
 					},
 					{
 						$set: {
@@ -160,7 +170,7 @@ export const insertStudent = async (req, res) => {
 				);
 
 				await StudentModel.updateMany(
-					{ $and: [{ checkUpdate: false }, { smester_id, majors, campus_id }] },
+					{ $and: [{ checkUpdate: false }, { smester_id, campus_id }] },
 					{
 						$set: {
 							statusCheck: 3,
@@ -171,11 +181,11 @@ export const insertStudent = async (req, res) => {
 					{ multi: true }
 				);
 
-				await StudentModel.insertMany(data);
+				await StudentModel.insertMany(updatedData);
 
 				await StudentModel.updateMany(
 					{
-						$and: [{ mssv: { $nin: listMS } }, { smester_id, majors, campus_id }],
+						$and: [{ mssv: { $nin: listOldStudentID } }, { smester_id, campus_id }],
 					},
 					{
 						$set: {
@@ -186,7 +196,7 @@ export const insertStudent = async (req, res) => {
 				);
 
 				await StudentModel.deleteMany({
-					$and: [{ checkMulti: false }, { smester_id, majors, campus_id }],
+					$and: [{ checkMulti: false }, { smester_id, campus_id }],
 				});
 			}
 
@@ -201,7 +211,7 @@ export const insertStudent = async (req, res) => {
 					if (err) {
 						throw err;
 					} else {
-						StudentModel.find({ smester_id, majors, campus_id })
+						StudentModel.find({ smester_id, campus_id })
 							.countDocuments({})
 							.exec((count_error, count) => {
 								if (err) {
@@ -217,7 +227,7 @@ export const insertStudent = async (req, res) => {
 					}
 				});
 		} else {
-			await StudentModel.insertMany(req.body.data);
+			await StudentModel.insertMany(updatedData);
 			await StudentModel.find({ smester_id })
 				.populate('campus_id')
 				.populate('smester_id')
@@ -229,7 +239,7 @@ export const insertStudent = async (req, res) => {
 					if (err) {
 						res.status(400).json(err);
 					} else {
-						StudentModel.find({ smester_id, majors, campus_id })
+						StudentModel.find({ smester_id, campus_id })
 							.countDocuments({})
 							.exec((count_error, count) => {
 								if (err) {
