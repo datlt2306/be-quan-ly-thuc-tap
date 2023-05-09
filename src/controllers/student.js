@@ -33,7 +33,7 @@ export const listStudent = async (req, res) => {
 			{
 				page: Number(page),
 				limit: Number(limit),
-				populate: ['campus_id', 'smester_id', 'business'],
+				populate: ['campus_id', 'smester_id', 'business', 'majors'],
 				sort: { statusCheck: 1 },
 				customLabels: {
 					totalDocs: 'total',
