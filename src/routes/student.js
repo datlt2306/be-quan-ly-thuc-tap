@@ -17,15 +17,15 @@ import student from '../models/student';
 import { role } from '../utils/role';
 
 router.get('/student', isAuthenticateUser, authorizeRoles([role.manager]), listStudent);
-router.get(
-	'/student/reviewcv',
-	isAuthenticateUser,
-	authorizeRoles([role.manager]),
-	listStudentReviewCV
-);
+router.get('/student/cv', isAuthenticateUser, authorizeRoles([role.manager]), listStudentReviewCV);
 router.get('/student/:id', isAuthenticateUser, readOneStudent);
 router.post('/student', isAuthenticateUser, authorizeRoles([role.manager]), insertStudent);
-router.patch('/student', isAuthenticateUser, authorizeRoles([role.manager]), updateReviewerStudent);
+router.patch(
+	'/student/reviewer',
+	isAuthenticateUser,
+	authorizeRoles([role.manager]),
+	updateReviewerStudent
+);
 
 router.patch(
 	'/student/business',

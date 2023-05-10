@@ -64,10 +64,11 @@ export const updateSemester = async (req, res) => {
 };
 
 export const insertSemester = async (req, res) => {
+	console.log(req.body);
 	try {
-		const reqName = req.body.name.toLowerCase();
+		const reqName = req.body.name || '';
 		const findName = await semester.findOne({
-			name: reqName,
+			name: reqName.toLowerCase(),
 			campus_id: req.body.campus_id,
 		});
 

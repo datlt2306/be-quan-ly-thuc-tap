@@ -124,7 +124,7 @@ paths:
                                 description:
                                     type: string
                                     description: 'Mô tả công việc'
-                                benefish:
+                                benefit:
                                     type: string
                                     description: 'Quyền lợi khi làm tại doanh nghiệp'
 
@@ -139,7 +139,7 @@ paths:
                                 major: '640abe8d4ed73d86530a5ee7',
                                 name: 'test tên doanh nghiệp',
                                 request: '1111111111',
-                                benefish: '111111111',
+                                benefit: '111111111',
                             }
 
             responses:
@@ -364,7 +364,7 @@ paths:
                                 description:
                                     type: string
                                     description: 'Mô tả công việc'
-                                benefish:
+                                benefit:
                                     type: string
                                     description: 'Quyền lợi khi làm tại doanh nghiệp'
                         example: { name: 'Sửa lại name' }
@@ -423,7 +423,7 @@ paths:
                                 description:
                                     type: string
                                     description: 'Mô tả công việc'
-                                benefish:
+                                benefit:
                                     type: string
                                     description: 'Quyền lợi khi làm tại doanh nghiệp'
                         example:
@@ -437,7 +437,7 @@ paths:
                                 major: '640abe8d4ed73d86530a5ee7',
                                 name: 'test tên doanh nghiệp',
                                 request: '1111111111',
-                                benefish: '111111111',
+                                benefit: '111111111',
                             }
 
             responses:

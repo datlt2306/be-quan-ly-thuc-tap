@@ -42,7 +42,7 @@ const businessSchema = mongoose.Schema({
 	description: {
 		type: String,
 	},
-	benefish: {
+	benefit: {
 		type: String,
 	},
 	status: {

@@ -69,7 +69,7 @@ components:
                 description:
                     type: string
                     description: 'Mô tả công việc'
-                benefish:
+                benefit:
                     type: string
                     description: 'Quyền lợi khi làm tại doanh nghiệp'
                 status:

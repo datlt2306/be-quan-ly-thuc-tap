@@ -64,8 +64,6 @@ export const listBusiness = async (req, res) => {
 	try {
 		// lấy ra học kỳ hiện tại
 		const semester = await getCurrentSemester(campus);
-		console.log(campus, 'campus');
-		console.log(semester, 'semester');
 		const result = await BusinessModel.paginate(
 			{
 				...req.query,
