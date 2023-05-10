@@ -46,10 +46,10 @@ paths:
                           token:
                               type: 'string'
                               default: 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjA3NGI5MjhlZGY2NWE2ZjQ3MGM3MWIwYTI0N2JkMGY3YTRjOWNjYmMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiMTE2MjA1MDgxMzg1LXVtcW03czVxbHNwZjRzMHRjNGprZTd0YWZwdmdqMms3LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiMTE2MjA1MDgxMzg1LXVtcW03czVxbHNwZjRzMHRjNGprZTd0YWZwdmdqMms3LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTAwMjkyMzU1OTY1NDkyNTA3NzQ2IiwiaGQiOiJmcHQuZWR1LnZuIiwiZW1haWwiOiJoYWluZHBoMTMxNThAZnB0LmVkdS52biIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiRk5kbzNiZGY5N0xCQ04tTlUzS09XQSIsIm5hbWUiOiJOZ3V5ZW4gRHVjIEhhaSAoRlBMIEsxNikiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FGZFp1Y3FoOXA1bDVGYTU0a1lRT2lWS1hBYld3SW11cHYzRU56LTBzYzh3eWc9czk2LWMiLCJnaXZlbl9uYW1lIjoiTmd1eWVuIER1YyBIYWkiLCJmYW1pbHlfbmFtZSI6IihGUEwgSzE2KSIsImxvY2FsZSI6InZpIiwiaWF0IjoxNjU4OTkyMTk1LCJleHAiOjE2NTg5OTU3OTUsImp0aSI6Ijg4YTY1MmEzOGM5OGZmZmVkNWY0YTc4YzljNmYyYTU1ZDhkODA5ZmQifQ.incmH62cM3dh6u9xM-XZniRURiAnSXk9Nmdc8jlNTdczjT1Q1Ncv-EVDSj56-yZ9euqcizVMqhPH5M7X6ZxqfFpYVohsfA1AEJPtn_3Me5tlCzfmgIMS0AU-M4-TfxjIBIljHFLuBCT49IW1YuQRyMQh7WTOEPrBjrznFIPLEoI17IBfrGFa7mYkB1OXJR76nbtc9Tw6cGC0T1K7d2ZE9yYE_koNMsljhzlGbllwcvTW6CpjPzwaoRW5EPoRnD1_jvne-3V9FzFQpoP07b5toO0dwtDEh4yQHsbuJtcRWzrUTKK1fusBLE2SxbkGwMG8eLAN91EhjUnjhalURigK4g'
-                          cumpusId:
+                          campus_id:
                               type: 'string'
                               default: '6247da5ee56ba5e634559901'
-                          smester_id:
+                          semester_id:
                               type: 'string'
                               default: '62cf870f4858743781d08b27'
             responses:
@@ -61,7 +61,7 @@ paths:
                     #   Access-Control-Allow-Headers: Content-Type, api_key, Authorization
                 '400':
                     description: 'Invalid user'
-    /smester:
+    /semester:
         get:
             security:
                 - Bearer: []
@@ -145,7 +145,7 @@ paths:
                     description: 'successful operation'
                 '400':
                     description: 'Invalid narrow'
-    /cumpus:
+    /campus:
         get:
             security:
                 - Bearer: []
@@ -187,7 +187,7 @@ paths:
                     description: 'Already exit narrow'
                 '400':
                     description: 'Invalid manager'
-    /cumpus/{id}:
+    /campus/{id}:
         patch:
             security:
                 - Bearer: []
@@ -254,9 +254,9 @@ definitions:
             course:
                 type: 'string'
                 description: 'Khoá sinh viên nhập học'
-            majors:
+            major:
                 type: 'integer'
-                description: 'Mã chuyên ngành, mã này nối với bảng majors'
+                description: 'Mã chuyên ngành, mã này nối với bảng major'
             narrow:
                 type: 'integer'
                 description: 'Mã ngành hẹp, mã này nối với bảng narrowspecializations'
@@ -299,12 +299,12 @@ definitions:
                 description: 'Đường link cv từ google drive'
             campus_id:
                 type: 'integer'
-                description: 'Mã cơ sở đang học của sinh viên, mã này nối với bảng campus(cumpus)'
+                description: 'Mã cơ sở đang học của sinh viên, mã này nối với bảng campus(campus)'
             business:
                 type: 'integer'
                 default: null
                 description: 'Mã của doanh nghiệp được gắn khi sinh viên chọn doanh nghiệp thực tập'
-            smester_id:
+            semester_id:
                 type: 'integer'
                 description: 'Mã kỳ học hiện tại của sinh viên, mã này nối với bảng semester'
             reviewer:
@@ -378,7 +378,7 @@ definitions:
                 type: 'string'
                 format: 'date'
                 description: 'Thời gian thông tin được tạo trên hệ thống'
-    majors:
+    major:
         type: 'object'
         properties:
             _id:
@@ -389,7 +389,7 @@ definitions:
                 description: 'Tên chuyên ngành'
             campus_id:
                 type: 'integer'
-                description: 'Mã cơ sở đang học của sinh viên, mã này nối với bảng campus(cumpus)'
+                description: 'Mã cơ sở đang học của sinh viên, mã này nối với bảng campus(campus)'
             create_at:
                 type: 'string'
                 format: 'date'
@@ -403,9 +403,9 @@ definitions:
             name:
                 type: 'string'
                 description: 'Tên chuyên ngành hẹp'
-            id_majors:
+            major_id:
                 type: 'integer'
-                description: 'Mã chuyên ngành, mã này được nối với bảng majors'
+                description: 'Mã chuyên ngành, mã này được nối với bảng major'
             createAt:
                 type: 'string'
                 format: 'date'
@@ -442,7 +442,7 @@ definitions:
                 description: 'Tên của quản lý'
             campus_id:
                 type: 'integer'
-                description: 'Mã cơ sở, mã này được nối với bảng campus(cumpus)'
+                description: 'Mã cơ sở, mã này được nối với bảng campus(campus)'
             role:
                 type: 'integer'
                 description: 'Vai trò của quản lý'
@@ -500,18 +500,18 @@ definitions:
             intershipPosition:
                 type: 'string'
                 description: 'Vị trí thực tập tại doanh nghiệp'
-            majors:
+            major:
                 type: 'integer'
                 description: 'Mã chuyên ngành, mã này được nối với bảng marjors'
             amount:
                 type: 'integer'
                 description: 'Số lượng sinh viên cần tuyển'
-            smester_id:
+            semester_id:
                 type: 'integer'
                 description: 'Mã kỳ học, mã này được nối với bảng semesters'
             campus_id:
                 type: 'integer'
-                description: 'Mã cơ sở, mã này được nối với bảng campus(cumpus)'
+                description: 'Mã cơ sở, mã này được nối với bảng campus(campus)'
             code_request:
                 type: 'string'
                 description: 'Yêu cầu của vị trí thực tập'
@@ -529,11 +529,11 @@ definitions:
                 type: 'string'
                 default: ''
                 description: 'Token được lấy khi login oauth2 google trả về'
-            cumpusId:
+            campus_id:
                 type: 'string'
                 default: '6247da5ee56ba5e634559901'
-                description: 'Mã cơ sở, lấy theo bảng campus(cumpust)'
-            smester_id:
+                description: 'Mã cơ sở, lấy theo bảng campus(campust)'
+            semester_id:
                 type: 'string'
                 default: '62cf870f4858743781d08b27'
                 description: 'Mã kỳ học, lấy theo bảng semester'

@@ -11,7 +11,7 @@ const businessSchema = mongoose.Schema({
 		type: String,
 		require: true,
 	},
-	majors: {
+	major: {
 		type: ObjectId,
 		ref: 'Major',
 		require: true,
@@ -23,13 +23,13 @@ const businessSchema = mongoose.Schema({
 	address: {
 		type: String,
 	},
-	smester_id: {
+	semester_id: {
 		type: ObjectId,
 		ref: 'Semester',
 	},
 	campus_id: {
 		type: ObjectId,
-		ref: 'Cumpus',
+		ref: 'Campus',
 	},
 	code_request: {
 		type: String,

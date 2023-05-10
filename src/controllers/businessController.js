@@ -42,7 +42,7 @@ export const insertBusiness = async (req, res) => {
 		const dataCreate = data.map((item) => ({
 			...item,
 			campus_id: campus,
-			smester_id: semester._id,
+			semester_id: semester._id,
 		}));
 
 		const result = await BusinessModel.insertMany(dataCreate);
@@ -64,17 +64,19 @@ export const listBusiness = async (req, res) => {
 	try {
 		// lấy ra học kỳ hiện tại
 		const semester = await getCurrentSemester(campus);
+		console.log(campus, 'campus');
+		console.log(semester, 'semester');
 		const result = await BusinessModel.paginate(
 			{
 				...req.query,
 				campus_id: campus,
-				smester_id: semester._id,
+				semester_id: semester._id,
 			},
 			{
 				page: Number(page),
 				limit: Number(limit),
 				sort: { createAt: 'desc' },
-				populate: ['majors', 'campus_id'],
+				populate: ['major', 'campus_id'],
 				customLabels: {
 					totalDocs: 'total',
 					docs: 'list',
@@ -101,7 +103,7 @@ export const removeBusiness = async (req, res) => {
 		const business = await BusinessModel.findOne({
 			_id: id,
 			campus_id: campus,
-			smester_id: semester._id,
+			semester_id: semester._id,
 		});
 
 		if (!business) {
@@ -112,7 +114,7 @@ export const removeBusiness = async (req, res) => {
 		const isStudentOfBusiness = await Student.findOne({
 			business: id,
 			campus_id: business.campus_id,
-			smester_id: business.smester_id,
+			semester_id: business.semester_id,
 		});
 
 		if (isStudentOfBusiness) {
@@ -153,7 +155,7 @@ export const createbusiness = async (req, res) => {
 		const newBusiness = await new BusinessModel({
 			...data,
 			campus_id: campus,
-			smester_id: semester._id,
+			semester_id: semester._id,
 		}).save();
 
 		return res.status(201).json(newBusiness);
@@ -175,7 +177,7 @@ export const updateBusiness = async (req, res) => {
 
 		const business = await BusinessModel.findOne({
 			_id: id,
-			smester_id: semester._id,
+			semester_id: semester._id,
 			campus_id: campus,
 		});
 
@@ -243,7 +245,7 @@ export const updateMany = async (req, res) => {
 			{ _id: { $in: data } },
 			{
 				$set: {
-					smester_id: semester._id,
+					semester_id: semester._id,
 					status: 1,
 				},
 			},

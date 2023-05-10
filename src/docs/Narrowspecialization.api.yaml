@@ -19,8 +19,8 @@ paths:
                                     {
                                         '_id': '64269d27a6303ea76af67727',
                                         'name': 'frontend',
-                                        'id_majors': '640abe8d4ed73d86530a5ee7',
-                                        'campus': '63eef716c9ef6d077f1f1deb',
+                                        'major_id': '640abe8d4ed73d86530a5ee7',
+                                        'campus_id': '63eef716c9ef6d077f1f1deb',
                                         'createAt': '2023-03-31T08:42:11.091Z',
                                         '__v': 0,
                                     },
@@ -44,11 +44,11 @@ paths:
                                     minLength: 3
                                     maxLength: 150
                                     required: true
-                                id_majors:
+                                major_id:
                                     type: string
                                     required: true
 
-                        example: { 'name': 'FrontEnd dev', 'id_majors': '640abe8d4ed73d86530a5ee7' }
+                        example: { 'name': 'FrontEnd dev', 'major_id': '640abe8d4ed73d86530a5ee7' }
 
             responses:
                 201:
@@ -60,7 +60,7 @@ paths:
                             example:
                                 {
                                     'name': 'frontend dev 1',
-                                    'id_majors': '640abe8d4ed73d86530a5ee7',
+                                    'major_id': '640abe8d4ed73d86530a5ee7',
                                     'campus': '63eef716c9ef6d077f1f1deb',
                                     '_id': '6426abb421f0f1d571910f0e',
                                     'createdAt': '2023-03-31T09:45:24.192Z',
@@ -121,7 +121,7 @@ paths:
                                 {
                                     '_id': '64269d27a6303ea76af67727',
                                     'name': 'frontend',
-                                    'id_majors': '640abe8d4ed73d86530a5ee7',
+                                    'major_id': '640abe8d4ed73d86530a5ee7',
                                     'campus': '63eef716c9ef6d077f1f1deb',
                                     'createAt': '2023-03-31T08:42:11.091Z',
                                     '__v': 0,

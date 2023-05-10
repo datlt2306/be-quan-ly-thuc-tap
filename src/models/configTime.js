@@ -20,7 +20,7 @@ const configTimeSchema = mongoose.Schema(
 		},
 		campus_id: {
 			type: ObjectId,
-			ref: 'Cumpus',
+			ref: 'Campus',
 		},
 	},
 	{

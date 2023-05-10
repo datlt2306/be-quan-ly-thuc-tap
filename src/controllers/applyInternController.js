@@ -1,103 +1,103 @@
-import { sendMail } from "./emailController";
-const Student = require("../models/student");
+import { sendMail } from './emailController';
+const Student = require('../models/student');
 export const signUpCVForSupport = async (req, res) => {
-  const {
-    address,
-    email,
-    dream,
-    majors,
-    name,
-    phone,
-    CV,
-    support,
-    unit,
-    unitAddress,
-    taxCode,
-    position,
-    numberEnterprise,
-    emailEnterprise,
-    business,
-    _id,
-    narrow,
-    signTheContract
-  } = req.body;
-  try {
-    const ms = req.body.user_code.toLowerCase();
-    const dataEmail = {};
+	const {
+		address,
+		email,
+		dream,
+		major,
+		name,
+		phone,
+		CV,
+		support,
+		unit,
+		unitAddress,
+		taxCode,
+		position,
+		numberEnterprise,
+		emailEnterprise,
+		business,
+		_id,
+		narrow,
+		signTheContract,
+	} = req.body;
+	try {
+		const ms = req.body.user_code.toLowerCase();
+		const dataEmail = {};
 
-    const findStudent = await Student.findOne({
-      mssv: ms,
-      email: email,
-      _id
-    });
-    const filter = {
-      _id,
-      mssv: ms,
-      email: email,
-    };
-    if (!findStudent) {
-      res.status(500).send({
-        message: "Thông tin của bạn không tồn tại trên hệ thống!",
-      });
-      return;
-    }
-    if (findStudent.statusCheck === 0) {
-      res.status(500).send({
-        message: "Thông tin CV của bạn đã được đăng ký",
-      });
-      return;
-    }
+		const findStudent = await Student.findOne({
+			mssv: ms,
+			email: email,
+			_id,
+		});
+		const filter = {
+			_id,
+			mssv: ms,
+			email: email,
+		};
+		if (!findStudent) {
+			res.status(500).send({
+				message: 'Thông tin của bạn không tồn tại trên hệ thống!',
+			});
+			return;
+		}
+		if (findStudent.statusCheck === 0) {
+			res.status(500).send({
+				message: 'Thông tin CV của bạn đã được đăng ký',
+			});
+			return;
+		}
 
-    // if (
-    //   (findStudent.numberOfTime === 2 && findStudent.statusCheck === 1) ||
-    //   (findStudent.numberOfTime === 2 && findStudent.statusCheck <= 3)
-    // ) {
-    //   res.status(500).send({
-    //     message:
-    //       "Tài khoạn của bạn đã vượt quá số lần đăng ký thông tin thực tập",
-    //   });
-    // }
+		// if (
+		//   (findStudent.numberOfTime === 2 && findStudent.statusCheck === 1) ||
+		//   (findStudent.numberOfTime === 2 && findStudent.statusCheck <= 3)
+		// ) {
+		//   res.status(500).send({
+		//     message:
+		//       "Tài khoạn của bạn đã vượt quá số lần đăng ký thông tin thực tập",
+		//   });
+		// }
 
-    let isSupport = 0;
-    support === 1 ? (isSupport = 0) : (isSupport = 2);
+		let isSupport = 0;
+		support === 1 ? (isSupport = 0) : (isSupport = 2);
 
-    const update = {
-      address: address,
-      dream: dream,
-      email: email,
-      majors: majors,
-      name: name,
-      phoneNumber: phone,
-      CV: CV,
-      form: null,
-      report: null,
-      statusCheck: isSupport,
-      support: support,
-      nameCompany: unit,
-      addressCompany: unitAddress,
-      taxCode: taxCode,
-      position: position,
-      phoneNumberCompany: numberEnterprise,
-      emailEnterprise: emailEnterprise,
-      business: business,
-      narrow: narrow,
-    };
+		const update = {
+			address: address,
+			dream: dream,
+			email: email,
+			major: major,
+			name: name,
+			phoneNumber: phone,
+			CV: CV,
+			form: null,
+			report: null,
+			statusCheck: isSupport,
+			support: support,
+			nameCompany: unit,
+			addressCompany: unitAddress,
+			taxCode: taxCode,
+			position: position,
+			phoneNumberCompany: numberEnterprise,
+			emailEnterprise: emailEnterprise,
+			business: business,
+			narrow: narrow,
+		};
 
-    // if (findStudent.statusCheck === 1 && findStudent.support === 0) {
-    //   return res
-    //     .status(500)
-    //     .send({ message: "Thông tin tự đăng ký người dùng không được sửa" });
-    // }
-    if (findStudent.statusCheck === 1 && findStudent.support === 1) {
-      //Ho tro
-      update.note = null;
-      const rptest = await Student.findOneAndUpdate(filter, update, {
-        new: true,
-      });
+		// if (findStudent.statusCheck === 1 && findStudent.support === 0) {
+		//   return res
+		//     .status(500)
+		//     .send({ message: "Thông tin tự đăng ký người dùng không được sửa" });
+		// }
+		if (findStudent.statusCheck === 1 && findStudent.support === 1) {
+			//Ho tro
+			update.note = null;
+			const rptest = await Student.findOneAndUpdate(filter, update, {
+				new: true,
+			});
 
-      dataEmail.mail = email;
-      dataEmail.subject = "Sửa thông tin hỗ trợ thực tập thành công";
-      dataEmail.content = `
+			dataEmail.mail = email;
+			dataEmail.subject = 'Sửa thông tin hỗ trợ thực tập thành công';
+			dataEmail.content = `
       <div style="margin:auto;background-color:#ffffff;width:500px;padding:10px;border-top:2px solid #e37c41">
       <div class="adM">
       </div>
@@ -126,21 +126,21 @@ export const signUpCVForSupport = async (req, res) => {
       </div>
       </div>
       `;
-      await sendMail(dataEmail);
+			await sendMail(dataEmail);
 
-      return res
-        .status(200)
-        .send({ message: "Sửa thông tin CV thành công!", support: support });
-    }
+			return res
+				.status(200)
+				.send({ message: 'Sửa thông tin CV thành công!', support: support });
+		}
 
-    if (findStudent.statusCheck === 10 && support === 1) {
-      await Student.findOneAndUpdate(filter, update, {
-        new: true,
-      });
+		if (findStudent.statusCheck === 10 && support === 1) {
+			await Student.findOneAndUpdate(filter, update, {
+				new: true,
+			});
 
-      dataEmail.mail = email;
-      dataEmail.subject = "Đăng ký hỗ trợ thực tập thành công";
-      dataEmail.content = `
+			dataEmail.mail = email;
+			dataEmail.subject = 'Đăng ký hỗ trợ thực tập thành công';
+			dataEmail.content = `
       <div style="margin:auto;background-color:#ffffff;width:500px;padding:10px;border-top:2px solid #e37c41">
       <div class="adM">
       </div>
@@ -170,30 +170,30 @@ export const signUpCVForSupport = async (req, res) => {
       </div>
       </div>
       `;
-      await sendMail(dataEmail);
-      return res
-        .status(200)
-        .send({ message: "Đăng ký thông tin thành công!", support: support });
-    }
+			await sendMail(dataEmail);
+			return res
+				.status(200)
+				.send({ message: 'Đăng ký thông tin thành công!', support: support });
+		}
 
-    if (findStudent.statusCheck === 1 && findStudent.support === 0) {
-      // if (findStudent.numberOfTime >= 2) {
-      //   res.status(500).send({
-      //     message: "Bạn đã vượt quá 2 lần cho phép sửa thông tin tự đăng ký!",
-      //     support: support,
-      //   });
-      // }
+		if (findStudent.statusCheck === 1 && findStudent.support === 0) {
+			// if (findStudent.numberOfTime >= 2) {
+			//   res.status(500).send({
+			//     message: "Bạn đã vượt quá 2 lần cho phép sửa thông tin tự đăng ký!",
+			//     support: support,
+			//   });
+			// }
 
-      const count = findStudent.numberOfTime + 1;
-      update.numberOfTime = count;
-      update.note = null;
-      await Student.findOneAndUpdate(filter, update, {
-        new: true,
-      });
+			const count = findStudent.numberOfTime + 1;
+			update.numberOfTime = count;
+			update.note = null;
+			await Student.findOneAndUpdate(filter, update, {
+				new: true,
+			});
 
-      dataEmail.mail = email;
-      dataEmail.subject = "Sửa thông tin tự tìm nơi thực tập thành công";
-      dataEmail.content = `
+			dataEmail.mail = email;
+			dataEmail.subject = 'Sửa thông tin tự tìm nơi thực tập thành công';
+			dataEmail.content = `
       <div style="margin:auto;background-color:#ffffff;width:500px;padding:10px;border-top:2px solid #e37c41">
       <div class="adM">
       </div>
@@ -223,21 +223,21 @@ export const signUpCVForSupport = async (req, res) => {
       </div>
       </div>
       `;
-      await sendMail(dataEmail);
+			await sendMail(dataEmail);
 
-      return res
-        .status(200)
-        .send({ message: "Sửa thông tin CV thành công!", support: support });
-    }
+			return res
+				.status(200)
+				.send({ message: 'Sửa thông tin CV thành công!', support: support });
+		}
 
-    if (findStudent.statusCheck === 10 && support === 0) {
-      await Student.findOneAndUpdate(filter, update, {
-        new: true,
-      });
+		if (findStudent.statusCheck === 10 && support === 0) {
+			await Student.findOneAndUpdate(filter, update, {
+				new: true,
+			});
 
-      dataEmail.mail = email;
-      dataEmail.subject = "Đăng ký thông tin tự tìm nới thực tập thành công";
-      dataEmail.content = `
+			dataEmail.mail = email;
+			dataEmail.subject = 'Đăng ký thông tin tự tìm nới thực tập thành công';
+			dataEmail.content = `
       <div style="margin:auto;background-color:#ffffff;width:500px;padding:10px;border-top:2px solid #e37c41">
       <div class="adM">
       </div>
@@ -267,14 +267,14 @@ export const signUpCVForSupport = async (req, res) => {
       </div>
       </div>
       `;
-      await sendMail(dataEmail);
-      return res
-        .status(200)
-        .send({ message: "Đăng ký thông tin thành công!", support: support });
-    }
-  } catch (error) {
-    return res.status(500).send({
-      message: "Đã xảy ra lỗi! Đăng ký lại sau ít phút!",
-    });
-  }
+			await sendMail(dataEmail);
+			return res
+				.status(200)
+				.send({ message: 'Đăng ký thông tin thành công!', support: support });
+		}
+	} catch (error) {
+		return res.status(500).send({
+			message: 'Đã xảy ra lỗi! Đăng ký lại sau ít phút!',
+		});
+	}
 };

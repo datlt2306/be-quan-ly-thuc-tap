@@ -17,7 +17,7 @@ components:
                     required: true
                     unique: true
                     description: Tên ngành hẹp
-                id_majors:
+                major_id:
                     type: ObjectId
                     required: true
                     description: id ngành lớn
@@ -41,7 +41,7 @@ components:
                     type: string
                     required: true
                     description: 'Vị trí cần tuyển'
-                majors:
+                major:
                     type: ObjectId
                     required: true
                     description: 'Chuyên ngành cần tuyển'
@@ -52,7 +52,7 @@ components:
                 address:
                     type: string
                     description: 'Địa chỉ công ty'
-                smester_id:
+                semester_id:
                     type: objectId
                     description: 'Kỳ học, server lấy là kỳ học hiện tại'
                 campus_id:
@@ -94,7 +94,7 @@ components:
                 course:
                     type: string
                     description: Khóa học của học sinh
-                majors:
+                major:
                     type: objectId
                     description: Ngành của học sinh
                 narrow:
@@ -143,7 +143,7 @@ components:
                 business:
                     type: objectId
                     description: Công ty học sinh đăng ký
-                smester_id:
+                semester_id:
                     type: objectId
                     description: Kỳ học hiện tại học sinh
                 reviewer:

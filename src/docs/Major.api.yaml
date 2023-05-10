@@ -2,7 +2,7 @@ paths:
     /major:
         post:
             tags:
-                - Majors
+                - Major
             description: api thêm chuyên ngành, thêm nhiều hay thêm 1 phụ thuộc vào data là { } || [ ]
             summary: Đăng nhập
 
@@ -56,7 +56,7 @@ paths:
 
         get:
             tags:
-                - Majors
+                - Major
             description: Lấy ra tất cả các chuyên ngành của cơ sở
             summary: Đăng nhập
 
@@ -92,7 +92,7 @@ paths:
     /major/:id:
         get:
             tags:
-                - Majors
+                - Major
             summary: Đăng nhập
             description: Api lấy ra thông tin chi tiết 1 chuyên ngành
 
@@ -133,7 +133,7 @@ paths:
 
         patch:
             tags:
-                - Majors
+                - Major
             description: Api sửa thông tin 1 chuyên ngành
             summary: Đăng nhập với vai trò quản lí (role = 2)
 
@@ -178,7 +178,7 @@ paths:
 
         delete:
             tags:
-                - Majors
+                - Major
             description: Api xóa vĩnh viễn 1 chuyên ngành
             summary: Đăng nhập với vai trò quản lí (role = 2)
 

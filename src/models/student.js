@@ -15,7 +15,7 @@ const studentSchema = mongoose.Schema(
 		course: {
 			type: String,
 		},
-		majors: {
+		major: {
 			type: ObjectId,
 			ref: 'Major',
 		},
@@ -68,14 +68,14 @@ const studentSchema = mongoose.Schema(
 		},
 		campus_id: {
 			type: ObjectId,
-			ref: 'Cumpus',
+			ref: 'Campus',
 		},
 		business: {
 			type: ObjectId,
 			ref: 'Business',
 			default: null,
 		},
-		smester_id: {
+		semester_id: {
 			type: ObjectId,
 			ref: 'Semester',
 		},

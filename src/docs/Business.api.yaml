@@ -46,7 +46,7 @@ paths:
                                                 '_id': '640abf214ed73d86530a6018',
                                                 'name': 'fgdfgf',
                                                 'internshipPosition': 'dfgdfg',
-                                                'majors':
+                                                'major':
                                                     {
                                                         '_id': '640abe8d4ed73d86530a5ee7',
                                                         'name': 'asdsa',
@@ -56,7 +56,7 @@ paths:
                                                     },
                                                 'amount': 13,
                                                 'address': 'gdgdfg',
-                                                'smester_id': '640abe7e4ed73d86530a5ed3',
+                                                'semester_id': '640abe7e4ed73d86530a5ed3',
                                                 'campus_id':
                                                     {
                                                         '_id': '63eef716c9ef6d077f1f1deb',
@@ -102,7 +102,7 @@ paths:
                                     type: string
                                     required: true
                                     description: 'Vị trí cần tuyển'
-                                majors:
+                                major:
                                     type: ObjectId
                                     required: true
                                     description: 'Chuyên ngành cần tuyển'
@@ -136,7 +136,7 @@ paths:
                                 code_request: '12334',
                                 description: '1111111111111',
                                 internshipPosition: 'Front end',
-                                majors: '640abe8d4ed73d86530a5ee7',
+                                major: '640abe8d4ed73d86530a5ee7',
                                 name: 'test tên doanh nghiệp',
                                 request: '1111111111',
                                 benefish: '111111111',
@@ -157,10 +157,10 @@ paths:
                                         '_id': '640abf214ed73d86530a6018',
                                         'name': 'fgdfgf',
                                         'internshipPosition': 'dfgdfg',
-                                        'majors': '640abe8d4ed73d86530a5ee7',
+                                        'major': '640abe8d4ed73d86530a5ee7',
                                         'amount': 13,
                                         'address': 'gdgdfg',
-                                        'smester_id': '640abe7e4ed73d86530a5ed3',
+                                        'semester_id': '640abe7e4ed73d86530a5ed3',
                                         'campus_id': '63eef716c9ef6d077f1f1deb',
                                         'code_request': 'dgsgfd',
                                         'request': 'dfgdfg',
@@ -257,10 +257,10 @@ paths:
                                     '_id': '640abf214ed73d86530a6018',
                                     'name': 'fgdfgf',
                                     'internshipPosition': 'dfgdfg',
-                                    'majors': '640abe8d4ed73d86530a5ee7',
+                                    'major': '640abe8d4ed73d86530a5ee7',
                                     'amount': 13,
                                     'address': 'gdgdfg',
-                                    'smester_id': '640abe7e4ed73d86530a5ed3',
+                                    'semester_id': '640abe7e4ed73d86530a5ed3',
                                     'campus_id': '63eef716c9ef6d077f1f1deb',
                                     'code_request': 'dgsgfd12',
                                     'request': 'dfgdfg',
@@ -296,10 +296,10 @@ paths:
                                     '_id': '640abf214ed73d86530a6018',
                                     'name': 'fgdfgf',
                                     'internshipPosition': 'dfgdfg',
-                                    'majors': '640abe8d4ed73d86530a5ee7',
+                                    'major': '640abe8d4ed73d86530a5ee7',
                                     'amount': 13,
                                     'address': 'gdgdfg',
-                                    'smester_id': '640abe7e4ed73d86530a5ed3',
+                                    'semester_id': '640abe7e4ed73d86530a5ed3',
                                     'campus_id': '63eef716c9ef6d077f1f1deb',
                                     'code_request': 'dgsgfd12',
                                     'request': 'dfgdfg',
@@ -346,7 +346,7 @@ paths:
                                 internshipPosition:
                                     type: string
                                     description: 'Vị trí cần tuyển'
-                                majors:
+                                major:
                                     type: ObjectId
                                     description: 'Chuyên ngành cần tuyển'
                                 amount:
@@ -405,7 +405,7 @@ paths:
                                 internshipPosition:
                                     type: string
                                     description: 'Vị trí cần tuyển'
-                                majors:
+                                major:
                                     type: ObjectId
                                     description: 'Chuyên ngành cần tuyển'
                                 amount:
@@ -434,7 +434,7 @@ paths:
                                 code_request: '12334',
                                 description: '1111111111111',
                                 internshipPosition: 'Front end',
-                                majors: '640abe8d4ed73d86530a5ee7',
+                                major: '640abe8d4ed73d86530a5ee7',
                                 name: 'test tên doanh nghiệp',
                                 request: '1111111111',
                                 benefish: '111111111',
@@ -452,10 +452,10 @@ paths:
                                     '_id': '640abf214ed73d86530a6018',
                                     'name': 'fgdfgf',
                                     'internshipPosition': 'dfgdfg',
-                                    'majors': '640abe8d4ed73d86530a5ee7',
+                                    'major': '640abe8d4ed73d86530a5ee7',
                                     'amount': 13,
                                     'address': 'gdgdfg',
-                                    'smester_id': '640abe7e4ed73d86530a5ed3',
+                                    'semester_id': '640abe7e4ed73d86530a5ed3',
                                     'campus_id': '63eef716c9ef6d077f1f1deb',
                                     'code_request': 'dgsgfd12',
                                     'request': 'dfgdfg',

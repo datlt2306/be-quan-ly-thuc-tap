@@ -9,7 +9,7 @@ const NarrowSpecializationSchema = mongoose.Schema(
 			lowercase: true,
 			unique: true,
 		},
-		id_majors: {
+		major_id: {
 			type: ObjectId,
 			require,
 			ref: 'Major',
@@ -17,7 +17,7 @@ const NarrowSpecializationSchema = mongoose.Schema(
 		campus: {
 			type: String,
 			require: true,
-			ref: 'Cumpus',
+			ref: 'Campus',
 		},
 	},
 	{

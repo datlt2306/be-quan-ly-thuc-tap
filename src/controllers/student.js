@@ -26,14 +26,14 @@ export const listStudent = async (req, res) => {
 		// lấy ra các học sinh thỏa mãn đăng ký kỳ hiện tại và thuộc cơ sở của manger đăng nhập
 		const students = await StudentModel.paginate(
 			{
-				smester_id: dataDefault._id,
+				semester_id: dataDefault._id,
 				campus_id: campusManager,
 				...req.query,
 			},
 			{
 				page: Number(page),
 				limit: Number(limit),
-				populate: ['campus_id', 'smester_id', 'business', 'majors'],
+				populate: ['campus_id', 'semester_id', 'business', 'major'],
 				sort: { statusCheck: 1 },
 				customLabels: {
 					totalDocs: 'total',
@@ -97,9 +97,9 @@ export const readOneStudent = async (req, res) => {
 
 		const student = await StudentModel.findOne({ _id: id })
 			.populate('campus_id')
-			.populate('smester_id')
+			.populate('semester_id')
 			.populate('business')
-			.populate('majors')
+			.populate('major')
 			.populate('narrow');
 
 		if (!student) {
@@ -117,12 +117,12 @@ export const readOneStudent = async (req, res) => {
 
 // [POST] /api/student
 export const insertStudent = async (req, res) => {
-	const { data, smester_id, majors, campus_id } = req.body;
+	const { data, semester_id, major, campus_id } = req.body;
 	try {
 		const checkStudent = await StudentModel.find({}).limit(3);
 
 		if (checkStudent.length > 0) {
-			const listMSSV = await StudentModel.find({ smester_id, majors, campus_id });
+			const listMSSV = await StudentModel.find({ semester_id, major, campus_id });
 			if (listMSSV.length === 0) {
 				await StudentModel.insertMany(data);
 			} else {
@@ -136,7 +136,7 @@ export const insertStudent = async (req, res) => {
 				});
 
 				await StudentModel.updateMany(
-					{ smester_id, majors, campus_id },
+					{ semester_id, major, campus_id },
 					{
 						$set: {
 							checkUpdate: false,
@@ -148,7 +148,7 @@ export const insertStudent = async (req, res) => {
 
 				await StudentModel.updateMany(
 					{
-						$and: [{ mssv: { $in: listNew } }, { smester_id, majors, campus_id }],
+						$and: [{ mssv: { $in: listNew } }, { semester_id, major, campus_id }],
 					},
 					{
 						$set: {
@@ -160,7 +160,7 @@ export const insertStudent = async (req, res) => {
 				);
 
 				await StudentModel.updateMany(
-					{ $and: [{ checkUpdate: false }, { smester_id, majors, campus_id }] },
+					{ $and: [{ checkUpdate: false }, { semester_id, major, campus_id }] },
 					{
 						$set: {
 							statusCheck: 3,
@@ -175,7 +175,7 @@ export const insertStudent = async (req, res) => {
 
 				await StudentModel.updateMany(
 					{
-						$and: [{ mssv: { $nin: listMS } }, { smester_id, majors, campus_id }],
+						$and: [{ mssv: { $nin: listMS } }, { semester_id, major, campus_id }],
 					},
 					{
 						$set: {
@@ -186,22 +186,22 @@ export const insertStudent = async (req, res) => {
 				);
 
 				await StudentModel.deleteMany({
-					$and: [{ checkMulti: false }, { smester_id, majors, campus_id }],
+					$and: [{ checkMulti: false }, { semester_id, major, campus_id }],
 				});
 			}
 
-			await StudentModel.find({ smester_id })
+			await StudentModel.find({ semester_id })
 				.populate('campus_id')
-				.populate('smester_id')
+				.populate('semester_id')
 				.populate('business')
-				.populate('majors')
+				.populate('major')
 				.limit(20)
 				.sort({ statusCheck: 1 })
 				.exec((err, doc) => {
 					if (err) {
 						throw err;
 					} else {
-						StudentModel.find({ smester_id, majors, campus_id })
+						StudentModel.find({ semester_id, major, campus_id })
 							.countDocuments({})
 							.exec((count_error, count) => {
 								if (err) {
@@ -218,18 +218,18 @@ export const insertStudent = async (req, res) => {
 				});
 		} else {
 			await StudentModel.insertMany(req.body.data);
-			await StudentModel.find({ smester_id })
+			await StudentModel.find({ semester_id })
 				.populate('campus_id')
-				.populate('smester_id')
+				.populate('semester_id')
 				.populate('business')
-				.populate('majors')
+				.populate('major')
 				.limit(20)
 				.sort({ statusCheck: 1 })
 				.exec((err, doc) => {
 					if (err) {
 						res.status(400).json(err);
 					} else {
-						StudentModel.find({ smester_id, majors, campus_id })
+						StudentModel.find({ semester_id, major, campus_id })
 							.countDocuments({})
 							.exec((count_error, count) => {
 								if (err) {
@@ -308,13 +308,13 @@ export const updateBusinessStudent = async (req, res) => {
 		const businessCheck = await BusinessModel.findOne({
 			_id: business,
 			campus_id: campus,
-			smester_id: semester._id,
+			semester_id: semester._id,
 		});
 
 		if (!businessCheck) throw createHttpError(404, 'Công ty không tồn tại!');
 
 		const data = await StudentModel.updateMany(
-			{ _id: { $in: listIdStudent }, campus_id: campus, smester_id: semester._id },
+			{ _id: { $in: listIdStudent }, campus_id: campus, semester_id: semester._id },
 			{
 				$set: {
 					business: business,
@@ -627,12 +627,12 @@ export const listStudentReviewCV = async (req, res) => {
 			report: null,
 			statusCheck: { $in: [0, 1] },
 			campus_id: campus,
-			smester_id: semester._id,
+			semester_id: semester._id,
 		})
 			.populate('campus_id')
-			.populate('smester_id')
+			.populate('semester_id')
 			.populate('business')
-			.populate('majors');
+			.populate('major');
 
 		return res.status(200).json(listStudentReviewCV);
 	} catch (error) {

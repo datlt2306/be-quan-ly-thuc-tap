@@ -21,7 +21,7 @@ export const checkStudentExist = async (id, campus) => {
 		const student = await StudentModel.findOne({
 			_id: id,
 			campus_id: campus,
-			smester_id: semester._id,
+			semester_id: semester._id,
 		});
 
 		if (!student) {
@@ -47,7 +47,7 @@ export const createListStudent = async (data, campus) => {
 			throw createHttpError(400, error.message);
 		}
 
-		const { _id: semesterId } = await getCurrentSemester(campus);
+		const { _id: semester_id } = await getCurrentSemester(campus);
 
 		// bảng chứa các mã ngành của data gửi lên
 		const majorCodeReqBodyData = [];
@@ -62,7 +62,7 @@ export const createListStudent = async (data, campus) => {
 			// thêm campus và semester cho student
 			data[index] = {
 				...student,
-				smester_id: semesterId,
+				semester_id: semester_id,
 				campus_id: campus,
 			};
 
@@ -95,13 +95,13 @@ export const createListStudent = async (data, campus) => {
 			delete data[index].majorCode;
 			data[index] = {
 				...student,
-				majors: majorId,
+				major: majorId,
 			};
 		});
 
 		// kiểm tra kỳ hiện tại đã nhập sinh viên chưa
 		const checkStudentCurrSemester = await StudentModel.findOne({
-			smester_id: semesterId,
+			semester_id: semester_id,
 			campus_id: campus,
 		})
 			.select('mssv')
@@ -113,7 +113,7 @@ export const createListStudent = async (data, campus) => {
 			// lấy ra các sinh viên đã tồn tại
 			const studentExists = await StudentModel.find({
 				mssv: { $in: mssvReqBodyData },
-				smester_id: semesterId,
+				semester_id: semester_id,
 				campus_id: campus,
 			})
 				.select('mssv')
@@ -173,7 +173,7 @@ export const updateStatusStudent = async (data, hostname, campus) => {
 		const checkStudentListExist = await StudentModel.find({
 			_id: { $in: listIdStudent },
 			campus_id: campus,
-			smester_id: semester._id,
+			semester_id: semester._id,
 		}).lean();
 
 		if (checkStudentListExist.length < listIdStudent.length) {

@@ -48,7 +48,7 @@ paths:
                                                 '_id': '640abe9e4ed73d86530a5f04',
                                                 'mssv': 'ph14253',
                                                 'name': 'Trần Văn Giang',
-                                                'majors': '640abe8d4ed73d86530a5ee7',
+                                                'major': '640abe8d4ed73d86530a5ee7',
                                                 'dream': null,
                                                 'email': 'giangtvph14253@fpt.edu.vn',
                                                 'checkUpdate': true,
@@ -67,7 +67,7 @@ paths:
                                                         '__v': 0,
                                                     },
                                                 'business': null,
-                                                'smester_id':
+                                                'semester_id':
                                                     {
                                                         '_id': '640abe7e4ed73d86530a5ed3',
                                                         'name': 'asds',
@@ -280,7 +280,7 @@ paths:
                                         '_id': '640abe9e4ed73d86530a5f5a',
                                         'mssv': 'ph14252',
                                         'name': 'Test',
-                                        'majors':
+                                        'major':
                                             {
                                                 '_id': '640abe8d4ed73d86530a5ee7',
                                                 'name': 'asdsa',
@@ -310,10 +310,10 @@ paths:
                                                 '_id': '640abf214ed73d86530a6018',
                                                 'name': 'fgdfgf',
                                                 'internshipPosition': 'dfgdfg',
-                                                'majors': '640abe8d4ed73d86530a5ee7',
+                                                'major': '640abe8d4ed73d86530a5ee7',
                                                 'amount': 13,
                                                 'address': 'gdgdfg',
-                                                'smester_id': '640abe7e4ed73d86530a5ed3',
+                                                'semester_id': '640abe7e4ed73d86530a5ed3',
                                                 'campus_id': '63eef716c9ef6d077f1f1deb',
                                                 'code_request': 'dgsgfd12',
                                                 'request': 'dfgdfg',
@@ -322,7 +322,7 @@ paths:
                                                 'createAt': '2023-03-10T05:24:49.081Z',
                                                 '__v': 0,
                                             },
-                                        'smester_id':
+                                        'semester_id':
                                             {
                                                 '_id': '640abe7e4ed73d86530a5ed3',
                                                 'name': 'asds',
@@ -374,7 +374,7 @@ paths:
                                     '_id': '640abe9e4ed73d86530a5f5a',
                                     'mssv': 'ph14252',
                                     'name': 'Test',
-                                    'majors':
+                                    'major':
                                         {
                                             '_id': '640abe8d4ed73d86530a5ee7',
                                             'name': 'asdsa',
@@ -404,10 +404,10 @@ paths:
                                             '_id': '640abf214ed73d86530a6018',
                                             'name': 'fgdfgf',
                                             'internshipPosition': 'dfgdfg',
-                                            'majors': '640abe8d4ed73d86530a5ee7',
+                                            'major': '640abe8d4ed73d86530a5ee7',
                                             'amount': 13,
                                             'address': 'gdgdfg',
-                                            'smester_id': '640abe7e4ed73d86530a5ed3',
+                                            'semester_id': '640abe7e4ed73d86530a5ed3',
                                             'campus_id': '63eef716c9ef6d077f1f1deb',
                                             'code_request': 'dgsgfd12',
                                             'request': 'dfgdfg',
@@ -416,7 +416,7 @@ paths:
                                             'createAt': '2023-03-10T05:24:49.081Z',
                                             '__v': 0,
                                         },
-                                    'smester_id':
+                                    'semester_id':
                                         {
                                             '_id': '640abe7e4ed73d86530a5ed3',
                                             'name': 'asds',
@@ -450,7 +450,7 @@ paths:
                                         {
                                             '_id': '640abeed4ed73d86530a5fcf',
                                             'name': 'ddsf',
-                                            'id_majors': '640abe8d4ed73d86530a5ee7',
+                                            'major_id': '640abe8d4ed73d86530a5ee7',
                                             'createAt': '2023-03-10T05:23:57.103Z',
                                             '__v': 0,
                                         },
@@ -482,7 +482,7 @@ paths:
                                     '_id': '640abe9e4ed73d86530a5f5a',
                                     'mssv': 'ph14252',
                                     'name': 'Nguyễn Văn A',
-                                    'majors': '640abe8d4ed73d86530a5ee7',
+                                    'major': '640abe8d4ed73d86530a5ee7',
                                     'dream': 'sffdfsdf',
                                     'email': 'phuongvmph14252@fpt.edu.vn',
                                     'checkUpdate': true,
@@ -495,7 +495,7 @@ paths:
                                     'CV': 'https://drive.google.com/file/d/1iBr7soZigfEB1Nl9iEqYKFpnOYa5nEch/view?usp=drivesdk',
                                     'campus_id': '63eef716c9ef6d077f1f1deb',
                                     'business': '640abf214ed73d86530a6018',
-                                    'smester_id': '640abe7e4ed73d86530a5ed3',
+                                    'semester_id': '640abe7e4ed73d86530a5ed3',
                                     'reviewer': 'axhaltz@gmail.com',
                                     'form': null,
                                     'report': null,
@@ -545,7 +545,7 @@ paths:
                                     '_id': '640abe9e4ed73d86530a5f5a',
                                     'mssv': 'ph14252',
                                     'name': 'Nguyễn Văn A',
-                                    'majors': '640abe8d4ed73d86530a5ee7',
+                                    'major': '640abe8d4ed73d86530a5ee7',
                                     'dream': 'sffdfsdf',
                                     'email': 'phuongvmph14252@fpt.edu.vn',
                                     'checkUpdate': true,
@@ -558,7 +558,7 @@ paths:
                                     'CV': 'https://drive.google.com/file/d/1iBr7soZigfEB1Nl9iEqYKFpnOYa5nEch/view?usp=drivesdk',
                                     'campus_id': '63eef716c9ef6d077f1f1deb',
                                     'business': '640abf214ed73d86530a6018',
-                                    'smester_id': '640abe7e4ed73d86530a5ed3',
+                                    'semester_id': '640abe7e4ed73d86530a5ed3',
                                     'reviewer': 'axhaltz@gmail.com',
                                     'form': null,
                                     'report': null,

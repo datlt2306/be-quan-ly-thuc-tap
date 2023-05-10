@@ -1,4 +1,4 @@
-import * as majorServices from '../services/majors.service';
+import * as majorServices from '../services/major.service';
 
 // [GET] /api/major
 export const getListMajor = async (req, res) => {
