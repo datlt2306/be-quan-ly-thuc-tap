@@ -1,5 +1,5 @@
 import * as configTimeServices from '../services/configTime.service';
-
+import ConfigTime from '../models/configTime';
 // [POST] /api/settime
 export const handleSetTimeRequest = async (req, res) => {
 	const data = req.body;
