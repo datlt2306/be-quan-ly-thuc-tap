@@ -18,11 +18,13 @@ export const handleSetTimeRequest = async (req, res) => {
 
 // [GET] /api/settime
 export const getListTypeSetTime = async (req, res) => {
-	const campus = req.campusManager || req.campusStudent;
 	try {
-		const result = await configTimeServices.getListConfigTime(campus);
-
-		return res.status(200).json(result);
+		const { semester_id, campus_id } = req.query;
+		const time = await ConfigTime.find({ semester_id, campus_id });
+		return res.status(200).json({
+			message: 'time success',
+			time: time,
+		});
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
@@ -31,14 +33,14 @@ export const getListTypeSetTime = async (req, res) => {
 	}
 };
 
-// [GET] /api/settime/:id
 export const getOneTypeSetTime = async (req, res) => {
-	const campus = req.campusManager || req.campusStudent;
-	const id = req.params.id;
+	const { typeNumber, semester_id, campus_id } = req.query;
 	try {
-		const result = await configTimeServices.getOneConfigTime(id, campus);
-
-		return res.status(200).json(result);
+		const time = await ConfigTime.findOne({ typeNumber, semester_id, campus_id });
+		return res.status(200).json({
+			message: 'time success',
+			time: time,
+		});
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
