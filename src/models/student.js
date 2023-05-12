@@ -7,7 +7,8 @@ const studentSchema = mongoose.Schema(
 		mssv: {
 			require: true,
 			type: String,
-			lowercase: true,
+			uppercase: true,
+			unique: true,
 		},
 		name: {
 			type: String,
@@ -18,6 +19,7 @@ const studentSchema = mongoose.Schema(
 		},
 		majorCode: {
 			type: String,
+			require: true,
 		},
 		narrow: {
 			type: ObjectId,
@@ -31,6 +33,7 @@ const studentSchema = mongoose.Schema(
 		email: {
 			type: String,
 			require: true,
+			unique: true,
 		},
 		checkUpdate: {
 			type: Boolean,
@@ -50,14 +53,18 @@ const studentSchema = mongoose.Schema(
 		},
 		statusStudent: {
 			type: String,
+			enum: ['Học đi', 'Học lại'],
+			default: 'Học đi',
 		},
 		support: {
 			type: Number,
 			default: null,
 		},
 		phoneNumber: {
-			type: Number,
+			type: String,
 			require: true,
+			minLength: 10,
+			maxLength: 11,
 			default: null,
 		},
 		address: {
@@ -97,7 +104,7 @@ const studentSchema = mongoose.Schema(
 		},
 		note: {
 			type: String,
-			default: null,
+			default: '',
 		},
 		numberOfTime: {
 			type: Number,
@@ -113,7 +120,7 @@ const studentSchema = mongoose.Schema(
 			default: null,
 		},
 		taxCode: {
-			type: Number,
+			type: String,
 			default: null,
 		},
 		position: {
@@ -121,7 +128,7 @@ const studentSchema = mongoose.Schema(
 			default: null,
 		},
 		phoneNumberCompany: {
-			type: Number,
+			type: String,
 			default: null,
 		},
 		emailEnterprise: {
@@ -135,11 +142,9 @@ const studentSchema = mongoose.Schema(
 		},
 		endInternShipTime: {
 			type: Date,
-			default: null,
 		},
 		attitudePoint: {
 			type: Number,
-			default: null,
 		},
 		resultScore: {
 			type: Number,
@@ -166,9 +171,9 @@ const studentSchema = mongoose.Schema(
 			type: Number,
 			default: null,
 		},
-		createdAt: {
+		addedAt: {
 			type: Date,
-			default: Date.now,
+			default: new Date(),
 		},
 	},
 	{
