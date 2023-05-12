@@ -15,32 +15,18 @@ export const listStudent = async (req, res) => {
 	const limit = req.query.limit || 20;
 	// campusManager được thêm từ middleware
 	const campusManager = req.campusManager;
-
 	try {
 		// xác định học kỳ hiện tại
 		const dataDefault = await semester.findOne({
 			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
 			campus_id: campusManager,
 		});
-
 		// lấy ra các học sinh thỏa mãn đăng ký kỳ hiện tại và thuộc cơ sở của manger đăng nhập
-		const students = await StudentModel.paginate(
-			{
-				smester_id: dataDefault._id,
-				campus_id: campusManager,
-				...req.query,
-			},
-			{
-				page: Number(page),
-				limit: Number(limit),
-				populate: ['campus_id', 'smester_id', 'business', 'majors'],
-				sort: { statusCheck: 1 },
-				customLabels: {
-					totalDocs: 'total',
-					docs: 'list',
-				},
-			}
-		);
+
+		const students = await StudentModel.find({
+			smester_id: dataDefault._id,
+			campus_id: campusManager,
+		}).populate({ path: 'major', select: 'name', match: { majorCode: { $exists: true } } });
 
 		return res.status(200).json(students);
 	} catch (error) {
@@ -99,7 +85,7 @@ export const readOneStudent = async (req, res) => {
 			.populate('campus_id')
 			.populate('smester_id')
 			.populate('business')
-			.populate('majors')
+			.populate({ path: 'major' })
 			.populate('narrow');
 
 		if (!student) {
@@ -117,12 +103,12 @@ export const readOneStudent = async (req, res) => {
 
 // [POST] /api/student
 export const insertStudent = async (req, res) => {
-	const { data, smester_id, majors, campus_id } = req.body;
+	const { data, smester_id, campus_id } = req.body;
 	try {
 		const checkStudent = await StudentModel.find({}).limit(3);
 
 		if (checkStudent.length > 0) {
-			const listMSSV = await StudentModel.find({ smester_id, majors, campus_id });
+			const listMSSV = await StudentModel.find({ smester_id, campus_id });
 			if (listMSSV.length === 0) {
 				await StudentModel.insertMany(data);
 			} else {
@@ -136,7 +122,7 @@ export const insertStudent = async (req, res) => {
 				});
 
 				await StudentModel.updateMany(
-					{ smester_id, majors, campus_id },
+					{ smester_id, campus_id },
 					{
 						$set: {
 							checkUpdate: false,
@@ -148,7 +134,7 @@ export const insertStudent = async (req, res) => {
 
 				await StudentModel.updateMany(
 					{
-						$and: [{ mssv: { $in: listNew } }, { smester_id, majors, campus_id }],
+						$and: [{ mssv: { $in: listNew } }, { smester_id, campus_id }],
 					},
 					{
 						$set: {
@@ -160,7 +146,7 @@ export const insertStudent = async (req, res) => {
 				);
 
 				await StudentModel.updateMany(
-					{ $and: [{ checkUpdate: false }, { smester_id, majors, campus_id }] },
+					{ $and: [{ checkUpdate: false }, { smester_id, campus_id }] },
 					{
 						$set: {
 							statusCheck: 3,
@@ -175,7 +161,7 @@ export const insertStudent = async (req, res) => {
 
 				await StudentModel.updateMany(
 					{
-						$and: [{ mssv: { $nin: listMS } }, { smester_id, majors, campus_id }],
+						$and: [{ mssv: { $nin: listMS } }, { smester_id, campus_id }],
 					},
 					{
 						$set: {
@@ -186,7 +172,7 @@ export const insertStudent = async (req, res) => {
 				);
 
 				await StudentModel.deleteMany({
-					$and: [{ checkMulti: false }, { smester_id, majors, campus_id }],
+					$and: [{ checkMulti: false }, { smester_id, campus_id }],
 				});
 			}
 
@@ -194,14 +180,14 @@ export const insertStudent = async (req, res) => {
 				.populate('campus_id')
 				.populate('smester_id')
 				.populate('business')
-				.populate('majors')
+				.populate({ path: 'major' })
 				.limit(20)
 				.sort({ statusCheck: 1 })
 				.exec((err, doc) => {
 					if (err) {
 						throw err;
 					} else {
-						StudentModel.find({ smester_id, majors, campus_id })
+						StudentModel.find({ smester_id, campus_id })
 							.countDocuments({})
 							.exec((count_error, count) => {
 								if (err) {
@@ -222,14 +208,14 @@ export const insertStudent = async (req, res) => {
 				.populate('campus_id')
 				.populate('smester_id')
 				.populate('business')
-				.populate('majors')
+				.populate({ path: 'major' })
 				.limit(20)
 				.sort({ statusCheck: 1 })
 				.exec((err, doc) => {
 					if (err) {
 						res.status(400).json(err);
 					} else {
-						StudentModel.find({ smester_id, majors, campus_id })
+						StudentModel.find({ smester_id, campus_id })
 							.countDocuments({})
 							.exec((count_error, count) => {
 								if (err) {

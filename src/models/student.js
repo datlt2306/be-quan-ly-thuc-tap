@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongooseAutoPopulate = require('mongoose-autopopulate');
 const mongoosePaginate = require('mongoose-paginate-v2');
 const { ObjectId } = mongoose.Schema;
 const studentSchema = mongoose.Schema(
@@ -15,13 +16,13 @@ const studentSchema = mongoose.Schema(
 		course: {
 			type: String,
 		},
-		majors: {
-			type: ObjectId,
-			ref: 'Major',
+		majorCode: {
+			type: String,
 		},
 		narrow: {
 			type: ObjectId,
 			ref: 'NarrowSpecialization',
+			autopopulate: true,
 		},
 		dream: {
 			type: String,
@@ -45,6 +46,7 @@ const studentSchema = mongoose.Schema(
 		},
 		statusCheck: {
 			type: Number,
+			default: 10,
 		},
 		statusStudent: {
 			type: String,
@@ -74,10 +76,12 @@ const studentSchema = mongoose.Schema(
 			type: ObjectId,
 			ref: 'Business',
 			default: null,
+			autopopulate: true,
 		},
 		smester_id: {
 			type: ObjectId,
 			ref: 'Semester',
+			autopopulate: true,
 		},
 		reviewer: {
 			type: String,
@@ -167,9 +171,18 @@ const studentSchema = mongoose.Schema(
 			default: Date.now,
 		},
 	},
-	{ timestamps: true }
+	{
+		timestamps: true,
+		strictPopulate: false,
+	}
 );
 
-studentSchema.plugin(mongoosePaginate);
+studentSchema.virtual('major', {
+	localField: 'majorCode',
+	foreignField: 'majorCode',
+	ref: 'Major',
+});
 
+studentSchema.plugin(mongoosePaginate);
+studentSchema.plugin(mongooseAutoPopulate);
 module.exports = mongoose.model('Student', studentSchema);
