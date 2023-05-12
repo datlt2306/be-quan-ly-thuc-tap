@@ -1,7 +1,7 @@
 import StudentModel from '../models/student';
 import BusinessModel from '../models/business';
 import { sendMail } from './emailController';
-import semester from '../models/semester';
+import SemesterModel from '../models/semester';
 import { getCurrentSemester } from './semesterController';
 import createHttpError from 'http-errors';
 import { checkStudentExist } from '../services/student.service';
@@ -11,20 +11,19 @@ const ObjectId = require('mongodb').ObjectID;
 
 // [GET] /api/student?limit=20&page=1
 export const listStudent = async (req, res) => {
-	const page = req.query.page || 1;
-	const limit = req.query.limit || 20;
+	const semester = req.query.semester;
 	// campusManager được thêm từ middleware
 	const campusManager = req.campusManager;
 	try {
 		// xác định học kỳ hiện tại
-		const dataDefault = await semester.findOne({
+		const dataDefault = await SemesterModel.findOne({
 			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
 			campus_id: campusManager,
 		});
 		// lấy ra các học sinh thỏa mãn đăng ký kỳ hiện tại và thuộc cơ sở của manger đăng nhập
 
 		const students = await StudentModel.find({
-			smester_id: dataDefault._id,
+			smester_id: semester || dataDefault._id,
 			campus_id: campusManager,
 		}).populate({ path: 'major', select: 'name', match: { majorCode: { $exists: true } } });
 
