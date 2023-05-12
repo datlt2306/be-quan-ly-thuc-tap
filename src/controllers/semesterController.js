@@ -7,7 +7,6 @@ export const getSemester = async (req, res) => {
 			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
 			campus_id,
 		});
-		console.log(dataDefault);
 		res.status(200).json({ defaultSemester: dataDefault, listSemesters: data });
 	} catch (error) {
 		res.status(400).json(error);

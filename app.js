@@ -9,11 +9,11 @@ const swaggerUI = require('swagger-ui-express');
 import swaggerOptions from './src/config/swagger.config';
 const app = express();
 // database
+mongoose.set('strictQuery', false);
 mongoose
 	.connect(process.env.DATABASE)
 	.then(() => console.log('DB Connected'))
 	.catch((error) => console.log('DB not connected ', error));
-
 // middleware
 app.use(morgan('tiny'));
 app.use(express.json({ limit: '50mb' }));
