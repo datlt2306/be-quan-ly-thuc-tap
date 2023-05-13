@@ -1,5 +1,7 @@
 import * as configTimeServices from '../services/configTime.service';
 import ConfigTime from '../models/configTime';
+import { getCurrentSemester } from './semesterController';
+import { validateConfigTimeCreateData } from '../validation/configTime.validation';
 // [POST] /api/settime
 export const handleSetTimeRequest = async (req, res) => {
 	const data = req.body;
@@ -19,8 +21,13 @@ export const handleSetTimeRequest = async (req, res) => {
 // [GET] /api/settime
 export const getListTypeSetTime = async (req, res) => {
 	try {
-		const { semester_id, campus_id } = req.query;
-		const time = await ConfigTime.find({ semester_id, campus_id });
+		const campus = req.campusManager;
+		const semester = await getCurrentSemester(campus);
+
+		if (!campus) throw new Error('Campus not found');
+		if (!semester) throw new Error('Semester not found');
+
+		const time = await ConfigTime.find({ semester_id: semester._id, campus_id: campus });
 		return res.status(200).json({
 			message: 'time success',
 			time: time,
@@ -34,12 +41,48 @@ export const getListTypeSetTime = async (req, res) => {
 };
 
 export const getOneTypeSetTime = async (req, res) => {
-	const { typeNumber, semester_id, campus_id } = req.query;
 	try {
-		const time = await ConfigTime.findOne({ typeNumber, semester_id, campus_id });
+		const { typeNumber } = req.params;
+		const campus = req.campusManager;
+		const semester = await getCurrentSemester(campus);
+
+		if (!campus) throw new Error('Campus not found');
+		if (!semester) throw new Error('Semester not found');
+
+		const timeWindow = await ConfigTime.findOne({
+			typeNumber,
+			semester_id: semester._id,
+			campus_id: campus,
+		})
+			.sort({ startTime: -1, endTime: -1 })
+			.exec();
+
+		if (!timeWindow) throw new Error('Time window not found');
+
 		return res.status(200).json({
-			message: 'time success',
-			time: time,
+			message: 'Time window retrieved successfully',
+			time: timeWindow,
+		});
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
+};
+
+export const getTimeWindowByID = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const timeWindow = await ConfigTime.findOne({
+			_id: id,
+		});
+
+		if (!timeWindow) throw new Error('Time window not found');
+
+		return res.status(200).json({
+			message: 'Time window retrieved successfully',
+			time: timeWindow,
 		});
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
