@@ -94,6 +94,11 @@ const studentSchema = mongoose.Schema(
 			type: String,
 			default: null,
 		},
+		updatedInStage: {
+			type: Number,
+			enum: [1, 2, 3],
+			default: 1,
+		},
 		form: {
 			type: String,
 			default: null,
@@ -171,10 +176,6 @@ const studentSchema = mongoose.Schema(
 			type: Number,
 			default: null,
 		},
-		addedAt: {
-			type: Date,
-			default: new Date(),
-		},
 	},
 	{
 		timestamps: true,
@@ -187,7 +188,12 @@ studentSchema.virtual('major', {
 	foreignField: 'majorCode',
 	ref: 'Major',
 });
-
+studentSchema.statics.insertManyIfNotExist = function (filter, callback) {
+	const _this = this;
+	_this.find(filter, (error, result) => {
+		return result ? callback(error, result) : _this.insertMany();
+	});
+};
 studentSchema.plugin(mongoosePaginate);
 studentSchema.plugin(mongooseAutoPopulate);
 module.exports = mongoose.model('Student', studentSchema);

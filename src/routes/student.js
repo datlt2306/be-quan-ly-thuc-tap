@@ -11,6 +11,7 @@ import {
 	updateStatusStudent,
 	updateStudent,
 	updateBusinessStudent,
+	importStudents,
 } from '../controllers/student';
 import { authorizeRoles, isAuthenticateUser } from '../middlewares/CheckAuth';
 import student from '../models/student';
@@ -24,7 +25,7 @@ router.get(
 	listStudentReviewCV
 );
 router.get('/student/:id', isAuthenticateUser, readOneStudent);
-router.post('/student', isAuthenticateUser, authorizeRoles([role.manager]), insertStudent);
+router.post('/student', isAuthenticateUser, authorizeRoles([role.manager]), importStudents);
 router.patch('/student', isAuthenticateUser, authorizeRoles([role.manager]), updateReviewerStudent);
 
 router.patch(

@@ -100,146 +100,6 @@ export const readOneStudent = async (req, res) => {
 	}
 };
 
-// [POST] /api/student
-export const insertStudent = async (req, res) => {
-	const { data, smester_id, campus_id } = req.body;
-	try {
-		const checkStudent = await StudentModel.find({}).limit(3);
-
-		if (checkStudent.length > 0) {
-			const listMSSV = await StudentModel.find({ smester_id, campus_id });
-			if (listMSSV.length === 0) {
-				await StudentModel.insertMany(data);
-			} else {
-				const listMS = [];
-				listMSSV.forEach((item) => {
-					listMS.push(item.mssv);
-				});
-				const listNew = [];
-				await data.forEach((item) => {
-					listNew.push(item.mssv);
-				});
-
-				await StudentModel.updateMany(
-					{ smester_id, campus_id },
-					{
-						$set: {
-							checkUpdate: false,
-							checkMulti: false,
-						},
-					},
-					{ multi: true }
-				);
-
-				await StudentModel.updateMany(
-					{
-						$and: [{ mssv: { $in: listNew } }, { smester_id, campus_id }],
-					},
-					{
-						$set: {
-							checkUpdate: true,
-							checkMulti: true,
-						},
-					},
-					{ multi: true }
-				);
-
-				await StudentModel.updateMany(
-					{ $and: [{ checkUpdate: false }, { smester_id, campus_id }] },
-					{
-						$set: {
-							statusCheck: 3,
-							checkUpdate: true,
-							checkMulti: true,
-						},
-					},
-					{ multi: true }
-				);
-
-				await StudentModel.insertMany(data);
-
-				await StudentModel.updateMany(
-					{
-						$and: [{ mssv: { $nin: listMS } }, { smester_id, campus_id }],
-					},
-					{
-						$set: {
-							checkMulti: true,
-						},
-					},
-					{ multi: true }
-				);
-
-				await StudentModel.deleteMany({
-					$and: [{ checkMulti: false }, { smester_id, campus_id }],
-				});
-			}
-
-			await StudentModel.find({ smester_id })
-				.populate('campus_id')
-				.populate('smester_id')
-				.populate('business')
-				.populate({ path: 'major' })
-				.limit(20)
-				.sort({ statusCheck: 1 })
-				.exec((err, doc) => {
-					if (err) {
-						throw err;
-					} else {
-						StudentModel.find({ smester_id, campus_id })
-							.countDocuments({})
-							.exec((count_error, count) => {
-								if (err) {
-									res.json(count_error);
-									return;
-								} else {
-									return res.status(200).json({
-										total: count,
-										list: doc,
-									});
-								}
-							});
-					}
-				});
-		} else {
-			await StudentModel.insertMany(req.body.data);
-			await StudentModel.find({ smester_id })
-				.populate('campus_id')
-				.populate('smester_id')
-				.populate('business')
-				.populate({ path: 'major' })
-				.limit(20)
-				.sort({ statusCheck: 1 })
-				.exec((err, doc) => {
-					if (err) {
-						res.status(400).json(err);
-					} else {
-						StudentModel.find({ smester_id, campus_id })
-							.countDocuments({})
-							.exec((count_error, count) => {
-								if (err) {
-									res.json(count_error);
-									return;
-								} else {
-									res.status(200).json({
-										total: count,
-										list: doc,
-									});
-									return;
-								}
-							});
-					}
-				});
-		}
-	} catch (error) {
-		return res.status(error.statusCode || 500).json({
-			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
-			error: error.error,
-		});
-	}
-};
-
 // [PATCH] /api/student (thêm người review cho student)
 export const updateReviewerStudent = async (req, res) => {
 	const { listIdStudent, email } = req.body;
@@ -624,6 +484,97 @@ export const listStudentReviewCV = async (req, res) => {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
 			message: error.message || 'Internal Server Error',
+		});
+	}
+};
+
+export const importStudents = async (req, res) => {
+	try {
+		const { data, smester_id, campus_id } = req.body;
+
+		// Lây ra danh sách sinh viên trong kỳ hiện tại
+		const instanceStudentsList = await StudentModel.find({
+			smester_id,
+			campus_id,
+		});
+
+		const isFirstStage = !instanceStudentsList.length;
+		const isSecondStage = instanceStudentsList.every((student) => student.updatedInStage === 1);
+		const isThirdStage = instanceStudentsList.every((student) => student.updatedInStage === 2);
+
+		const newStudent = data.filter(
+			(student) =>
+				!instanceStudentsList.some(
+					(std) => std.mssv.toUpperCase() === student.mssv.toUpperCase()
+				)
+		);
+
+		if (isFirstStage) {
+			console.log('\n >>>>>>>> Case stage 1 <<<<<<<<< \n');
+			const newStudentsInFirstStage = data.map((student) => ({
+				...student,
+				updatedInStage: 1,
+			}));
+			const newStudents = await StudentModel.insertMany(newStudentsInFirstStage);
+			return res.status(201).json(newStudents);
+		}
+
+		if (isSecondStage) {
+			console.log('\n >>>>>>>> Case stage 2 <<<<<<<<< \n');
+
+			// Danh sách sinh viên không đủ điều kiện trong đợt 2
+			const excludeStudentsInSecondStage = instanceStudentsList.filter(
+				(student) => !data.some((std) => std.mssv === student.mssv)
+			);
+			const resultOfUpdateAtStage2 = await Promise.all([
+				StudentModel.insertMany(newStudent),
+				StudentModel.updateMany(
+					{ _id: { $in: excludeStudentsInSecondStage } },
+					{ $set: { statusCheck: 3 } }
+				),
+				StudentModel.updateMany(
+					{
+						smester_id,
+						campus_id,
+					},
+					{ $set: { updatedInStage: 2 } },
+					{ multi: true, new: true }
+				),
+			]);
+
+			return res.status(201).json(resultOfUpdateAtStage2);
+		}
+
+		// Sinh viên không đủ điều kiện trong đợt 2 nhưng có trong đợt bổ sung
+		console.log('\n >>>>>>>> Case additional stage <<<<<<<<< \n');
+		const exclude_in_2nd_stage_and_include_in_3rd_stage = instanceStudentsList
+			.filter((student) => data.some((std) => std.mssv === student.mssv))
+			.filter((student) => student.statusCheck === 3);
+		console.log(
+			'\n Sinh viên không đủ đk trong đợt 2 nhưng có trong đợt 3: \n',
+			exclude_in_2nd_stage_and_include_in_3rd_stage
+		);
+		const resultOfUpdateAtStage3 = await Promise.all([
+			StudentModel.insertMany(newStudent),
+			StudentModel.updateMany(
+				{ _id: { $in: exclude_in_2nd_stage_and_include_in_3rd_stage } },
+				{ $set: { statusCheck: 10 } }
+			),
+			StudentModel.updateMany(
+				{
+					smester_id,
+					campus_id,
+				},
+				{ $set: { updatedInStage: 3 } },
+				{ multi: true, new: true }
+			),
+		]);
+		return res.status(201).json(resultOfUpdateAtStage3);
+	} catch (error) {
+		console.log(error.message);
+		return res.status(500).json({
+			message: error.message,
+			status: 500,
 		});
 	}
 };
