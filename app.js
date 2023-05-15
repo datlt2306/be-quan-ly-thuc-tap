@@ -1,13 +1,14 @@
+import compression from 'compression';
+import cors from 'cors';
 import express from 'express';
+import { readdirSync } from 'fs';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
-import cors from 'cors';
-import { readdirSync } from 'fs';
-import semester from './src/models/semester';
-require('dotenv').config();
-const swaggerUI = require('swagger-ui-express');
 import swaggerOptions from './src/config/swagger.config';
 import { jobScheduler } from './src/cronjobs';
+require('dotenv').config();
+const swaggerUI = require('swagger-ui-express');
+
 const app = express();
 // database
 mongoose.set('strictQuery', false);
@@ -15,7 +16,6 @@ mongoose
 	.connect(process.env.DATABASE)
 	.then(() => {
 		// cronjob
-		// if(process.env.NODE_ENV === 'production')
 		jobScheduler.init();
 		console.log('DB Connected');
 	})
@@ -24,6 +24,7 @@ mongoose
 app.use(morgan('tiny'));
 app.use(express.json({ limit: '50mb' }));
 app.use(cors());
+app.use(compression({ level: 6, threshold: 1 * 1024 })); // compress data if payload is too large
 // Route
 readdirSync('./src/routes').map((route) => app.use('/api', require(`./src/routes/${route}`)));
 
@@ -31,7 +32,6 @@ app.use(express.json());
 
 // swagger
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerOptions));
-
 app.use('*', (req, res) => {
 	res.redirect('/api-docs');
 });
