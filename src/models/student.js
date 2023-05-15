@@ -77,7 +77,7 @@ const studentSchema = mongoose.Schema(
 		},
 		campus_id: {
 			type: ObjectId,
-			ref: 'Cumpus',
+			ref: 'Campus',
 		},
 		business: {
 			type: ObjectId,

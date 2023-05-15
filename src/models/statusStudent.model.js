@@ -22,7 +22,7 @@ const StatusSchema = Schema(
 		campus: {
 			type: ObjectId,
 			require: true,
-			ref: 'Cumpus',
+			ref: 'Campus',
 		},
 	},
 	{

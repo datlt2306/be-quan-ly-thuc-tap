@@ -1,30 +1,20 @@
-import express from "express";
+import express from 'express';
 import {
-  createCumpus,
-  getCumpus,
-  getListCumpus,
-  removeCumpus,
-  updateCumpus,
-} from "../controllers/cumpus";
-import { authorizeRoles, isAuthenticateUser } from "../middlewares/CheckAuth";
-import { role } from "../utils/role";
+	createCampus,
+	getCampus,
+	getListCampus,
+	removeCampus,
+	updateCampus,
+} from '../controllers/campus';
+import { authorizeRoles, isAuthenticateUser } from '../middlewares/CheckAuth';
+import { role } from '../utils/role';
 
 const router = express.Router();
 
-router.get("/cumpus", getListCumpus);
-router.get("/cumpus/:id", getCumpus);
-router.post("/cumpus", isAuthenticateUser, authorizeRoles([role.dev]), createCumpus);
-router.patch(
-  "/cumpus/:id",
-  isAuthenticateUser,
-  authorizeRoles([role.dev]),
-  updateCumpus
-);
-router.delete(
-  "/cumpus/:id",
-  isAuthenticateUser,
-  authorizeRoles([role.dev]),
-  removeCumpus
-);
+router.get('/campus', getListCampus);
+router.get('/campus/:id', getCampus);
+router.post('/campus', isAuthenticateUser, authorizeRoles([role.dev]), createCampus);
+router.patch('/campus/:id', isAuthenticateUser, authorizeRoles([role.dev]), updateCampus);
+router.delete('/campus/:id', isAuthenticateUser, authorizeRoles([role.dev]), removeCampus);
 
 module.exports = router;
