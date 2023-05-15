@@ -13,7 +13,7 @@ const majorSchema = mongoose.Schema(
 		},
 		campus: {
 			type: ObjectId,
-			ref: 'Cumpus',
+			ref: 'Campus',
 		},
 		createdAt: {
 			type: Date,

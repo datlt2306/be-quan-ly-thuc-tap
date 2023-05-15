@@ -17,7 +17,7 @@ const NarrowSpecializationSchema = mongoose.Schema(
 		campus: {
 			type: String,
 			require: true,
-			ref: 'Cumpus',
+			ref: 'Campus',
 		},
 	},
 	{

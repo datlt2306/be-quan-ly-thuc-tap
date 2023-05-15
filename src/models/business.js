@@ -30,7 +30,7 @@ const businessSchema = mongoose.Schema({
 	},
 	campus_id: {
 		type: ObjectId,
-		ref: 'Cumpus',
+		ref: 'Campus',
 	},
 	tax_code: {
 		type: String,

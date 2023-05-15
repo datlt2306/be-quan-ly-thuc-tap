@@ -12,7 +12,7 @@ const managerSchema = mongoose.Schema({
 	},
 	campus_id: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'Cumpus',
+		ref: 'Campus',
 		require: true,
 	},
 	role: {
