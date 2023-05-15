@@ -492,7 +492,10 @@ export const listStudentReviewCV = async (req, res) => {
 export const importStudents = async (req, res) => {
 	try {
 		const { data, smester_id, campus_id } = req.body;
-
+		const { error, value: validatedStudentsList } = validateDataCreateStudentList(data);
+		if (error) {
+			throw createHttpError.BadRequest(error.message);
+		}
 		// Lây ra danh sách sinh viên trong kỳ hiện tại
 		const instanceStudentsList = await StudentModel.find({
 			smester_id,
@@ -503,19 +506,15 @@ export const importStudents = async (req, res) => {
 		const isSecondStage = instanceStudentsList.every((student) => student.updatedInStage === 1);
 		const isThirdStage = instanceStudentsList.every((student) => student.updatedInStage === 2);
 
-		const newStudent = data.filter(
+		const newStudent = validatedStudentsList.filter(
 			(student) =>
 				!instanceStudentsList.some(
 					(std) => std.mssv.toUpperCase() === student.mssv.toUpperCase()
 				)
 		);
-		const { error } = validateDataCreateStudentList(data);
-		if (error) {
-			throw createHttpError.BadRequest(error.message);
-		}
 		if (isFirstStage) {
 			console.log('\n >>>>>>>> Case stage 1 <<<<<<<<< \n');
-			const newStudentsInFirstStage = data.map((student) => ({
+			const newStudentsInFirstStage = validatedStudentsList.map((student) => ({
 				...student,
 				updatedInStage: 1,
 			}));
@@ -525,10 +524,9 @@ export const importStudents = async (req, res) => {
 
 		if (isSecondStage) {
 			console.log('\n >>>>>>>> Case stage 2 <<<<<<<<< \n');
-
 			// Danh sách sinh viên không đủ điều kiện trong đợt 2
 			const excludeStudentsInSecondStage = instanceStudentsList.filter(
-				(student) => !data.some((std) => std.mssv === student.mssv)
+				(student) => !validatedStudentsList.some((std) => std.mssv === student.mssv)
 			);
 			const resultOfUpdateAtStage2 = await Promise.all([
 				StudentModel.insertMany(newStudent),
@@ -552,7 +550,7 @@ export const importStudents = async (req, res) => {
 		// Sinh viên không đủ điều kiện trong đợt 2 nhưng có trong đợt bổ sung
 		console.log('\n >>>>>>>> Case additional stage <<<<<<<<< \n');
 		const exclude_in_2nd_stage_and_include_in_3rd_stage = instanceStudentsList
-			.filter((student) => data.some((std) => std.mssv === student.mssv))
+			.filter((student) => validatedStudentsList.some((std) => std.mssv === student.mssv))
 			.filter((student) => student.statusCheck === 3);
 		console.log(
 			'\n Sinh viên không đủ đk trong đợt 2 nhưng có trong đợt 3: \n',
@@ -575,6 +573,7 @@ export const importStudents = async (req, res) => {
 		]);
 		return res.status(201).json(resultOfUpdateAtStage3);
 	} catch (error) {
+		console.log(error);
 		return res.status(error.status || 500).json({
 			message: error.message,
 			status: error.status || 500,
