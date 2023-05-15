@@ -8,32 +8,58 @@ import {
 
 // get list
 export const getListManager = async (campus) => {
+	const options = {
+		page: 1,
+		limit: 1000,
+		populate: ['campus_id'],
+		customLabels: {
+			totalDocs: 'total',
+			docs: 'list',
+		},
+	};
+
 	try {
-		return await ManagerModel.find({
-			campus_id: campus,
-		});
+		return await ManagerModel.paginate(
+			{
+				campus_id: campus,
+			},
+			options
+		);
 	} catch (error) {
-		throw error;
+		throw new Error(error.message || 'Lỗi');
 	}
 };
 
 // get one
 export const getOneManager = async (id, campus) => {
+	const options = {
+		page: 1,
+		limit: 1,
+		populate: ['campus_id'],
+		customLabels: {
+			totalDocs: 'total',
+			docs: 'list',
+		},
+	};
+
 	try {
 		if (!mongoose.Types.ObjectId.isValid(id)) {
 			throw createHttpError(400, 'Id không phải type objectId');
 		}
 
-		const manager = await ManagerModel.findOne({
-			campus_id: campus,
-			_id: id,
-		});
+		const { list } = await ManagerModel.paginate(
+			{
+				campus_id: campus,
+				_id: id,
+			},
+			options
+		);
 
-		if (!manager) {
+		if (!list) {
 			throw createHttpError(404, 'Tài liệu không tồn tại');
 		}
 
-		return manager;
+		return list[0] || {};
 	} catch (error) {
 		throw error;
 	}
