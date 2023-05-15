@@ -12,23 +12,23 @@ export const insertBusiness = async (req, res) => {
 			throw createHttpError(400, 'Body data type không phải là array');
 		}
 
-		if (data.length === 0) throw createHttpError(204);
+		if (!data.length) throw createHttpError(204);
 
 		// lấy ra kỳ học hiện tại
 		const semester = await getCurrentSemester(campus);
 
 		// check xem doanh nghiệp đã tồn tại trong db chưa
 		const businessExists = [];
-		const codeRequestList = data.map((item) => item.code_request);
+		const businessCodeList = data.map((item) => item.business_code);
 		const businessExistDb = await BusinessModel.find({
-			code_request: { $in: codeRequestList },
+			business_code: { $in: businessCodeList },
 			campus_id: campus,
-		}).select('name code_request');
+		}).select('name business_code');
 
 		businessExistDb.forEach((item) => {
-			let check = codeRequestList.includes(item.code_request);
+			let check = businessCodeList.includes(item.business_code);
 			if (check) {
-				businessExists.push({ name: item.name, code_request: item.code_request });
+				businessExists.push({ name: item.name, business_code: item.business_code });
 			}
 		});
 
@@ -42,7 +42,7 @@ export const insertBusiness = async (req, res) => {
 		const dataCreate = data.map((item) => ({
 			...item,
 			campus_id: campus,
-			smester_id: semester._id,
+			semester_id: semester._id,
 		}));
 
 		const result = await BusinessModel.insertMany(dataCreate);
@@ -58,23 +58,24 @@ export const insertBusiness = async (req, res) => {
 
 // [GET] /api/business
 export const listBusiness = async (req, res) => {
-	const page = req.query.page || 1;
-	const limit = req.query.limit || 10;
-	const campus = req.campusManager || req.campusStudent;
+	const { page = 1, limit = 10, semester_id } = req.query;
+
 	try {
 		// lấy ra học kỳ hiện tại
-		const semester = await getCurrentSemester(campus);
+		const campus = req.campusManager || req.campusStudent;
+		let { _id: semester } = await getCurrentSemester(campus);
+		if (semester_id) semester = semester_id;
+
 		const result = await BusinessModel.paginate(
 			{
-				...req.query,
 				campus_id: campus,
-				smester_id: semester._id,
+				semester_id: semester,
 			},
 			{
 				page: Number(page),
 				limit: Number(limit),
-				sort: { createAt: 'desc' },
-				populate: ['majors', 'campus_id'],
+				sort: { created_at: 'desc' },
+				populate: ['major'],
 				customLabels: {
 					totalDocs: 'total',
 					docs: 'list',
@@ -101,7 +102,7 @@ export const removeBusiness = async (req, res) => {
 		const business = await BusinessModel.findOne({
 			_id: id,
 			campus_id: campus,
-			smester_id: semester._id,
+			semester_id: semester._id,
 		});
 
 		if (!business) {
@@ -112,7 +113,7 @@ export const removeBusiness = async (req, res) => {
 		const isStudentOfBusiness = await Student.findOne({
 			business: id,
 			campus_id: business.campus_id,
-			smester_id: business.smester_id,
+			semester_id: business.semester_id,
 		});
 
 		if (isStudentOfBusiness) {
@@ -133,7 +134,7 @@ export const removeBusiness = async (req, res) => {
 
 // [POST] /api/business/new
 export const createbusiness = async (req, res) => {
-	const { code_request } = req.body;
+	const { business_code } = req.body;
 	const data = req.body;
 	const campus = req.campusManager || req.campusStudent;
 	try {
@@ -142,7 +143,7 @@ export const createbusiness = async (req, res) => {
 
 		// check xem đã tồn tại chưa
 		const business = await BusinessModel.findOne({
-			code_request: code_request,
+			business_code: business_code,
 			campus_id: campus,
 		});
 
@@ -153,7 +154,7 @@ export const createbusiness = async (req, res) => {
 		const newBusiness = await new BusinessModel({
 			...data,
 			campus_id: campus,
-			smester_id: semester._id,
+			semester_id: semester._id,
 		}).save();
 
 		return res.status(201).json(newBusiness);
@@ -175,7 +176,7 @@ export const updateBusiness = async (req, res) => {
 
 		const business = await BusinessModel.findOne({
 			_id: id,
-			smester_id: semester._id,
+			semester_id: semester._id,
 			campus_id: campus,
 		});
 
@@ -243,7 +244,7 @@ export const updateMany = async (req, res) => {
 			{ _id: { $in: data } },
 			{
 				$set: {
-					smester_id: semester._id,
+					semester_id: semester._id,
 					status: 1,
 				},
 			},
