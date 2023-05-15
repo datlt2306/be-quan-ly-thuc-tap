@@ -6,6 +6,7 @@ import { getCurrentSemester } from './semesterController';
 import createHttpError from 'http-errors';
 import { checkStudentExist } from '../services/student.service';
 import * as studentServices from '../services/student.service';
+import { validateDataCreateStudentList } from '../validation/student.validation';
 
 const ObjectId = require('mongodb').ObjectID;
 
@@ -508,7 +509,10 @@ export const importStudents = async (req, res) => {
 					(std) => std.mssv.toUpperCase() === student.mssv.toUpperCase()
 				)
 		);
-
+		const { error } = validateDataCreateStudentList(data);
+		if (error) {
+			throw createHttpError.BadRequest(error.message);
+		}
 		if (isFirstStage) {
 			console.log('\n >>>>>>>> Case stage 1 <<<<<<<<< \n');
 			const newStudentsInFirstStage = data.map((student) => ({
@@ -571,10 +575,9 @@ export const importStudents = async (req, res) => {
 		]);
 		return res.status(201).json(resultOfUpdateAtStage3);
 	} catch (error) {
-		console.log(error.message);
-		return res.status(500).json({
+		return res.status(error.status || 500).json({
 			message: error.message,
-			status: 500,
+			status: error.status || 500,
 		});
 	}
 };
