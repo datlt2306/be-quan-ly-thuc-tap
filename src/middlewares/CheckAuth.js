@@ -15,13 +15,12 @@ export const isAuthenticateUser = async (req, res, next) => {
 		const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
 		const manager = await Manager.findOne({
 			_id: decoded.userId,
-			campus_id: decoded.campusId,
+			campus_id: decoded.campus_id,
 		});
 		const student = await Student.findOne({
 			_id: decoded.userId,
-			campus_id: decoded.campusId,
+			campus_id: decoded.campus_id,
 		});
-
 		if (manager) {
 			req.role = manager.role;
 			// xác nhận cơ sở của mannager

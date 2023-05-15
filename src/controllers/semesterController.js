@@ -17,10 +17,9 @@ export const getDefaultSemester = async (req, res) => {
 	try {
 		const { campus_id } = req.query;
 		const data = await semester.findOne({
-			$and: [{ start_time: { $lte: new Date() } }, { date_time: { $gte: new Date() } }],
+			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
 			campus_id,
 		});
-		console.log(data);
 		res.status(200).json({
 			result: data,
 			success: true,
