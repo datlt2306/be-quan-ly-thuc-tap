@@ -512,7 +512,7 @@ definitions:
             campus_id:
                 type: 'integer'
                 description: 'Mã cơ sở, mã này được nối với bảng campus(cumpus)'
-            code_request:
+            business_code:
                 type: 'string'
                 description: 'Yêu cầu của vị trí thực tập'
             description:

@@ -46,7 +46,7 @@ paths:
                                                 '_id': '640abf214ed73d86530a6018',
                                                 'name': 'fgdfgf',
                                                 'internshipPosition': 'dfgdfg',
-                                                'majors':
+                                                'major':
                                                     {
                                                         '_id': '640abe8d4ed73d86530a5ee7',
                                                         'name': 'asdsa',
@@ -64,8 +64,8 @@ paths:
                                                         'createdAt': '2023-02-17T03:40:06.247Z',
                                                         '__v': 0,
                                                     },
-                                                'code_request': 'dgsgfd12',
-                                                'request': 'dfgdfg',
+                                                'business_code': 'dgsgfd12',
+                                                'requirement': 'dfgdfg',
                                                 'description': 'dfgfd',
                                                 'status': 1,
                                                 'createAt': '2023-03-10T05:24:49.081Z',
@@ -102,7 +102,7 @@ paths:
                                     type: string
                                     required: true
                                     description: 'Vị trí cần tuyển'
-                                majors:
+                                major:
                                     type: ObjectId
                                     required: true
                                     description: 'Chuyên ngành cần tuyển'
@@ -113,18 +113,18 @@ paths:
                                 address:
                                     type: string
                                     description: 'Địa chỉ công ty'
-                                code_request:
+                                business_code:
                                     type: string
                                     unique: true
                                     required: true
                                     description: 'Mã doanh nghiệp'
-                                request:
+                                requirement:
                                     type: string
                                     description: 'Yêu cầu vị trí của doanh nghiệp'
                                 description:
                                     type: string
                                     description: 'Mô tả công việc'
-                                benefish:
+                                benefit:
                                     type: string
                                     description: 'Quyền lợi khi làm tại doanh nghiệp'
 
@@ -133,13 +133,13 @@ paths:
                                 address: 'aaaaaaaaaaaaaaaa',
                                 amount: 10,
                                 campus_id: '63eef716c9ef6d077f1f1deb',
-                                code_request: '12334',
+                                business_code: '12334',
                                 description: '1111111111111',
                                 internshipPosition: 'Front end',
-                                majors: '640abe8d4ed73d86530a5ee7',
+                                major: '640abe8d4ed73d86530a5ee7',
                                 name: 'test tên doanh nghiệp',
-                                request: '1111111111',
-                                benefish: '111111111',
+                                requirement: '1111111111',
+                                benefit: '111111111',
                             }
 
             responses:
@@ -157,13 +157,13 @@ paths:
                                         '_id': '640abf214ed73d86530a6018',
                                         'name': 'fgdfgf',
                                         'internshipPosition': 'dfgdfg',
-                                        'majors': '640abe8d4ed73d86530a5ee7',
+                                        'major': '640abe8d4ed73d86530a5ee7',
                                         'amount': 13,
                                         'address': 'gdgdfg',
                                         'smester_id': '640abe7e4ed73d86530a5ed3',
                                         'campus_id': '63eef716c9ef6d077f1f1deb',
-                                        'code_request': 'dgsgfd',
-                                        'request': 'dfgdfg',
+                                        'business_code': 'dgsgfd',
+                                        'requirement': 'dfgdfg',
                                         'description': 'dfgfd',
                                         'status': 1,
                                         'createAt': '2023-03-10T05:24:49.081Z',
@@ -192,7 +192,7 @@ paths:
                                 {
                                     statusCode: 409,
                                     message: 'Doanh nghiệp đã tồn tại (có thể ở kỳ trước)',
-                                    error: [{ name: 'Doanh nghiệp A', code_request: '12345' }],
+                                    error: [{ name: 'Doanh nghiệp A', business_code: '12345' }],
                                 }
 
         patch:
@@ -257,13 +257,13 @@ paths:
                                     '_id': '640abf214ed73d86530a6018',
                                     'name': 'fgdfgf',
                                     'internshipPosition': 'dfgdfg',
-                                    'majors': '640abe8d4ed73d86530a5ee7',
+                                    'major': '640abe8d4ed73d86530a5ee7',
                                     'amount': 13,
                                     'address': 'gdgdfg',
                                     'smester_id': '640abe7e4ed73d86530a5ed3',
                                     'campus_id': '63eef716c9ef6d077f1f1deb',
-                                    'code_request': 'dgsgfd12',
-                                    'request': 'dfgdfg',
+                                    'business_code': 'dgsgfd12',
+                                    'requirement': 'dfgdfg',
                                     'description': 'dfgfd',
                                     'status': 1,
                                     'createAt': '2023-03-10T05:24:49.081Z',
@@ -296,13 +296,13 @@ paths:
                                     '_id': '640abf214ed73d86530a6018',
                                     'name': 'fgdfgf',
                                     'internshipPosition': 'dfgdfg',
-                                    'majors': '640abe8d4ed73d86530a5ee7',
+                                    'major': '640abe8d4ed73d86530a5ee7',
                                     'amount': 13,
                                     'address': 'gdgdfg',
                                     'smester_id': '640abe7e4ed73d86530a5ed3',
                                     'campus_id': '63eef716c9ef6d077f1f1deb',
-                                    'code_request': 'dgsgfd12',
-                                    'request': 'dfgdfg',
+                                    'business_code': 'dgsgfd12',
+                                    'requirement': 'dfgdfg',
                                     'description': 'dfgfd',
                                     'status': 1,
                                     'createAt': '2023-03-10T05:24:49.081Z',
@@ -346,7 +346,7 @@ paths:
                                 internshipPosition:
                                     type: string
                                     description: 'Vị trí cần tuyển'
-                                majors:
+                                major:
                                     type: ObjectId
                                     description: 'Chuyên ngành cần tuyển'
                                 amount:
@@ -355,16 +355,16 @@ paths:
                                 address:
                                     type: string
                                     description: 'Địa chỉ công ty'
-                                code_request:
+                                business_code:
                                     type: string
                                     description: 'Mã doanh nghiệp'
-                                request:
+                                requirement:
                                     type: string
                                     description: 'Yêu cầu vị trí của doanh nghiệp'
                                 description:
                                     type: string
                                     description: 'Mô tả công việc'
-                                benefish:
+                                benefit:
                                     type: string
                                     description: 'Quyền lợi khi làm tại doanh nghiệp'
                         example: { name: 'Sửa lại name' }
@@ -405,7 +405,7 @@ paths:
                                 internshipPosition:
                                     type: string
                                     description: 'Vị trí cần tuyển'
-                                majors:
+                                major:
                                     type: ObjectId
                                     description: 'Chuyên ngành cần tuyển'
                                 amount:
@@ -414,16 +414,16 @@ paths:
                                 address:
                                     type: string
                                     description: 'Địa chỉ công ty'
-                                code_request:
+                                business_code:
                                     type: string
                                     description: 'Mã doanh nghiệp'
-                                request:
+                                requirement:
                                     type: string
                                     description: 'Yêu cầu vị trí của doanh nghiệp'
                                 description:
                                     type: string
                                     description: 'Mô tả công việc'
-                                benefish:
+                                benefit:
                                     type: string
                                     description: 'Quyền lợi khi làm tại doanh nghiệp'
                         example:
@@ -431,13 +431,13 @@ paths:
                                 address: 'aaaaaaaaaaaaaaaa',
                                 amount: 10,
                                 campus_id: '63eef716c9ef6d077f1f1deb',
-                                code_request: '12334',
+                                business_code: '12334',
                                 description: '1111111111111',
                                 internshipPosition: 'Front end',
-                                majors: '640abe8d4ed73d86530a5ee7',
+                                major: '640abe8d4ed73d86530a5ee7',
                                 name: 'test tên doanh nghiệp',
-                                request: '1111111111',
-                                benefish: '111111111',
+                                requirement: '1111111111',
+                                benefit: '111111111',
                             }
 
             responses:
@@ -452,13 +452,13 @@ paths:
                                     '_id': '640abf214ed73d86530a6018',
                                     'name': 'fgdfgf',
                                     'internshipPosition': 'dfgdfg',
-                                    'majors': '640abe8d4ed73d86530a5ee7',
+                                    'major': '640abe8d4ed73d86530a5ee7',
                                     'amount': 13,
                                     'address': 'gdgdfg',
                                     'smester_id': '640abe7e4ed73d86530a5ed3',
                                     'campus_id': '63eef716c9ef6d077f1f1deb',
-                                    'code_request': 'dgsgfd12',
-                                    'request': 'dfgdfg',
+                                    'business_code': 'dgsgfd12',
+                                    'requirement': 'dfgdfg',
                                     'description': 'dfgfd',
                                     'status': 1,
                                     'createAt': '2023-03-10T05:24:49.081Z',

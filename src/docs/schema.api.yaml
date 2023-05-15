@@ -58,18 +58,18 @@ components:
                 campus_id:
                     type: objectId
                     description: 'Cơ sở, mặc định lấy cơ sở của manager'
-                code_request:
+                business_code:
                     type: string
                     unique: true
                     required: true
                     description: 'Mã doanh nghiệp'
-                request:
+                requirement:
                     type: string
                     description: 'Yêu cầu vị trí của doanh nghiệp'
                 description:
                     type: string
                     description: 'Mô tả công việc'
-                benefish:
+                benefit:
                     type: string
                     description: 'Quyền lợi khi làm tại doanh nghiệp'
                 status:

@@ -1,20 +1,21 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
+
 const { ObjectId } = mongoose.Schema;
 const businessSchema = mongoose.Schema({
 	name: {
 		type: String,
-		require: true,
+		required: true,
 		lowercase: true,
 	},
-	internshipPosition: {
+	internship_position: {
 		type: String,
-		require: true,
+		required: true,
 	},
-	majors: {
+	major: {
 		type: ObjectId,
 		ref: 'Major',
-		require: true,
+		required: true,
 	},
 	amount: {
 		type: Number,
@@ -23,7 +24,7 @@ const businessSchema = mongoose.Schema({
 	address: {
 		type: String,
 	},
-	smester_id: {
+	semester_id: {
 		type: ObjectId,
 		ref: 'Semester',
 	},
@@ -31,25 +32,29 @@ const businessSchema = mongoose.Schema({
 		type: ObjectId,
 		ref: 'Cumpus',
 	},
-	code_request: {
+	tax_code: {
+		type: String,
+		required: true,
+	},
+	business_code: {
 		type: String,
 		unique: true,
-		require: true,
+		required: true,
 	},
-	request: {
+	requirement: {
 		type: String,
 	},
 	description: {
 		type: String,
 	},
-	benefish: {
+	benefit: {
 		type: String,
 	},
 	status: {
 		type: Number,
 		default: 1,
 	},
-	createAt: {
+	created_at: {
 		type: Date,
 		default: Date.now,
 	},
