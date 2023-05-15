@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const paginate = require('mongoose-paginate-v2');
+
 const managerSchema = mongoose.Schema({
 	name: {
 		type: String,
@@ -22,5 +24,7 @@ const managerSchema = mongoose.Schema({
 		default: Date.now,
 	},
 });
+
+managerSchema.plugin(paginate);
 
 module.exports = mongoose.model('Manager', managerSchema);
