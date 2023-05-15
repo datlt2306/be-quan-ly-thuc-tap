@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-export default businessValidate = Joi.object({
+export const businessValidation = Joi.object({
 	name: Joi.string().required(),
 	internship_position: Joi.string().required(),
 	major: Joi.string().required(),
@@ -16,3 +16,5 @@ export default businessValidate = Joi.object({
 	status: Joi.number().default(1),
 	created_at: Joi.date().default(Date.now),
 });
+
+export const businessListValidation = Joi.array().items(businessValidation);

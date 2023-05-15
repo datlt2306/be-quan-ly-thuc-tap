@@ -2,6 +2,7 @@ import BusinessModel from '../models/business';
 import Student from '../models/student';
 import { getCurrentSemester } from './semesterController';
 import createHttpError from 'http-errors';
+import { businessListValidation, businessValidation } from '../validation/business.validation';
 
 // [POST] /api/business
 export const insertBusiness = async (req, res) => {
@@ -12,6 +13,9 @@ export const insertBusiness = async (req, res) => {
 			throw createHttpError(400, 'Body data type không phải là array');
 		}
 
+		const { error } = businessListValidation.validate(data);
+
+		if (error) throw createHttpError(400, { error: error.details[0].message });
 		if (!data.length) throw createHttpError(204);
 
 		// lấy ra kỳ học hiện tại
@@ -27,9 +31,8 @@ export const insertBusiness = async (req, res) => {
 
 		businessExistDb.forEach((item) => {
 			let check = businessCodeList.includes(item.business_code);
-			if (check) {
-				businessExists.push({ name: item.name, business_code: item.business_code });
-			}
+			if (!check) return;
+			businessExists.push({ name: item.name, business_code: item.business_code });
 		});
 
 		if (businessExists.length > 0) {
@@ -140,16 +143,15 @@ export const createbusiness = async (req, res) => {
 	try {
 		// lấy ra học kỳ hiện tại
 		const semester = await getCurrentSemester(campus);
-
+		const { error } = businessValidation.validate(data);
 		// check xem đã tồn tại chưa
 		const business = await BusinessModel.findOne({
 			business_code: business_code,
 			campus_id: campus,
 		});
 
-		if (business) {
-			throw createHttpError(409, 'Doanh nghiệp đã tồn tại');
-		}
+		if (business) throw createHttpError(409, 'Doanh nghiệp đã tồn tại');
+		if (error) throw createHttpError(400, { error: error.details[0].message });
 
 		const newBusiness = await new BusinessModel({
 			...data,
@@ -173,7 +175,10 @@ export const updateBusiness = async (req, res) => {
 	const campus = req.campusManager || req.campusStudent;
 	try {
 		const semester = await getCurrentSemester(campus);
-
+		const { error } = businessValidation.validate(data);
+		console.log('before');
+		if (error) throw createHttpError(400, { error: error.details[0].message });
+		console.log('after');
 		const business = await BusinessModel.findOne({
 			_id: id,
 			semester_id: semester._id,
