@@ -19,10 +19,10 @@ const authClient = new google.auth.JWT(
 	['https://www.googleapis.com/auth/spreadsheets']
 );
 
-const semester = require('../models/semester');
-const business = require('../models/business');
-const major = require('../models/major');
-const campus = require('../models/campus');
+const semester = require('../api/models/semester');
+const business = require('../api/models/business');
+const major = require('../api/models/major');
+const campus = require('../api/models/campus');
 const task = cron.schedule(
 	'10 * * * * *',
 	async () => {

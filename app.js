@@ -26,7 +26,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(cors());
 app.use(compression({ level: 6, threshold: 1 * 1024 })); // compress data if payload is too large
 // Route
-readdirSync('./src/routes').map((route) => app.use('/api', require(`./src/routes/${route}`)));
+readdirSync('./src/api/routes').map((route) => app.use('/api', require(`./src/api/routes/${route}`)));
 
 app.use(express.json());
 
