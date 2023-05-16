@@ -1,5 +1,5 @@
 import moment from 'moment';
-import semester from '../models/semester';
+import semester from '../api/models/semester.model';
 
 //* Tạo kỳ học mới mỗi năm
 export default {

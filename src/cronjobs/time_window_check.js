@@ -1,4 +1,4 @@
-import configTime from '../models/configTime';
+import configTime from '../api/models/configTime.model';
 import moment from 'moment';
 
 //* Xoá configtime đã hết hạn, chạy mỗi 12 tiếng một ngày
