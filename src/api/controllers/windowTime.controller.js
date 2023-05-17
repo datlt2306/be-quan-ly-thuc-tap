@@ -1,5 +1,5 @@
-import * as configTimeServices from '../services/configTime.service'
-import ConfigTime from "../models/configTime.model"
+import * as configTimeServices from '../services/configTime.service';
+import ConfigTime from '../models/configTime.model';
 import { getCurrentSemester } from './semester.controller';
 import { validateConfigTimeCreateData } from '../validation/configTime.validation';
 // [POST] /api/settime
@@ -42,7 +42,7 @@ export const getListTypeSetTime = async (req, res) => {
 
 export const getOneTypeSetTime = async (req, res) => {
 	try {
-		const { typeNumber } = req.params;
+		const { typeNumber } = req.query;
 		const campus = req.campusManager;
 		const semester = await getCurrentSemester(campus);
 
