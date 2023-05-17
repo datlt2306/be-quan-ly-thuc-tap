@@ -43,7 +43,7 @@ export const getListTypeSetTime = async (req, res) => {
 export const getOneTypeSetTime = async (req, res) => {
 	try {
 		const { typeNumber } = req.query;
-		const campus = req.campusManager;
+		const campus = req.campusManager || req.campusStudent;
 		const semester = await getCurrentSemester(campus);
 
 		if (!campus) throw new Error('Campus not found');
