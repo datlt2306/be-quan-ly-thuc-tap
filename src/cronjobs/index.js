@@ -1,8 +1,7 @@
 import cron from 'node-cron';
 import time_window_check from './time_window_check';
-import generate_semester from './generate_semester';
 
-const jobs = [time_window_check, generate_semester];
+const jobs = [time_window_check];
 
 //Cron jobs handler
 class Scheduler {
