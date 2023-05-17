@@ -6,8 +6,6 @@ export const AllowedMimeType = [
 	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 	'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 	'application/pdf',
-	'application/zip',
-	'application/vnd.rar',
 	'image/png',
 	'image/jpeg',
 ];
