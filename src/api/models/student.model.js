@@ -53,8 +53,8 @@ const studentSchema = mongoose.Schema(
 		},
 		statusStudent: {
 			type: String,
-			enum: ['Học đi', 'Học lại'],
-			default: 'Học đi',
+			enum: ["HDI","HL","CHO","TN"],
+			uppercase:true
 		},
 		support: {
 			type: Number,
