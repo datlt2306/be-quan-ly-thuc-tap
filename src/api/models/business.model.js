@@ -39,7 +39,6 @@ const businessSchema = mongoose.Schema({
 	},
 	business_code: {
 		type: String,
-		unique: true,
 		required: true,
 	},
 	requirement: {
