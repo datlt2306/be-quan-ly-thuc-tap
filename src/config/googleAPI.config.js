@@ -8,11 +8,9 @@ const authClient = new google.auth.JWT(
 	['https://www.googleapis.com/auth/drive']
 );
 
-// Authorize the client
-(async () => {
-	const { token } = authClient.authorize();
-	authClient.setCredentials(token);
-})();
+const { token } = authClient.authorize();
+
+authClient.setCredentials(token);
 
 export const drive = google.drive({
 	version: 'v3',
