@@ -8,7 +8,6 @@ const studentSchema = mongoose.Schema(
 			require: true,
 			type: String,
 			uppercase: true,
-			unique: true,
 		},
 		name: {
 			type: String,
@@ -33,7 +32,6 @@ const studentSchema = mongoose.Schema(
 		email: {
 			type: String,
 			require: true,
-			unique: true,
 		},
 		checkUpdate: {
 			type: Boolean,
