@@ -38,7 +38,6 @@ const generateEmail = (name, email, type) => {
 export const signUpCVForSupport = async (req, res) => {
 	const { support, _id, phoneNumber, address, dream, majorCode } = req.body;
 	try {
-		const [file] = await req.files;
 		const findStudent = await Student.findById(_id).exec();
 
 		if (!findStudent) {
@@ -46,14 +45,14 @@ export const signUpCVForSupport = async (req, res) => {
 				message: 'Thông tin của bạn không tồn tại trên hệ thống!',
 			});
 		}
-		if (findStudent.statusCheck === 0 || findStudent.statusCheck === 11) {
+		if (findStudent.statusCheck == 0 || findStudent.statusCheck == 11) {
 			return res.status(500).send({
 				message: 'Thông tin CV của bạn đã được đăng ký',
 			});
 		}
 
 		if (
-			(findStudent.numberOfTime > 2 && findStudent.statusCheck === 1) ||
+			(findStudent.numberOfTime > 2 && findStudent.statusCheck == 1) ||
 			(findStudent.numberOfTime > 2 && findStudent.statusCheck <= 3)
 		) {
 			return res.status(500).send({
@@ -71,9 +70,10 @@ export const signUpCVForSupport = async (req, res) => {
 		};
 
 		// Lấy request body & validate
-		if (support === 1) {
+		if (support == 1) {
 			// Cho SV đăng ký hỗ trợ
 			const { business } = req.body;
+			const [file] = await req.files;
 			const uploadedFile = await uploadFile(file); // Upload & Get URL
 
 			const requestSupportUpdate = {
@@ -123,7 +123,7 @@ export const signUpCVForSupport = async (req, res) => {
 
 		let message, emailType;
 
-		if (findStudent.statusCheck === 1) {
+		if (findStudent.statusCheck == 1) {
 			message = 'Sửa thông tin CV thành công!';
 			emailType = support ? 'internshipSupportUpdated' : 'selfInternshipUpdated';
 		} else {
