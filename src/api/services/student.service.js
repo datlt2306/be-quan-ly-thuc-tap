@@ -1,15 +1,14 @@
 import createHttpError from 'http-errors';
-require('dotenv').config();
+import { replaceContentMail } from '../../utils/toolkit';
+import { transporter } from '../controllers/email.controller';
 import { getCurrentSemester } from '../controllers/semester.controller';
 import StudentModel from '../models/student.model';
-import MajorModel from '../models/major.model';
 import {
-	validateDataCreateStudentList,
-	validateUpdateStatus,
+	validateUpdateStatus
 } from '../validation/student.validation';
 import { selectOneStatus } from './statusStudent.service';
-import { transporter } from '../controllers/email.controller';
-import { replaceContentMail } from '../../utils/toolkit';
+import { StudentStatusEnum } from '../constants/studentStatus';
+require('dotenv').config();
 const apiKey = 'cc126cffe46824f121e00226099067e3-us21';
 
 // check xem học sinh có tồn tại ở cơ sở và kỳ hiện tại không
@@ -35,109 +34,105 @@ export const checkStudentExist = async (id, campus) => {
 };
 
 // thêm sinh viên thực tập thực tập
-export const createListStudent = async (data, campus) => {
+export const createListStudent = async ({semesterId, campusId , data}) => {
 	try {
-		if (!Array.isArray(data)) throw createHttpError(400, 'Body data type phải là array');
-		if (data.length === 0) throw createHttpError(204);
-
-		// validate list data
-		const { error } = validateDataCreateStudentList(data);
-
-		if (error) {
-			throw createHttpError(400, error.message);
-		}
-
-		const { _id: semesterId } = await getCurrentSemester(campus);
-
-		// bảng chứa các mã ngành của data gửi lên
-		const majorCodeReqBodyData = [];
-		// bảng chứa mssv của data gửi lên
-		const mssvReqBodyData = [];
-
-		data.forEach((student, index) => {
-			if (!majorCodeReqBodyData.includes(student.majorCode)) {
-				majorCodeReqBodyData.push(student.majorCode);
-			}
-
-			// thêm campus và semester cho student
-			data[index] = {
-				...student,
-				smester_id: semesterId,
-				campus_id: campus,
-			};
-
-			mssvReqBodyData.push(student.mssv);
-		});
-
-		// kiểm tra các ngành gửi lên có tồn tại không
-		const majorNotExists = [];
-		const majorExists = await MajorModel.find({
-			campus: campus,
-			majorCode: { $in: majorCodeReqBodyData },
-		})
-			.select('majorCode')
-			.lean();
-		const majorCodeExists = majorExists.map((major) => major.majorCode);
-
-		if (majorCodeExists.length !== majorCodeReqBodyData.length) {
-			majorCodeReqBodyData.forEach((item) => {
-				if (!majorCodeExists.includes(item)) {
-					majorNotExists.push(item);
-				}
-			});
-
-			throw createHttpError(404, 'Chuyên ngành không tồn tại', { error: majorNotExists });
-		}
-
-		// thay thế majorCode bằng majorId
-		data.forEach((student, index) => {
-			let { _id: majorId } = majorExists.find((item) => item.majorCode === student.majorCode);
-			delete data[index].majorCode;
-			data[index] = {
-				...student,
-				majors: majorId,
-			};
-		});
-
-		// kiểm tra kỳ hiện tại đã nhập sinh viên chưa
-		const checkStudentCurrSemester = await StudentModel.findOne({
+		// Lây ra danh sách sinh viên trong kỳ hiện tại
+		const instanceStudentsList = await StudentModel.find({
 			smester_id: semesterId,
-			campus_id: campus,
-		})
-			.select('mssv')
-			.lean();
+			campus_id: campusId,
+		});
+		const isFirstStage = !instanceStudentsList.length;
+		const isSecondStage = instanceStudentsList.every((student) => student.updatedInStage === 1);
 
-		let countStudentCreate = null;
-		if (Boolean(checkStudentCurrSemester)) {
-			// Đã nhập rồi
-			// lấy ra các sinh viên đã tồn tại
-			const studentExists = await StudentModel.find({
-				mssv: { $in: mssvReqBodyData },
-				smester_id: semesterId,
-				campus_id: campus,
-			})
-				.select('mssv')
-				.lean();
-			const mssvStudentExists = studentExists.map((item) => item.mssv.toLowerCase());
-			// các sinh viên được thêm vào
-			let studentCreate = data.filter((student) => {
-				return !mssvStudentExists.includes(student.mssv.toLowerCase());
+		const newStudents = data.filter(
+			(student) =>
+				!instanceStudentsList.some(
+					(std) => std.mssv.toUpperCase() === student.mssv.toUpperCase()
+				)
+		);
+
+		if (isFirstStage) {
+			// Sinh viên không đủ điều kiện từ các kỳ trước đến nay
+			const notQualifiedStudentForAllTime = await StudentModel.find({
+				campus_id: campusId,
+				statusCheck: { $in: [3, 12] },
 			});
 
-			// create
-			await StudentModel.insertMany(studentCreate);
-			countStudentCreate = studentCreate.length;
-		} else {
-			// Chưa nhập
-			await StudentModel.insertMany(data);
-			countStudentCreate = data.length;
+			// Các sinh viên không đủ điều kiện từ kỳ trước nay có trong danh sách dự kiến ở kỳ hiện tại
+			const qualifiedStudents = notQualifiedStudentForAllTime.filter((student) =>
+				newStudents.some((std) => std.mssv === student.mssv)
+			);
+
+			// Các sinh viên mới ngoại trừ sinh viên đã trượt từ các kỳ trước nay đã có trong danh sách
+			const newStudentsInFirstStage = newStudents
+				.map((student) => ({
+					...student,
+					updatedInStage: 1,
+				}))
+				.filter(
+					(student) =>
+						!qualifiedStudents.some(
+							(std) => std.mssv.toUpperCase() === student.mssv.toUpperCase()
+						)
+				);
+
+			const newExpectedStudents = await Promise.all([
+				StudentModel.insertMany(newStudentsInFirstStage),
+				StudentModel.updateMany(
+					{ _id: { $in: qualifiedStudents } },
+					{ $set: { smester_id: semesterId, updatedInStage: 1, statusCheck: 10 } },
+					{ new: true, multi: true }
+				),
+			]);
+
+			return newExpectedStudents;
 		}
 
-		return {
-			message: `${countStudentCreate} sinh viên đã được thêm vào hệ thống, ${
-				data.length - countStudentCreate
-			} sinh viên đã tồn tại`,
-		};
+		if (isSecondStage) {
+			// Danh sách sinh viên không đủ điều kiện trong đợt 2
+			const excludeStudentsInSecondStage = instanceStudentsList.filter(
+				(student) => !data.some((std) => std.mssv === student.mssv)
+			);
+			const resultOfUpdateAtStage2 = await Promise.all([
+				StudentModel.insertMany(newStudents),
+				StudentModel.updateMany(
+					{ _id: { $in: excludeStudentsInSecondStage } },
+					{ $set: { statusCheck: 3 } }
+				),
+				StudentModel.updateMany(
+					{
+						smester_id: semesterId,
+						campus_id: campusId,
+					},
+					{ $set: { updatedInStage: 2 } },
+					{ multi: true, new: true }
+				),
+			]);
+
+			return resultOfUpdateAtStage2;
+		}
+
+		// Sinh viên không đủ điều kiện trong đợt 2 nhưng có trong đợt bổ sung
+		const exclude_in_2nd_stage_and_include_in_additional_stage = instanceStudentsList
+			.filter((student) => data.some((std) => std.mssv === student.mssv))
+			.filter((student) => student.statusCheck === 3);
+
+		const resultOfUpdateAtAdditionalStage = await Promise.all([
+			StudentModel.insertMany(newStudents),
+			StudentModel.updateMany(
+				{ _id: { $in: exclude_in_2nd_stage_and_include_in_additional_stage } },
+				{ $set: { statusCheck: 10 } }
+			),
+			StudentModel.updateMany(
+				{
+					smester_id: semesterId,
+					campus_id: campusId,
+				},
+				{ $set: { updatedInStage: 3 } },
+				{ multi: true, new: true }
+			),
+		]);
+		return resultOfUpdateAtAdditionalStage;
 	} catch (error) {
 		throw error;
 	}
