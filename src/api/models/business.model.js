@@ -35,6 +35,7 @@ const businessSchema = mongoose.Schema({
 	tax_code: {
 		type: String,
 		required: true,
+		unique: true,
 	},
 	business_code: {
 		type: String,
