@@ -4,7 +4,7 @@ const sharedSchema = {
 	phoneNumber: Joi.string().required(),
 	address: Joi.string().required(),
 	dream: Joi.string().required(),
-	narrow: Joi.string().required(),
+	majorCode: Joi.string().required(),
 	email: Joi.string().email().required(),
 	statusCheck: Joi.number(),
 	support: Joi.number().optional(),

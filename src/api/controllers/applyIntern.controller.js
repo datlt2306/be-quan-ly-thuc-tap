@@ -20,7 +20,7 @@ const generateEmail = (name, email, type) => {
  * - dream (string): applicant's desired position
  * - CV (file): applicant's CV file
  * - phoneNumber: applicant's phone number
- * - narrow (string): narrow of applicant's dream
+ * - majorCode (string):  applicant's major ID
  * - support: support type
  *
  * COMPANY INFO
@@ -36,7 +36,7 @@ const generateEmail = (name, email, type) => {
  */
 
 export const signUpCVForSupport = async (req, res) => {
-	const { support, _id, phoneNumber, address, dream, narrow } = req.body;
+	const { support, _id, phoneNumber, address, dream, majorCode } = req.body;
 	try {
 		const [file] = await req.files;
 		const findStudent = await Student.findById(_id).exec();
@@ -61,12 +61,11 @@ export const signUpCVForSupport = async (req, res) => {
 			});
 		}
 
-		//! UPDATE PATCH DATA HERE
 		let update = {
 			phoneNumber,
 			address,
 			dream,
-			narrow,
+			majorCode,
 			support,
 			email: findStudent.email,
 		};
@@ -100,7 +99,6 @@ export const signUpCVForSupport = async (req, res) => {
 			} = req.body;
 
 			const selfFindUpdate = {
-				narrow,
 				position,
 				addressCompany,
 				taxCode,
