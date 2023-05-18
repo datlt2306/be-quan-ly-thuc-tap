@@ -6,6 +6,9 @@ import { getCurrentSemester } from './semester.controller';
 import createHttpError from 'http-errors';
 import { checkStudentExist } from '../services/student.service';
 import { validateDataCreateStudentList } from '../validation/student.validation';
+import { StudentStatusEnum } from '../constants/studentStatus';
+import * as StudentService from '../services/student.service'
+
 
 const ObjectId = require('mongodb').ObjectID;
 
@@ -495,82 +498,8 @@ export const importStudents = async (req, res) => {
 		if (error) {
 			throw createHttpError.BadRequest(error.message);
 		}
-		// Lây ra danh sách sinh viên trong kỳ hiện tại
-		const instanceStudentsList = await StudentModel.find({
-			smester_id,
-			campus_id,
-		});
-
-		const isFirstStage = !instanceStudentsList.length;
-		const isSecondStage = instanceStudentsList.every((student) => student.updatedInStage === 1);
-		const isThirdStage = instanceStudentsList.every((student) => student.updatedInStage === 2);
-
-		const newStudent = validatedStudentsList.filter(
-			(student) =>
-				!instanceStudentsList.some(
-					(std) => std.mssv.toUpperCase() === student.mssv.toUpperCase()
-				)
-		);
-		if (isFirstStage) {
-			console.log('\n >>>>>>>> Case stage 1 <<<<<<<<< \n');
-			const newStudentsInFirstStage = validatedStudentsList.map((student) => ({
-				...student,
-				updatedInStage: 1,
-			}));
-			const newStudents = await StudentModel.insertMany(newStudentsInFirstStage);
-			return res.status(201).json(newStudents);
-		}
-
-		if (isSecondStage) {
-			console.log('\n >>>>>>>> Case stage 2 <<<<<<<<< \n');
-			// Danh sách sinh viên không đủ điều kiện trong đợt 2
-			const excludeStudentsInSecondStage = instanceStudentsList.filter(
-				(student) => !validatedStudentsList.some((std) => std.mssv === student.mssv)
-			);
-			const resultOfUpdateAtStage2 = await Promise.all([
-				StudentModel.insertMany(newStudent),
-				StudentModel.updateMany(
-					{ _id: { $in: excludeStudentsInSecondStage } },
-					{ $set: { statusCheck: 3 } }
-				),
-				StudentModel.updateMany(
-					{
-						smester_id,
-						campus_id,
-					},
-					{ $set: { updatedInStage: 2 } },
-					{ multi: true, new: true }
-				),
-			]);
-
-			return res.status(201).json(resultOfUpdateAtStage2);
-		}
-
-		// Sinh viên không đủ điều kiện trong đợt 2 nhưng có trong đợt bổ sung
-		console.log('\n >>>>>>>> Case additional stage <<<<<<<<< \n');
-		const exclude_in_2nd_stage_and_include_in_3rd_stage = instanceStudentsList
-			.filter((student) => validatedStudentsList.some((std) => std.mssv === student.mssv))
-			.filter((student) => student.statusCheck === 3);
-		console.log(
-			'\n Sinh viên không đủ đk trong đợt 2 nhưng có trong đợt 3: \n',
-			exclude_in_2nd_stage_and_include_in_3rd_stage
-		);
-		const resultOfUpdateAtStage3 = await Promise.all([
-			StudentModel.insertMany(newStudent),
-			StudentModel.updateMany(
-				{ _id: { $in: exclude_in_2nd_stage_and_include_in_3rd_stage } },
-				{ $set: { statusCheck: 10 } }
-			),
-			StudentModel.updateMany(
-				{
-					smester_id,
-					campus_id,
-				},
-				{ $set: { updatedInStage: 3 } },
-				{ multi: true, new: true }
-			),
-		]);
-		return res.status(201).json(resultOfUpdateAtStage3);
+		const importResult = await StudentService.createListStudent({semesterId:smester_id, campusId:campus_id, data:validatedStudentsList})
+	return res.status(201).json(importResult);
 	} catch (error) {
 		console.log(error);
 		return res.status(error.status || 500).json({

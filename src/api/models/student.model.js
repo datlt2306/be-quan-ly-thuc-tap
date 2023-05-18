@@ -8,7 +8,6 @@ const studentSchema = mongoose.Schema(
 			require: true,
 			type: String,
 			uppercase: true,
-			unique: true,
 		},
 		name: {
 			type: String,
@@ -34,14 +33,6 @@ const studentSchema = mongoose.Schema(
 			type: String,
 			require: true,
 			unique: true,
-		},
-		checkUpdate: {
-			type: Boolean,
-			default: true,
-		},
-		checkMulti: {
-			type: Boolean,
-			default: false,
 		},
 		supplement: {
 			type: String,
@@ -188,12 +179,7 @@ studentSchema.virtual('major', {
 	foreignField: 'majorCode',
 	ref: 'Major',
 });
-studentSchema.statics.insertManyIfNotExist = function (filter, callback) {
-	const _this = this;
-	_this.find(filter, (error, result) => {
-		return result ? callback(error, result) : _this.insertMany();
-	});
-};
+
 studentSchema.plugin(mongoosePaginate);
 studentSchema.plugin(mongooseAutoPopulate);
 module.exports = mongoose.model('Student', studentSchema);
