@@ -7,12 +7,6 @@ import multer from 'multer';
 const upload = multer();
 const router = express.Router();
 
-router.post(
-	'/drive/upload',
-	upload.any(),
-	isAuthenticateUser,
-	uploadFile
-);
+router.post('/drive/upload', upload.any(), isAuthenticateUser, uploadFile);
 
 module.exports = router;
-    

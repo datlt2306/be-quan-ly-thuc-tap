@@ -1,6 +1,7 @@
 import createHttpError from 'http-errors';
 import { PassThrough } from 'stream';
 import { drive } from '../../config/googleAPI.config';
+import { AllowedMimeType } from '../../utils/allowFileType';
 import 'dotenv/config';
 
 // Lấy & xử lý file
@@ -56,5 +57,28 @@ export const deleteFile = async (fileId) => {
 		return await drive.files.delete({ fileId });
 	} catch (error) {
 		return Promise.resolve(error); // ignore error after delete file on google drive successfully
+	}
+};
+
+export const uploadFile = async (file) => {
+	try {
+		if (!file) throw new Error('File must be provided!');
+		if (!AllowedMimeType.includes(file.mimetype))
+			throw new Error('File type is not allowed to upload!');
+
+		const uploadedFile = await processFile(file);
+		const newFile = {
+			url: process.env.DRIVE_URL + uploadedFile.data.id,
+			fileName: file.originalname,
+			mimeType: file.mimetype,
+		};
+
+		return newFile;
+	} catch (error) {
+		throw new Error(error.message);
+		// return res.status(error.status || 500).json({
+		// 	message: error.message,
+		// 	statusCode: error.status || 400,
+		// });
 	}
 };

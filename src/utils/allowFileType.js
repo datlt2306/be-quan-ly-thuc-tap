@@ -7,5 +7,5 @@ export const AllowedMimeType = [
 	'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 	'application/pdf',
 	'image/png',
-	'image/jpeg',
+	'image/jpg',
 ];
