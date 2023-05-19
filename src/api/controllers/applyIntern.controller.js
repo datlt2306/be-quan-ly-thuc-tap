@@ -74,7 +74,6 @@ export const signUpCVForSupport = async (req, res) => {
 			const [file] = req.files;
 			// Cho SV đăng ký hỗ trợ
 			const { business } = req.body;
-		  const [file] = await req.files;
 			const uploadedFile = await uploadFile(file); // Upload & Get URL
 
 			const requestSupportUpdate = {
