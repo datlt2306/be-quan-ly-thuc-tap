@@ -74,6 +74,7 @@ export const signUpCVForSupport = async (req, res) => {
 			const [file] = req.files;
 			// Cho SV đăng ký hỗ trợ
 			const { business } = req.body;
+		  const [file] = await req.files;
 			const uploadedFile = await uploadFile(file); // Upload & Get URL
 
 			const requestSupportUpdate = {
@@ -96,7 +97,6 @@ export const signUpCVForSupport = async (req, res) => {
 				nameCompany,
 				phoneNumberCompany,
 				emailEnterprise,
-				CV,
 			} = req.body;
 
 			const selfFindUpdate = {
@@ -106,7 +106,6 @@ export const signUpCVForSupport = async (req, res) => {
 				nameCompany,
 				phoneNumberCompany,
 				emailEnterprise,
-				CV,
 				statusCheck: 11,
 			};
 
