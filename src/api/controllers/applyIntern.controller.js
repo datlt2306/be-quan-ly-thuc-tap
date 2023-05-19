@@ -38,7 +38,7 @@ const generateEmail = (name, email, type) => {
 export const signUpCVForSupport = async (req, res) => {
 	const { support, _id, phoneNumber, address, dream, majorCode } = req.body;
 	try {
-		const findStudent = await Student.findById(_id).exec();
+		const findStudent = await Student.findById(_id);
 
 		if (!findStudent) {
 			return res.status(500).send({
@@ -96,6 +96,7 @@ export const signUpCVForSupport = async (req, res) => {
 				nameCompany,
 				phoneNumberCompany,
 				emailEnterprise,
+				CV,
 			} = req.body;
 
 			const selfFindUpdate = {
@@ -105,6 +106,7 @@ export const signUpCVForSupport = async (req, res) => {
 				nameCompany,
 				phoneNumberCompany,
 				emailEnterprise,
+				CV,
 				statusCheck: 11,
 			};
 
