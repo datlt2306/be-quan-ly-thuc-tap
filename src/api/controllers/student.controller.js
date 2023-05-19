@@ -7,8 +7,7 @@ import createHttpError from 'http-errors';
 import { checkStudentExist } from '../services/student.service';
 import { validateDataCreateStudentList } from '../validation/student.validation';
 import { StudentStatusEnum } from '../constants/studentStatus';
-import * as StudentService from '../services/student.service'
-
+import * as StudentService from '../services/student.service';
 
 const ObjectId = require('mongodb').ObjectID;
 
@@ -498,10 +497,13 @@ export const importStudents = async (req, res) => {
 		if (error) {
 			throw createHttpError.BadRequest(error.message);
 		}
-		const importResult = await StudentService.createListStudent({semesterId:smester_id, campusId:campus_id, data:validatedStudentsList})
-	return res.status(201).json(importResult);
+		const importResult = await StudentService.createListStudent({
+			semesterId: smester_id,
+			campusId: campus_id,
+			data: validatedStudentsList,
+		});
+		return res.status(201).json(importResult);
 	} catch (error) {
-		console.log(error);
 		return res.status(error.status || 500).json({
 			message: error.message,
 			status: error.status || 500,
