@@ -41,6 +41,7 @@ export const signUpCVForSupport = async (req, res) => {
 		const [file] = await req.files;
 		const findStudent = await Student.findById(_id).exec();
 
+
 		if (!findStudent) {
 			return res.status(500).send({
 				message: 'Thông tin của bạn không tồn tại trên hệ thống!',
@@ -96,6 +97,7 @@ export const signUpCVForSupport = async (req, res) => {
 				nameCompany,
 				phoneNumberCompany,
 				emailEnterprise,
+				CV,
 			} = req.body;
 
 			const selfFindUpdate = {
@@ -105,6 +107,7 @@ export const signUpCVForSupport = async (req, res) => {
 				nameCompany,
 				phoneNumberCompany,
 				emailEnterprise,
+				CV,
 				statusCheck: 11,
 			};
 
