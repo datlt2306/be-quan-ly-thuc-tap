@@ -3,9 +3,7 @@ import { replaceContentMail } from '../../utils/toolkit';
 import { transporter } from '../controllers/email.controller';
 import { getCurrentSemester } from '../controllers/semester.controller';
 import StudentModel from '../models/student.model';
-import {
-	validateUpdateStatus
-} from '../validation/student.validation';
+import { validateUpdateStatus } from '../validation/student.validation';
 import { selectOneStatus } from './statusStudent.service';
 import { StudentStatusEnum } from '../constants/studentStatus';
 require('dotenv').config();
@@ -34,48 +32,41 @@ export const checkStudentExist = async (id, campus) => {
 };
 
 // thêm sinh viên thực tập thực tập
-export const createListStudent = async ({semesterId, campusId , data}) => {
+export const createListStudent = async ({ semesterId, campusId, data }) => {
 	try {
-		// Lây ra danh sách sinh viên trong kỳ hiện tại
-		const instanceStudentsList = await StudentModel.find({
-			smester_id: semesterId,
-			campus_id: campusId,
-		});
+		data = data.map((student) => ({ ...student, mssv: student.mssv.toUpperCase() }));
+		// Lây ra danh sách sinh viên trong kỳ hiện tại & sinh viên đã trượt/không đủ điều kiện
+		const [instanceStudentsList, notQualifiedStudentForAllTime] = await Promise.all([
+			StudentModel.find({
+				smester_id: semesterId,
+				campus_id: campusId,
+			}),
+			StudentModel.find({
+				campus_id: campusId,
+				statusCheck: { $in: [3, 12] },
+			}),
+		]);
 		const isFirstStage = !instanceStudentsList.length;
 		const isSecondStage = instanceStudentsList.every((student) => student.updatedInStage === 1);
 
 		const newStudents = data.filter(
-			(student) =>
-				!instanceStudentsList.some(
-					(std) => std.mssv.toUpperCase() === student.mssv.toUpperCase()
-				)
+			(student) => !instanceStudentsList.some((std) => std.mssv === student.mssv)
 		);
 
+		// Các sinh viên không đủ điều kiện từ kỳ trước nay có trong danh sách dự kiến ở kỳ hiện tại
+		const qualifiedStudents = notQualifiedStudentForAllTime.filter((student) =>
+			newStudents.some((std) => std.mssv === student.mssv)
+		);
+	
+
 		if (isFirstStage) {
-			// Sinh viên không đủ điều kiện từ các kỳ trước đến nay
-			const notQualifiedStudentForAllTime = await StudentModel.find({
-				campus_id: campusId,
-				statusCheck: { $in: [3, 12] },
-			});
-
-			// Các sinh viên không đủ điều kiện từ kỳ trước nay có trong danh sách dự kiến ở kỳ hiện tại
-			const qualifiedStudents = notQualifiedStudentForAllTime.filter((student) =>
-				newStudents.some((std) => std.mssv === student.mssv)
-			);
-
 			// Các sinh viên mới ngoại trừ sinh viên đã trượt từ các kỳ trước nay đã có trong danh sách
 			const newStudentsInFirstStage = newStudents
 				.map((student) => ({
 					...student,
 					updatedInStage: 1,
 				}))
-				.filter(
-					(student) =>
-						!qualifiedStudents.some(
-							(std) => std.mssv.toUpperCase() === student.mssv.toUpperCase()
-						)
-				);
-
+				.filter((student) => !qualifiedStudents.some((std) => std.mssv === student.mssv));
 			const newExpectedStudents = await Promise.all([
 				StudentModel.insertMany(newStudentsInFirstStage),
 				StudentModel.updateMany(
@@ -93,11 +84,19 @@ export const createListStudent = async ({semesterId, campusId , data}) => {
 			const excludeStudentsInSecondStage = instanceStudentsList.filter(
 				(student) => !data.some((std) => std.mssv === student.mssv)
 			);
+			const newStudentsInSecondStage = newStudents.filter(
+				(student) => !qualifiedStudents.some((std) => std.mssv === student.mssv)
+			);
 			const resultOfUpdateAtStage2 = await Promise.all([
-				StudentModel.insertMany(newStudents),
+				StudentModel.insertMany(newStudentsInSecondStage),
 				StudentModel.updateMany(
 					{ _id: { $in: excludeStudentsInSecondStage } },
 					{ $set: { statusCheck: 3 } }
+				),
+				StudentModel.updateMany(
+					{ _id: { $in: qualifiedStudents } },
+					{ $set: { smester_id: semesterId, statusCheck: 10 } },
+					{ new: true, multi: true }
 				),
 				StudentModel.updateMany(
 					{
@@ -116,12 +115,19 @@ export const createListStudent = async ({semesterId, campusId , data}) => {
 		const exclude_in_2nd_stage_and_include_in_additional_stage = instanceStudentsList
 			.filter((student) => data.some((std) => std.mssv === student.mssv))
 			.filter((student) => student.statusCheck === 3);
-
+		const newStudentInAdditionalStage = newStudents.filter(
+			(student) => !qualifiedStudents.some((std) => std.mssv === student.mssv)
+		);
 		const resultOfUpdateAtAdditionalStage = await Promise.all([
-			StudentModel.insertMany(newStudents),
+			StudentModel.insertMany(newStudentInAdditionalStage),
 			StudentModel.updateMany(
 				{ _id: { $in: exclude_in_2nd_stage_and_include_in_additional_stage } },
 				{ $set: { statusCheck: 10 } }
+			),
+			StudentModel.updateMany(
+				{ _id: { $in: qualifiedStudents } },
+				{ $set: { smester_id: semesterId, statusCheck: 10 } },
+				{ new: true, multi: true }
 			),
 			StudentModel.updateMany(
 				{
@@ -134,7 +140,6 @@ export const createListStudent = async ({semesterId, campusId , data}) => {
 		]);
 		return resultOfUpdateAtAdditionalStage;
 	} catch (error) {
-		throw error;
 	}
 };
 
@@ -151,7 +156,6 @@ export const updateStatusStudent = async (data, hostname, campus) => {
 
 		// validate
 		const { error } = validateUpdateStatus(data);
-
 		if (error) {
 			throw createHttpError(400, error.message);
 		}

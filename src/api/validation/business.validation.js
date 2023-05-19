@@ -17,4 +17,4 @@ export const businessValidation = Joi.object({
 	created_at: Joi.date().default(Date.now),
 });
 
-export const businessListValidation = Joi.array().unique("tax_code").items(businessValidation);
+export const businessListValidation = Joi.array().items(businessValidation);

@@ -32,6 +32,7 @@ const studentSchema = mongoose.Schema(
 		email: {
 			type: String,
 			require: true,
+			unique: true,
 		},
 		supplement: {
 			type: String,
