@@ -38,9 +38,7 @@ const generateEmail = (name, email, type) => {
 export const signUpCVForSupport = async (req, res) => {
 	const { support, _id, phoneNumber, address, dream, majorCode } = req.body;
 	try {
-		const [file] = await req.files;
 		const findStudent = await Student.findById(_id).exec();
-
 
 		if (!findStudent) {
 			return res.status(500).send({
@@ -73,6 +71,7 @@ export const signUpCVForSupport = async (req, res) => {
 
 		// Lấy request body & validate
 		if (support === 1) {
+			const [file] = req.files;
 			// Cho SV đăng ký hỗ trợ
 			const { business } = req.body;
 			const uploadedFile = await uploadFile(file); // Upload & Get URL

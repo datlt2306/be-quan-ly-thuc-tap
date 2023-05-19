@@ -76,9 +76,5 @@ export const uploadFile = async (file) => {
 		return newFile;
 	} catch (error) {
 		throw new Error(error.message);
-		// return res.status(error.status || 500).json({
-		// 	message: error.message,
-		// 	statusCode: error.status || 400,
-		// });
 	}
 };
