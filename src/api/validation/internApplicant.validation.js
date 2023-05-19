@@ -8,12 +8,12 @@ const sharedSchema = {
 	email: Joi.string().email().required(),
 	statusCheck: Joi.number(),
 	support: Joi.number().optional(),
-	CV: Joi.alternatives().try(Joi.string().valid('NO-CV'), Joi.string().uri()).required(),
 };
 
 export const requestSupportSchema = Joi.object({
 	...sharedSchema,
 	business: Joi.string().required(),
+	CV: Joi.string().required(),
 });
 
 export const selfFindSchema = Joi.object({
