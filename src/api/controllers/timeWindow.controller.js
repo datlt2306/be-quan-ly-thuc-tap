@@ -1,15 +1,35 @@
-import * as configTimeServices from '../services/configTime.service';
-import ConfigTime from '../models/configTime.model';
+import * as timeWindowService from '../services/timeWindow.service';
+import ConfigTime from '../models/timeWindow.model';
 import { getCurrentSemester } from './semester.controller';
 import { validateConfigTimeCreateData } from '../validation/configTime.validation';
+
+// [PUT] /api/settime
+export const setTimeWindow = async (req, res) => {
+	const { body, campusManager: campus_id } = req;
+
+	try {
+		const { _id: semester_id } = await getCurrentSemester(campus_id);
+		const result = await timeWindowService.upsertTimeWindow(body, semester_id, campus_id);
+
+		return res.status(200).json(result);
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error',
+		});
+	}
+};
+
 // [POST] /api/settime
+//! DEPRECATED
 export const handleSetTimeRequest = async (req, res) => {
 	const data = req.body;
 	const campus = req.campusManager;
-	try {
-		const result = await configTimeServices.createConfigTime(data, campus);
 
-		return res.status(201).json(result);
+	try {
+		const result = await timeWindowService.createConfigTime(data, campus);
+
+		return res.status(201).json({ message: 'Tạo thời gian thành công', time: result });
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
@@ -98,7 +118,7 @@ export const updateSetTime = async (req, res) => {
 	const id = req.params.id;
 	const data = req.body;
 	try {
-		const result = await configTimeServices.updateConfigTime(id, data, campus);
+		const result = await timeWindowService.updateConfigTime(id, data, campus);
 
 		return res.status(201).json(result);
 	} catch (error) {
@@ -114,7 +134,7 @@ export const deleteSetTime = async (req, res) => {
 	const campus = req.campusManager;
 	const id = req.params.id;
 	try {
-		const result = await configTimeServices.deleteConfigTime(id, campus);
+		const result = await timeWindowService.deleteConfigTime(id, campus);
 
 		return res.status(200).json(result);
 	} catch (error) {

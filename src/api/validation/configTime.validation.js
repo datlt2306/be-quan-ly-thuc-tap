@@ -1,5 +1,13 @@
 import Joi from 'joi';
 
+export const TimeWindowSchema = Joi.object({
+	typeNumber: Joi.number().required().valid(0, 1, 2, 3, 4),
+	typeName: Joi.string().required(),
+	startTime: Joi.date().required(),
+	endTime: Joi.date().greater(Joi.ref('startTime')).required(),
+});
+
+//! DEPRECATED
 export const validateConfigTimeCreateData = (data) => {
 	try {
 		const schema = Joi.object({
