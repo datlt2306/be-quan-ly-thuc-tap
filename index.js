@@ -21,7 +21,10 @@ Promise.all(appRouteModules)
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(express.json({ limit: '50mb' }));
-app.use(cors());
+app.use(cors({
+   origin: "*",
+   methods:['GET','POST','PUT','PATCH','DELETE']
+}));
 app.use(compression({ level: 6, threshold: 1 * 1024 })); // compress data if payload is too large
 
 // swagger
