@@ -5,14 +5,15 @@ import express from 'express';
 import { readdirSync } from 'fs';
 import morgan from 'morgan';
 import swaggerUI from 'swagger-ui-express';
-import swaggerOptions from './src/config/swagger.config';
-import connectMongo from './src/database/mongo.db';
+import swaggerOptions from './config/swagger.config';
+import connectMongo from './database/mongo.db';
+import path from 'path'
 
 const app = express();
 
 // Route
-const ROUTES_DIR = './src/api/routes/';
-const appRouteModules = readdirSync(ROUTES_DIR).map((route) => import(ROUTES_DIR + route));
+const ROUTES_DIR = path.resolve(path.join(__dirname, './api/routes'))
+const appRouteModules = readdirSync(ROUTES_DIR).map((route) => import(path.join(ROUTES_DIR ,route) ));
 Promise.all(appRouteModules)
 	.then((routes) => routes.forEach((route) => app.use('/api', route.default)))
 	.catch((error) => console.log(error.message));
