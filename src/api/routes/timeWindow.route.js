@@ -19,7 +19,7 @@ router.patch('/settime/:id', isAuthenticateUser, authorizeRoles([role.manager]),
 
 router.put('/settime', isAuthenticateUser, authorizeRoles([role.manager]), setTimeWindow);
 router.get('/settime/byNumber', isAuthenticateUser, getOneTypeSetTime);
-router.get('/settime/byNumber', isAuthenticateUser, getOneTypeSetTime);
+router.get('/settime', isAuthenticateUser, getOneTypeSetTime);
 router.get('/settime/:id', isAuthenticateUser, authorizeRoles([role.manager]), getTimeWindowByID);
 router.get('/settime', isAuthenticateUser, getListTypeSetTime);
 router.delete('/settime/:id', isAuthenticateUser, authorizeRoles([role.manager]), deleteSetTime);
