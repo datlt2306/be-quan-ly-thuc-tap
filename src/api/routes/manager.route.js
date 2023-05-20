@@ -29,4 +29,5 @@ router.post('/manager', isAuthenticateUser, authorizeRoles([role.dev]), createMa
 router.patch('/manager/:id', isAuthenticateUser, authorizeRoles([role.dev]), updateManager);
 router.delete('/manager/:id', isAuthenticateUser, authorizeRoles([role.dev]), removeManager);
 
-module.exports = router;
+export default router;
+

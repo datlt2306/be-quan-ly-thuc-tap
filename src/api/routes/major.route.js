@@ -17,4 +17,5 @@ router.post('/major', isAuthenticateUser, authorizeRoles([role.dev]), createMajo
 router.patch('/major/:id', isAuthenticateUser, authorizeRoles([role.dev]), updateMajor);
 router.delete('/major/:id', isAuthenticateUser, authorizeRoles([role.dev]), removeMajor);
 
-module.exports = router;
+export default router;
+

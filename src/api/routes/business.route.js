@@ -20,4 +20,5 @@ router.get('/business/:id', isAuthenticateUser, getBusiness);
 router.patch('/business/:id', isAuthenticateUser, authorizeRoles([role.manager]), updateBusiness);
 router.patch('/business', isAuthenticateUser, authorizeRoles([role.manager]), updateMany);
 
-module.exports = router;
+export default router;
+

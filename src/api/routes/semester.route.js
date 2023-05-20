@@ -32,4 +32,6 @@ router.get(
   "/smester/default",
   getDefaultSemester
 );
-module.exports = router;
+
+export default router;
+

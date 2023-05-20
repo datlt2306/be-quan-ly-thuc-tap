@@ -8,4 +8,5 @@ const { getListNotificationByStudentId, createNotification, removeNotification, 
   router.post('/notification', createNotification);
   router.put('/notification-send/:id', updateSendNoti);
   router.delete('/token', removeNotification);
-  module.exports = router;
+
+export default router;

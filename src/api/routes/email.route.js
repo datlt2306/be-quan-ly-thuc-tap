@@ -7,4 +7,5 @@ const router = require("express").Router();
 
 router.post("/send-mail", isAuthenticateUser, sendMailController.sendMailUser);
 
-module.exports = router;
+export default router;
+

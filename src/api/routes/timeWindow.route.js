@@ -19,4 +19,4 @@ router.get('/settime', isAuthenticateUser, getListTypeSetTime);
 router.patch('/settime/:id', isAuthenticateUser, authorizeRoles([role.manager]), updateSetTime);
 router.delete('/settime/:id', isAuthenticateUser, authorizeRoles([role.manager]), deleteSetTime);
 
-module.exports = router;
+export default router;

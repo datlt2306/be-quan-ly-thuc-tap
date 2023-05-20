@@ -30,4 +30,4 @@ router.delete(
 	deleteStatusStudent
 );
 
-module.exports = router;
+export default router;

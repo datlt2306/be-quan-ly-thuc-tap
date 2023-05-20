@@ -57,4 +57,6 @@ router.post('/generate-fake-data', () => {
 		});
 	}
 });
-module.exports = router;
+
+export default router;
+

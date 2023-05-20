@@ -13,4 +13,6 @@ router.get('/narrows', isAuthenticateUser, getNarrow);
 router.post('/narrow', isAuthenticateUser, authorizeRoles([role.dev]), insertNarrow);
 router.put('/narrow/:id', isAuthenticateUser, authorizeRoles([role.dev]), updateNarrow);
 router.delete('/narrow/:id', isAuthenticateUser, authorizeRoles([role.dev]), deleteNarrow);
-module.exports = router;
+
+export default router;
+

@@ -13,4 +13,6 @@ router.get('/tokens/:student_id', getTokenByStudentId);
 router.post('/token', createToken);
 router.put('/tokens/:id', updateTokenDevice);
 router.delete('/token', removeTokenDevice);
-module.exports = router;
+
+export default router;
+
