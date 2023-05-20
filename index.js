@@ -26,10 +26,14 @@ app.use(compression({ level: 6, threshold: 1 * 1024 })); // compress data if pay
 
 // swagger
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerOptions));
-
 // Run server
 const PORT = process.env.PORT || 9998;
 app.listen(PORT, () => console.log('[Success] Server is listening on port: ', PORT));
+
+app.get('/', (req, res) => res.json({
+   message: 'Connected to server !',
+   status: 200
+}))
 
 // Connect database
 connectMongo();
