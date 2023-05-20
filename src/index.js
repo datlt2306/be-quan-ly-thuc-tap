@@ -25,9 +25,9 @@ app.use(
 );
 app.use(compression({ level: 6, threshold: 1024 })); // compress data if payload is too large
 app.use((_req, res, next) => {
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Headers', '*');
-
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Headers', '*');
+	res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
 	next();
 });
 // swagger
