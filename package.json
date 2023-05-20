@@ -5,7 +5,7 @@
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
-		"start": "nodemon --exec npx babel-node ./src/app.js -e js"
+		"start": "nodemon --exec npx babel-node index.js -e js"
 	},
 	"dependencies": {
 		"axios": "^0.27.2",

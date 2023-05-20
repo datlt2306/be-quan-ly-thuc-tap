@@ -3,12 +3,11 @@ import cors from 'cors';
 import express from 'express';
 import { readdir, readdirSync } from 'fs';
 import morgan from 'morgan';
-import swaggerOptions from './config/swagger.config';
+import swaggerOptions from './src/config/swagger.config';
 import path from 'path';
 import swaggerUI from 'swagger-ui-express';
 import 'dotenv/config';
-import connectMongo from './database/mongo.db';
-import routes from './api/routes';
+import connectMongo from './src/database/mongo.db';
 const app = express();
 
 
@@ -18,7 +17,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(cors());
 app.use(compression({ level: 6, threshold: 1 * 1024 })); // compress data if payload is too large
 // Route
-const routedDir = path.resolve(path.join(__dirname, "./api/routes")) 
+const routedDir = path.resolve(path.join(__dirname, "./src/api/routes")) 
 readdir(routedDir, (err, files) => {
 	if (err) {
 		console.error('Error reading directory:', err);
