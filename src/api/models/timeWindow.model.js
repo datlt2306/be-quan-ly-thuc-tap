@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-import moment from 'moment';
-
 const { ObjectId } = mongoose.Schema;
 const configTimeSchema = mongoose.Schema(
 	{
@@ -34,16 +32,6 @@ const configTimeSchema = mongoose.Schema(
 	}
 );
 
-// Cập nhật timezone
-// configTimeSchema.pre('save', (next) => {
-// 	const correctedStartTime = moment().tz(this.startTime, 'Asia/Ho_Chi_Minh').format();
-// 	const correctedEndTime = moment().tz(this.endTime, 'Asia/Ho_Chi_Minh').format();
-
-// 	this.startTime = correctedStartTime;
-// 	this.endTime = correctedEndTime;
-
-// 	next();
-// });
 
 configTimeSchema.index({ semester_id: 1, typeNumber: 1 }, { unique: true });
 
