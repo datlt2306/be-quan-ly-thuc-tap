@@ -30,9 +30,8 @@ readdir(routedDir, (err, files) => {
 		if (file.endsWith('.js')) {
 			// Resolve the full file path
 			const filePath = path.join(routedDir, file);
-
 			// Import the file
-			require(filePath);
+			import(filePath);
 
 		}
 	});
