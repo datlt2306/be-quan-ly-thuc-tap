@@ -27,7 +27,6 @@ app.use('*', (req, res) => {
 	res.redirect('/api-docs');
 });
 
-
 const port = process.env.PORT || 9998;
 app.listen(port, () => console.log('server is listening port: ', port));
 connectMongo()
