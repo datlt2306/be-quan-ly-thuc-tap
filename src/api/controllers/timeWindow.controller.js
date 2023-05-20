@@ -47,7 +47,10 @@ export const getListTypeSetTime = async (req, res) => {
 		if (!campus) throw new Error('Campus not found');
 		if (!semester) throw new Error('Semester not found');
 
-		const time = await ConfigTime.find({ semester_id: semester._id, campus_id: campus });
+		const time = await ConfigTime.find({
+			semester_id: req.query.semester_id || semester._id,
+			campus_id: campus,
+		});
 		return res.status(200).json({
 			message: 'time success',
 			time: time,
