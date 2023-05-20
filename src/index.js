@@ -2,21 +2,16 @@ import compression from 'compression';
 import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
-import { readdirSync } from 'fs';
 import morgan from 'morgan';
 import swaggerUI from 'swagger-ui-express';
+import rootRouter from './api/routes';
 import swaggerOptions from './config/swagger.config';
 import connectMongo from './database/mongo.db';
-import path from 'path'
 
 const app = express();
 
 // Route
-const ROUTES_DIR = path.resolve(path.join(__dirname, './api/routes'))
-const appRouteModules = readdirSync(ROUTES_DIR).map((route) => import(path.join(ROUTES_DIR ,route) ));
-Promise.all(appRouteModules)
-	.then((routes) => routes.forEach((route) => app.use('/api', route.default)))
-	.catch((error) => console.log(error.message));
+app.use('/api',rootRouter)
 
 // middleware
 app.use(express.json());
