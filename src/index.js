@@ -19,12 +19,13 @@ app.use(morgan('tiny'));
 app.use(express.json({ limit: '50mb' }));
 app.use(cors({
    origin: "*",
-   methods:['GET','POST','PUT','PATCH','DELETE']
+   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
 }));
-app.use(compression({ level: 6, threshold: 1 * 1024 })); // compress data if payload is too large
+app.use(compression({ level: 6, threshold: 1024 })); // compress data if payload is too large
 
 // swagger
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerOptions));
+
 // Run server
 const PORT = process.env.PORT || 9998;
 app.listen(PORT, () => console.log('[Success] Server is listening on port: ', PORT));
