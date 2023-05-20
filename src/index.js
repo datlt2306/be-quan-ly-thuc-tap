@@ -19,15 +19,15 @@ app.use(morgan('tiny'));
 app.use(express.json({ limit: '50mb' }));
 app.use(
 	cors({
-		origin: '*',
+		origin: [process.env.FE_DEV_DOMAIN, process.env.FE_PRODUCTION_DOMAIN],
 		methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
 	})
 );
 app.use(compression({ level: 6, threshold: 1024 })); // compress data if payload is too large
-app.use((_req, res, next) => {
+app.use((req, res, next) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Headers', '*');
-	res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, PATCH, DELETE, POST, PUT');
 	next();
 });
 // swagger
