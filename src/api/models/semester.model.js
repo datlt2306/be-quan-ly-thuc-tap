@@ -1,4 +1,3 @@
-const { isLowercase } = require('class-validator');
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema;
 const semesterSchema = mongoose.Schema({
