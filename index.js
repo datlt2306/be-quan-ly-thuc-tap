@@ -17,7 +17,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(cors());
 app.use(compression({ level: 6, threshold: 1 * 1024 })); // compress data if payload is too large
 // Route
-const routedDir = path.resolve(path.join(__dirname, "./src/api/routes")) 
+const routedDir = path.resolve(path.join(__dirname, "./src/api/routes/")) 
 readdir(routedDir, (err, files) => {
 	if (err) {
 		console.error('Error reading directory:', err);
