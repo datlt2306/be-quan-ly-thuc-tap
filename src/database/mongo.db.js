@@ -7,7 +7,7 @@ const connectMongo = async () => {
 		mongoose.set('strictQuery', false);
 		await mongoose.connect(process.env.DATABASE);
 		jobScheduler.init();
-		console.log('DB Connected');
+		console.log('[SUCCESS] Connected to database');
 	} catch (error) {
 		console.log('[Error]: Failed to connect to Mongo');
 	}
