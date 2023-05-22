@@ -9,11 +9,12 @@ import swaggerOptions from './config/swagger.config';
 import connectMongo from './database/mongo.db';
 import { jobSchedule } from './cronjobs';
 import { readdirSync } from 'fs';
-import path from 'path';
 
 const app = express();
 
-// Middleware
+// Route
+
+// middleware
 app.use(cors());
 app.use(express.json());
 app.use(morgan('tiny'));
@@ -33,8 +34,6 @@ app.listen(PORT, () => {
 	jobSchedule.init();
 });
 
-
-// Default route
 app.get('/', (req, res) =>
 	res.json({
 		message: 'Connected to server !',
