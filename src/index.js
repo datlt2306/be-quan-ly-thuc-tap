@@ -6,9 +6,8 @@ import morgan from 'morgan';
 import swaggerUI from 'swagger-ui-express';
 import rootRouter from './api/routes';
 import swaggerOptions from './config/swagger.config';
-import connectMongo from './database/mongo.db';
 import { jobSchedule } from './cronjobs';
-import { readdirSync } from 'fs';
+import connectMongo from './database/mongo.db';
 
 const app = express();
 
