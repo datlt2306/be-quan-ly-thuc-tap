@@ -1,13 +1,13 @@
-import ConfigTime from '../models/configTime.model';
+import ConfigTime from '../models/timeWindow.model';
 import { getCurrentSemester } from '../controllers/semester.controller';
+import moment from 'moment';
 
 export const checkRequestTime = async (req, res, next) => {
-	const { typeNumber, checkTime = true } = req.body;
+	const { typeNumber } = req.body;
 	const campus = req.campusManager || req.campusStudent;
 
 	try {
 		const semester = await getCurrentSemester(campus);
-		const dateNow = Date.now();
 
 		if (!semester || !campus) throw new Error('Bạn không có quyền truy cập vào chức năng này');
 
@@ -17,12 +17,16 @@ export const checkRequestTime = async (req, res, next) => {
 			campus_id: campus,
 		});
 
-		if (!timeWindow) throw new Error('Không tìm thấy thời gian đăng ký');
+		if (!timeWindow) return res.status(400).json('Không tìm thấy thời gian đăng ký');
 
-		const { startTime, endTime } = timeWindow;
-		if (checkTime) {
-			next();
-		} else if (dateNow > startTime && dateNow < endTime && !checkTime) {
+		const dateNow = moment();
+		const startTime = moment(timeWindow.startTime);
+		const endTime = moment(timeWindow.endTime);
+
+		// Kiểm tra nếu trong thời gian đăng ký sẽ cho phép tiếp tục
+		const isWithinTimeWindow = dateNow.isAfter(startTime) && dateNow.isBefore(endTime);
+
+		if (isWithinTimeWindow) {
 			next();
 		} else {
 			return res.status(400).json({

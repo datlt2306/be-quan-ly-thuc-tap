@@ -69,7 +69,7 @@ export const signUpCVForSupport = async (req, res) => {
 		};
 
 		// Lấy request body & validate
-		if (support === 1) {
+		if (support == 1) {
 			const [file] = req.files;
 			// Cho SV đăng ký hỗ trợ
 			const { business } = req.body;
