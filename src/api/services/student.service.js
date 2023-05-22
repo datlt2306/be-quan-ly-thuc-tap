@@ -35,31 +35,36 @@ export const checkStudentExist = async (id, campus) => {
 export const createListStudent = async ({ semesterId, campusId, data }) => {
 	try {
 		data = data.map((student) => ({ ...student, mssv: student.mssv.toUpperCase() }));
-		// Lây ra danh sách sinh viên trong kỳ hiện tại & sinh viên đã trượt/không đủ điều kiện
-		const [instanceStudentsList, notQualifiedStudentForAllTime] = await Promise.all([
-			StudentModel.find({
-				smester_id: semesterId,
-				campus_id: campusId,
-			}),
-			StudentModel.find({
-				campus_id: campusId,
-				statusCheck: { $in: [3, 12] },
-			}),
-		]);
+		// Lây ra danh sách sinh viên trong kỳ hiện tại & sinh viên đã trượt/không đủ điều kiện + những sinh viên đã tồn tại
+		const [existsStudent, instanceStudentsList, notQualifiedStudentForAllTime] =
+			await Promise.all([
+				StudentModel.exists({ mssv: { $in: data } }),
+				StudentModel.find({
+					smester_id: semesterId,
+					campus_id: campusId,
+				}),
+				StudentModel.find({
+					campus_id: campusId,
+					statusCheck: { $in: [3, 12] },
+				}),
+			]);
 		const isFirstStage = !instanceStudentsList.length;
 		const isSecondStage = instanceStudentsList.every((student) => student.updatedInStage === 1);
 
 		const newStudents = data.filter(
 			(student) => !instanceStudentsList.some((std) => std.mssv === student.mssv)
 		);
-
 		// Các sinh viên không đủ điều kiện từ kỳ trước nay có trong danh sách dự kiến ở kỳ hiện tại
 		const qualifiedStudents = notQualifiedStudentForAllTime.filter((student) =>
 			newStudents.some((std) => std.mssv === student.mssv)
 		);
-	
 
+		/* CASE STAGE 1 */
 		if (isFirstStage) {
+			console.log('::::::::::::: Stage 1 :::::::::::::');
+			if (!!existsStudent) {
+				throw createHttpError.Conflict('Some students already existed!');
+			}
 			// Các sinh viên mới ngoại trừ sinh viên đã trượt từ các kỳ trước nay đã có trong danh sách
 			const newStudentsInFirstStage = newStudents
 				.map((student) => ({
@@ -79,11 +84,14 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 			return newExpectedStudents;
 		}
 
+		/* CASE STAGE 2 */
 		if (isSecondStage) {
 			// Danh sách sinh viên không đủ điều kiện trong đợt 2
 			const excludeStudentsInSecondStage = instanceStudentsList.filter(
-				(student) => !data.some((std) => std.mssv === student.mssv)
+				(student) =>
+					!data.some((std) => std.mssv.toUpperCase() === student.mssv.toUpperCase())
 			);
+			console.log(excludeStudentsInSecondStage);
 			const newStudentsInSecondStage = newStudents.filter(
 				(student) => !qualifiedStudents.some((std) => std.mssv === student.mssv)
 			);
@@ -111,6 +119,7 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 			return resultOfUpdateAtStage2;
 		}
 
+		/* CASE ADDITIONAL STAGE  */
 		// Sinh viên không đủ điều kiện trong đợt 2 nhưng có trong đợt bổ sung
 		const exclude_in_2nd_stage_and_include_in_additional_stage = instanceStudentsList
 			.filter((student) => data.some((std) => std.mssv === student.mssv))
@@ -140,6 +149,7 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 		]);
 		return resultOfUpdateAtAdditionalStage;
 	} catch (error) {
+		throw error;
 	}
 };
 
