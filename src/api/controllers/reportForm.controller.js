@@ -151,8 +151,7 @@ export const form = async (req, res) => {
 				};
 
 				error = formSchema.validate(data).error;
-
-				if (error) return res.status(403).json('Sai dữ liệu: ' + error.message);
+				if (error) throw createHttpError(403, 'Sai dữ liệu: ' + error.message);
 
 				result = await studentModel.findOneAndUpdate(filter, data, {
 					new: true,
@@ -186,7 +185,7 @@ export const form = async (req, res) => {
 
 				error = formSchema.validate(data).error;
 
-				if (error) return res.status(403).json('Sai dữ liệu: ' + error.message);
+				if (error) throw createHttpError(403, 'Sai dữ liệu: ' + error.message);
 
 				result = await studentModel.findOneAndUpdate(
 					filter,
@@ -201,9 +200,10 @@ export const form = async (req, res) => {
 			// Đã đăng ký
 			case 11:
 				if (!findStudent.support == 0)
-					return res.status(403).json({
-						message: 'Form tự tìm của bạn chưa được duyệt hoặc server bị lỗi!',
-					});
+					throw createHttpError(
+						403,
+						'Form tự tìm của bạn chưa được duyệt hoặc server bị lỗi!'
+					);
 
 				uploadedFile = await uploadFile(file);
 
@@ -216,7 +216,7 @@ export const form = async (req, res) => {
 
 				error = formSchema.validate(data).error;
 
-				if (error) return res.status(403).json('Sai dữ liệu: ' + error.message);
+				if (error) throw createHttpError(403, 'Sai dữ liệu: ' + error.message);
 
 				result = await studentModel.findOneAndUpdate(filter, data, {
 					new: true,
@@ -228,7 +228,8 @@ export const form = async (req, res) => {
 				throw new Error();
 		}
 	} catch (error) {
-		console.error(error.message);
-		return res.status(500).json({ message: 'Có lỗi xảy ra! Vui lòng quay lại sau ít phút' });
+		return res.status(error.statusCode || 500).json({
+			message: error.message || 'Có lỗi xảy ra! Vui lòng quay lại sau ít phút',
+		});
 	}
 };
