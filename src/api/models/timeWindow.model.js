@@ -32,13 +32,18 @@ const configTimeSchema = mongoose.Schema(
 	}
 );
 
-configTimeSchema.statics.removeExpired = async function () {
-	const now = new Date().getTime();
-	const docs = await this.find({ endTime: { $lt: now } });
-	if (docs.length) {
-		const ids = docs.map((doc) => doc._id);
-		await this.deleteMany({ _id: { $in: ids } });
-	}
-};
+
+configTimeSchema.index({ semester_id: 1, typeNumber: 1 }, { unique: true });
+
+// Xoá thơi gian đã hết hạn
+//! Sai nghiệp vụ. DEPRECATED
+// configTimeSchema.statics.removeExpired = async function () {
+// 	const now = new Date().getTime();
+// 	const docs = await this.find({ endTime: { $lt: now } });
+// 	if (docs.length) {
+// 		const ids = docs.map((doc) => doc._id);
+// 		await this.deleteMany({ _id: { $in: ids } });
+// 	}
+// };
 
 module.exports = mongoose.model('ConfigTime', configTimeSchema);
