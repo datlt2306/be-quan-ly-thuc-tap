@@ -7,6 +7,8 @@ import swaggerUI from 'swagger-ui-express';
 import rootRouter from './api/routes';
 import swaggerOptions from './config/swagger.config';
 import connectMongo from './database/mongo.db';
+import { jobSchedule } from './cronjobs';
+import { readdirSync } from 'fs';
 
 const app = express();
 
@@ -20,12 +22,20 @@ app.use(express.json({ limit: '50mb' }));
 app.use(compression({ level: 6, threshold: 1024 })); // compress data if payload is too large
 
 // swagger
+// app.use('/api', rootRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerOptions));
-app.use('/api', rootRouter);
+readdirSync('./api/routes').forEach((file) =>
+	import(`./api/routes/${file}`)
+		.then((module) => app.use('/api', module.default))
+		.catch((error) => console.log(error.message))
+);
 
 // Run server
 const PORT = process.env.PORT || 9998;
-app.listen(PORT, () => console.log('[SUCCESS] Server is listening on port: ', PORT));
+app.listen(PORT, () => {
+	console.log('[SUCCESS] Server is listening on port: ', PORT);
+	jobSchedule.init();
+});
 
 app.get('/', (req, res) =>
 	res.json({
