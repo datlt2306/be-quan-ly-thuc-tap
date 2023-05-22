@@ -1,13 +1,14 @@
-const mongoose = require('mongoose');
-const mongooseAutoPopulate = require('mongoose-autopopulate');
-const mongoosePaginate = require('mongoose-paginate-v2');
-const { ObjectId } = mongoose.Schema;
-const studentSchema = mongoose.Schema(
+import mongoose from 'mongoose';
+import mongooseAutoPopulate from 'mongoose-autopopulate';
+import mongoosePaginate from 'mongoose-paginate-v2';
+
+const studentSchema = new mongoose.Schema(
 	{
 		mssv: {
 			require: true,
 			type: String,
 			uppercase: true,
+			unique: true,
 		},
 		name: {
 			type: String,
@@ -21,7 +22,7 @@ const studentSchema = mongoose.Schema(
 			require: true,
 		},
 		narrow: {
-			type: ObjectId,
+			type: mongoose.Types.mongoose.Types.ObjectId,
 			ref: 'NarrowSpecialization',
 			autopopulate: true,
 		},
@@ -44,8 +45,8 @@ const studentSchema = mongoose.Schema(
 		},
 		statusStudent: {
 			type: String,
-			enum: ["HDI","HL","CHO","TN"],
-			uppercase:true
+			enum: ['HDI', 'HL', 'CHO', 'TN'],
+			uppercase: true,
 		},
 		support: {
 			type: Number,
@@ -67,17 +68,17 @@ const studentSchema = mongoose.Schema(
 			default: null,
 		},
 		campus_id: {
-			type: ObjectId,
+			type: mongoose.Types.ObjectId,
 			ref: 'Campus',
 		},
 		business: {
-			type: ObjectId,
+			type: mongoose.Types.ObjectId,
 			ref: 'Business',
 			default: null,
 			autopopulate: true,
 		},
 		smester_id: {
-			type: ObjectId,
+			type: mongoose.Types.ObjectId,
 			ref: 'Semester',
 			autopopulate: true,
 		},
