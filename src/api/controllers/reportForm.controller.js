@@ -3,13 +3,15 @@ import { sendMail } from './email.controller';
 import { uploadFile } from '../services/googleDrive.service';
 import studentModel from '../models/student.model';
 import { generateEmail } from '../../utils/emailTemplate';
-import { reportSchema } from '../validation/reportForm.validation';
+import { formSchema, reportSchema } from '../validation/reportForm.validation';
 import createHttpError from 'http-errors';
 
 export const report = async (req, res) => {
+	let data, error, result, uploadedFile;
+
 	const {
 		attitudePoint,
-		EndInternShipTime,
+		endInternShipTime,
 		mssv,
 		email,
 		nameCompany,
@@ -18,156 +20,90 @@ export const report = async (req, res) => {
 		signTheContract,
 	} = req.body;
 
-	const filter = { mssv: mssv, email: email, _id };
-	const findStudent = await studentModel.findOne(filter);
-	const startTimeReport = moment(findStudent.internshipTime).valueOf();
-	const endTimeReport = moment(EndInternShipTime).valueOf();
-	const checkTimeReport = endTimeReport > startTimeReport;
 	try {
-		const dataEmail = {};
-		if (!checkTimeReport) {
-			return res.status(500).send({
-				message: 'Thời gian kết thúc thực tập phải lớn hơn thời gian bắt đầu!',
-			});
-		}
+		const filter = { mssv: mssv, email: email, _id };
+		const findStudent = await studentModel.findOne(filter);
 
-		if (!findStudent) {
-			return res
-				.status(404)
-				.send({ status: false, message: 'Đã xảy ra lỗi! Vui đăng ký lại!' });
-		}
+		if (!findStudent) throw createHttpError(403, 'Không tìm thấy thông tin sinh viên');
 
-		// if (nameCompany) {
-		//   const nameCompanyD = findStudent.nameCompany === nameCompany;
-		//   if (!nameCompanyD) {
-		//     const err = {
-		//       message: "Tên công ty không khớp với biểu mẫu!",
-		//     };
-		//     res.status(500).send(err);
-		//     return;
-		//   }
-		// }
+		if (!findStudent.internshipTime)
+			throw createHttpError(403, 'Không tìm thấy thời gian thực tập');
 
-		// if (business) {
-		//   const nameBusiness = findStudent.business === business;
-		//   if (!nameBusiness) {
-		//     const err = {
-		//       message: "Tên công ty không khớp với biểu mẫu!",
-		//     };
-		//     res.status(500).send(err);
-		//     return;
-		//   }
-		// }
+		if (!endInternShipTime) throw createHttpError(403, 'Chưa nhập thời gian kết thúc thực tập');
 
+		const startTimeReport = moment(findStudent.internshipTime).valueOf();
+		const endTimeReport = moment(endInternShipTime).valueOf();
+		const checkTimeReport = endTimeReport > startTimeReport;
 		const [file] = req.files;
 
-		const uploadedFile = uploadFile(file);
+		if (!checkTimeReport)
+			throw createHttpError(
+				403,
+				'Thời gian kết thúc thực tập phải lớn hơn thời gian bắt đầu!'
+			);
 
-		const update = {
-			attitudePoint: attitudePoint,
-			endInternShipTime: EndInternShipTime,
-			nameCompany: nameCompany,
-			resultScore: resultScore,
-			report: uploadedFile.url,
-			statusCheck: 7,
-			signTheContract: signTheContract,
-		};
+		switch (findStudent.statusCheck) {
+			// Đang thực tập
+			case 6:
+				uploadedFile = await uploadFile(file);
 
-		if (findStudent.statusCheck === 0 && findStudent.form) {
-			const err = {
-				status: false,
-				message: 'Thông tin biên bản đã tồn tại và đang chờ xác nhận!',
-			};
-			res.status(500).send(err);
-			return;
+				data = {
+					attitudePoint,
+					endInternShipTime,
+					nameCompany,
+					resultScore,
+					report: uploadedFile.url,
+					statusCheck: 7,
+					signTheContract,
+				};
+
+				error = reportSchema.validate(data).error;
+
+				if (error) throw createHttpError(403, 'Sai dữ liệu: ' + error.message);
+
+				result = await studentModel.findOneAndUpdate(filter, data, {
+					new: true,
+				});
+
+				// await sendMail(generateEmail(findStudent.name, email, 'minutesRegistered'));
+				return res.status(200).json({ message: 'Nộp báo cáo thành công', result });
+
+			// Đã nộp báo cáo
+			case 7:
+				if (!findStudent.report)
+					throw createHttpError(500, 'Không tìm thấy thông tin báo cáo');
+
+				throw createHttpError(403, 'Thông tin báo cáo đã tồn tại và đang chờ xác nhận!');
+
+			// Sửa báo cáo
+			case 8:
+				uploadedFile = await uploadFile(file);
+
+				data = {
+					attitudePoint,
+					endInternShipTime,
+					nameCompany,
+					resultScore,
+					report: uploadedFile.url,
+					statusCheck: 7,
+					signTheContract,
+				};
+
+				error = reportSchema.validate(data).error;
+
+				if (error) throw createHttpError(403, 'Sai dữ liệu: ' + error.message);
+
+				result = await studentModel.findOneAndUpdate(filter, data, {
+					new: true,
+				});
+				// await sendMail(generateEmail(findStudent.name, email, 'minutesUpdated'));
+				return res.status(200).json({ message: 'Sửa báo cáo thành công', result });
+			default:
+				throw createHttpError(403, 'Bạn không đủ điều kiện nộp báo cáo');
 		}
-
-		if (findStudent.statusCheck === 8) {
-			update.note = null;
-			const result = await studentModel.findOneAndUpdate(filter, update, {
-				new: true,
-			});
-
-			return res.status(200).send(result);
-			dataEmail.mail = email;
-			dataEmail.subject = 'Sửa thông tin báo cáo thành công';
-			dataEmail.content = `
-      <div style="margin:auto;background-color:#ffffff;width:500px;padding:10px;border-top:2px solid #e37c41">
-      <div class="adM">
-      </div>
-      <img src="https://i.imgur.com/q7xM8RP.png" width="120" alt="logo" class="CToWUd">
-      <p>
-          Xin chào <b>${findStudent.name}</b>,
-          <br>
-          Bạn vừa <b style="color:green"><span><span class="il">chỉnh</span></span> <span><span class="il">sửa</span></span> <span>thành</span> <span>công</span></b> thông tin <b><span>Báo</span> <span>cáo</span></b>
-          <br>
-          Trạng thái hiện tại của dịch vụ là <b style="color:orange">Đã nộp báo cáo </b>
-          <br>
-          Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
-      </p>
-      <hr style="border-top:1px solid">
-      <div style="font-style:italic">
-          <span>Lưu ý: đây là email tự động vui lòng không phản hồi lại email này, mọi thắc mắc xin liên hệ phòng QHDN qua số điện thoại bên dưới</span>
-          <div class="yj6qo"></div>
-          <div class="adL"></div>
-          <div class="adL"><br>
-          </div>
-      </div>
-      <div class="adL">
-      </div>
-      <div class="adL">
-      </div>
-      <div class="adL">
-      </div>
-      </div>
-      `;
-			await sendMail(dataEmail);
-			return res.status(200).send({ message: 'Sửa báo cáo thành công' });
-		}
-
-		if (findStudent.statusCheck === 6) {
-			await studentModel.findOneAndUpdate(filter, update, {
-				new: true,
-			});
-			dataEmail.mail = email;
-			dataEmail.subject = 'Đăng ký thông tin báo cáo thành công';
-			dataEmail.content = /*html*/ `
-      <div style="margin:auto;background-color:#ffffff;width:500px;padding:10px;border-top:2px solid #e37c41">
-      <div class="adM">
-      </div>
-      <img src="https://i.imgur.com/q7xM8RP.png" width="120" alt="logo" class="CToWUd">
-      <p>
-          Xin chào <b>${findStudent.name}</b>,
-          <br>
-          Bạn vừa <b style="color:green"><span><span class="il">đăng</span></span> <span><span class="il">ký</span></span> <span>thành</span> <span>công</span></b> thông tin <b><span>Báo</span> <span>cáo</span></b>
-          <br>
-          Trạng thái hiện tại của dịch vụ là <b style="color:orange">Đã nộp báo cáo </b>
-          <br>
-          Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
-      </p>
-      <hr style="border-top:1px solid">
-      <div style="font-style:italic">
-          <span>Lưu ý: đây là email tự động vui lòng không phản hồi lại email này, mọi thắc mắc xin liên hệ phòng QHDN qua số điện thoại bên dưới</span>
-          <div class="yj6qo"></div>
-          <div class="adL"></div>
-          <div class="adL"><br>
-          </div>
-      </div>
-      <div class="adL">
-      </div>
-      <div class="adL">
-      </div>
-      <div class="adL">
-      </div>
-      </div>
-      `;
-			await sendMail(dataEmail);
-			return res.status(200).send({ message: 'Nộp báo cáo thành công' });
-		}
-		throw new Error();
 	} catch (error) {
-		res.status(500).send({
-			message: 'Đã xảy ra lỗi! Vui lòng kiểm tra lại thông tin biên bản!',
+		return res.status(error.statusCode || 500).json({
+			message: error.message || 'Đã xảy ra lỗi! Vui lòng kiểm tra lại thông tin báo cáo!',
 		});
 	}
 };
@@ -184,26 +120,28 @@ export const form = async (req, res) => {
 		if (!findStudent)
 			return res
 				.status(404)
-				.send({ status: false, message: 'Đã xảy ra lỗi! Vui lòng đăng ký lại!' });
+				.json({ status: false, message: 'Đã xảy ra lỗi! Vui lòng đăng ký lại!' });
 
 		switch (findStudent.statusCheck) {
 			// Chờ kiểm tra CV
 			case 0:
 				if (!findStudent.CV)
-					return res.status(500).send({
+					return res.status(500).json({
 						message: 'CV không tồn tại trên hệ thống',
 					});
 
-				return res.status(403).send({
+				return res.status(403).json({
 					message: 'CV phải được duyệt trước khi nộp biên bản!',
 				});
 
 			// Nhận CV
 			case 2:
 				if (!findStudent.support == 1)
-					return res.status(403).send({
+					return res.status(403).json({
 						message: 'Bạn chưa gửi form nhờ nhà trường hỗ trợ',
 					});
+
+				uploadedFile = await uploadFile(file);
 
 				data = {
 					nameCompany,
@@ -212,7 +150,7 @@ export const form = async (req, res) => {
 					statusCheck: 4,
 				};
 
-				error = reportSchema.validate(data).error;
+				error = formSchema.validate(data).error;
 
 				if (error) return res.status(403).json('Sai dữ liệu: ' + error.message);
 
@@ -225,13 +163,13 @@ export const form = async (req, res) => {
 			// Không đủ điều kiện
 			case 3:
 			case 10:
-				return res.status(403).send({
+				return res.status(403).json({
 					message: 'Bạn không đủ điều kiện nộp biên bản!',
 				});
 
 			// Đã nộp biên bản
 			case 4:
-				return res.status(403).send({
+				return res.status(403).json({
 					message: 'Bạn đã nộp biên bản!',
 				});
 
@@ -246,7 +184,7 @@ export const form = async (req, res) => {
 					statusCheck: 4,
 				};
 
-				error = reportSchema.validate(data).error;
+				error = formSchema.validate(data).error;
 
 				if (error) return res.status(403).json('Sai dữ liệu: ' + error.message);
 
@@ -258,12 +196,12 @@ export const form = async (req, res) => {
 					}
 				);
 
-				return res.status(200).send({ message: 'Sửa biên bản thành công', result });
+				return res.status(200).json({ message: 'Sửa biên bản thành công', result });
 
 			// Đã đăng ký
 			case 11:
 				if (!findStudent.support == 0)
-					return res.status(403).send({
+					return res.status(403).json({
 						message: 'Form tự tìm của bạn chưa được duyệt hoặc server bị lỗi!',
 					});
 
@@ -276,7 +214,7 @@ export const form = async (req, res) => {
 					statusCheck: 4,
 				};
 
-				error = reportSchema.validate(data).error;
+				error = formSchema.validate(data).error;
 
 				if (error) return res.status(403).json('Sai dữ liệu: ' + error.message);
 
@@ -291,6 +229,6 @@ export const form = async (req, res) => {
 		}
 	} catch (error) {
 		console.error(error.message);
-		return res.status(500).send({ message: 'Có lỗi xảy ra! Vui lòng quay lại sau ít phút' });
+		return res.status(500).json({ message: 'Có lỗi xảy ra! Vui lòng quay lại sau ít phút' });
 	}
 };
