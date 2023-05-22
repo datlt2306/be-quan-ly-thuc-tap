@@ -22,7 +22,7 @@ const studentSchema = new mongoose.Schema(
 			require: true,
 		},
 		narrow: {
-			type: mongoose.Types.mongoose.Types.ObjectId,
+			type: mongoose.Types.ObjectId,
 			ref: 'NarrowSpecialization',
 			autopopulate: true,
 		},
