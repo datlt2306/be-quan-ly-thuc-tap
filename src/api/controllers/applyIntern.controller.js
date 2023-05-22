@@ -1,16 +1,7 @@
-import { emailTemplates } from '../../utils/emailTemplate';
+import { generateEmail } from '../../utils/emailTemplate';
 import Student from '../models/student.model';
 import { uploadFile } from '../services/googleDrive.service';
 import { requestSupportSchema, selfFindSchema } from '../validation/internApplicant.validation';
-
-// Tạo email mới dựa theo template
-const generateEmail = (name, email, type) => {
-	const template = emailTemplates[type];
-
-	if (!template) throw new Error(`Invalid email type: ${type}`);
-
-	return { mail: email, subject: template.subject, content: template.content(name) };
-};
 
 /*
  * Fields to include in request body:
