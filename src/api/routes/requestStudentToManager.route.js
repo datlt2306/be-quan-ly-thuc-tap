@@ -31,6 +31,8 @@ const { isAuthenticateUser, authorizeRoles } = require('../middlewares/CheckAuth
     isAuthenticateUser,
     authorizeRoles([role.manager]),
     cancelResetStudent
-  )
-  module.exports = router;
+)
+  
+export default router;
+
   

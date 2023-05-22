@@ -18,4 +18,5 @@ router.patch(
 	form
 );
 
-module.exports = router;
+export default router;
+

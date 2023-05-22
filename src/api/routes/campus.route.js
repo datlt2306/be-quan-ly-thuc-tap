@@ -17,4 +17,5 @@ router.post('/campus', isAuthenticateUser, authorizeRoles([role.dev]), createCam
 router.patch('/campus/:id', isAuthenticateUser, authorizeRoles([role.dev]), updateCampus);
 router.delete('/campus/:id', isAuthenticateUser, authorizeRoles([role.dev]), removeCampus);
 
-module.exports = router;
+export default router;
+

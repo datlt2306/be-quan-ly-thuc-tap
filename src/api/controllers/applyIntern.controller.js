@@ -1,8 +1,7 @@
-import { sendMail } from './email.controller';
-import Student from '../models/student.model';
 import { emailTemplates } from '../../utils/emailTemplate';
+import Student from '../models/student.model';
 import { uploadFile } from '../services/googleDrive.service';
-import { selfFindSchema, requestSupportSchema } from '../validation/internApplicant.validation';
+import { requestSupportSchema, selfFindSchema } from '../validation/internApplicant.validation';
 
 // Tạo email mới dựa theo template
 const generateEmail = (name, email, type) => {

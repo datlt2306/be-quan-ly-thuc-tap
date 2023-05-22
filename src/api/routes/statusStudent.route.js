@@ -4,7 +4,7 @@ import {
 	deleteStatusStudent,
 	getStatusStudent,
 	updateStatusStudent,
-} from '../controllers/StatusStudent.controller';
+} from '../controllers/statusStudent.controller';
 import { authorizeRoles, isAuthenticateUser } from '../middlewares/CheckAuth';
 import { role } from '../../utils/role';
 
@@ -30,4 +30,4 @@ router.delete(
 	deleteStatusStudent
 );
 
-module.exports = router;
+export default router;

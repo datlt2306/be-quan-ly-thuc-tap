@@ -9,4 +9,5 @@ const router = express.Router();
 
 router.post('/drive/upload', upload.any(), isAuthenticateUser, uploadFile);
 
-module.exports = router;
+export default router;
+

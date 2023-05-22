@@ -7,4 +7,4 @@ const router = express.Router();
 router.post('/login-google', loginGoogle)
 router.get('/logout',isAuthenticateUser, logout)
 
-module.exports = router
+export default router
