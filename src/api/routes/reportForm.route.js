@@ -5,22 +5,7 @@ const router = require('express').Router();
 const multer = require('multer');
 const upload = multer();
 
-router.patch(
-	'/report',
-	isAuthenticateUser,
-	// authorizeRoles([1, 2]),
-	checkRequestTime,
-	upload.any(),
-	report
-);
-router.patch(
-	'/form',
-	isAuthenticateUser,
-	// authorizeRoles([1, 2]),
-	checkRequestTime,
-	upload.any(),
-	form
-);
+router.patch('/upload/report', isAuthenticateUser, upload.any(), checkRequestTime, report);
+router.patch('/upload/form', isAuthenticateUser, upload.any(), checkRequestTime, form);
 
 export default router;
-
