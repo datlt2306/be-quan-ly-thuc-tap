@@ -24,13 +24,7 @@ app.use(compression({ level: 6, threshold: 1024 })); // compress data if payload
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerOptions));
 
 // Routes
-// app.use('/api', rootRouter);
-const ROUTES_DIR = path.resolve(path.join(__dirname, './api/routes'))
-readdirSync(ROUTES_DIR).forEach((file) =>
-	import(path.resolve(path.join(ROUTES_DIR,file)))
-		.then((module) => app.use('/api', module.default))
-		.catch((error) => console.log(error.message))
-);
+app.use('/api', rootRouter);
 
 // Run server
 const PORT = process.env.PORT || 9998;
