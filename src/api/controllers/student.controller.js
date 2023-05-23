@@ -20,20 +20,20 @@ export const listStudent = async (req, res) => {
 		// xác định học kỳ hiện tại
 		const dataDefault = await SemesterModel.findOne({
 			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
-			campus_id: campusManager,
+			campus_id: campusManager
 		});
 		// lấy ra các học sinh thỏa mãn đăng ký kỳ hiện tại và thuộc cơ sở của manger đăng nhập
 
 		const students = await StudentModel.find({
 			smester_id: semester || dataDefault._id,
-			campus_id: campusManager,
+			campus_id: campusManager
 		}).populate({ path: 'major', select: 'name', match: { majorCode: { $exists: true } } });
 
 		return res.status(200).json(students);
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -48,13 +48,13 @@ export const updateStudent = async (req, res) => {
 		const student = await checkStudentExist(id, campus);
 
 		const result = await StudentModel.findOneAndUpdate({ _id: id }, data, {
-			new: true,
+			new: true
 		});
 		return res.status(201).json(result);
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -72,7 +72,7 @@ export const removeStudent = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -97,7 +97,7 @@ export const readOneStudent = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -111,14 +111,11 @@ export const updateReviewerStudent = async (req, res) => {
 		const studentNotExist = [];
 		const checkStudentListExist = await StudentModel.find({
 			_id: { $in: listIdStudent },
-			campus_id: campus,
+			campus_id: campus
 		});
-
 		if (checkStudentListExist.length < listIdStudent.length) {
 			listIdStudent.forEach((idStudent) => {
-				let check = checkStudentListExist.find(
-					(student) => student._id.toString() === idStudent.toString()
-				);
+				let check = checkStudentListExist.find((student) => student._id.toString() === idStudent.toString());
 				if (!check) {
 					studentNotExist.push(idStudent);
 				}
@@ -131,16 +128,17 @@ export const updateReviewerStudent = async (req, res) => {
 			{ _id: { $in: listIdStudent } },
 			{
 				$set: {
-					reviewer: email,
-				},
+					reviewer: email
+				}
 			},
 			{ multi: true }
 		);
 		return res.status(201).json({ listIdStudent, email });
 	} catch (error) {
+		console.log('error :>> ', error);
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -155,7 +153,7 @@ export const updateBusinessStudent = async (req, res) => {
 		const businessCheck = await BusinessModel.findOne({
 			_id: business,
 			campus_id: campus,
-			smester_id: semester._id,
+			smester_id: semester._id
 		});
 
 		if (!businessCheck) throw createHttpError(404, 'Công ty không tồn tại!');
@@ -164,8 +162,8 @@ export const updateBusinessStudent = async (req, res) => {
 			{ _id: { $in: listIdStudent }, campus_id: campus, smester_id: semester._id },
 			{
 				$set: {
-					business: business,
-				},
+					business: business
+				}
 			},
 			{ multi: true }
 		);
@@ -173,7 +171,7 @@ export const updateBusinessStudent = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -195,20 +193,20 @@ export const updateStatusStudent = async (req, res) => {
 	try {
 		await StudentModel.updateMany(
 			{
-				_id: { $in: listIdStudents },
+				_id: { $in: listIdStudents }
 			},
 			{
 				$set: {
 					statusCheck: status,
-					note: textNote,
-				},
+					note: textNote
+				}
 			},
 			{ multi: true, new: true }
 		);
 		const listStudentChangeStatus = await StudentModel.find({
 			_id: { $in: listIdStudent },
 			statusCheck: status,
-			note: textNote,
+			note: textNote
 		}).select('name');
 
 		if (status === 1) {
@@ -458,7 +456,7 @@ export const updateStatusStudent = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -474,18 +472,18 @@ export const listStudentReviewCV = async (req, res) => {
 			report: null,
 			statusCheck: { $in: [0, 1] },
 			campus_id: campus,
-			smester_id: semester._id,
+			smester_id: semester._id
 		})
 			.populate('campus_id')
 			.populate('smester_id')
 			.populate('business')
-			.populate('majors');
+			.populate({ path: 'majorCode' });
 
 		return res.status(200).json(listStudentReviewCV);
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -500,13 +498,13 @@ export const importStudents = async (req, res) => {
 		const importResult = await StudentService.createListStudent({
 			semesterId: smester_id,
 			campusId: campus_id,
-			data: validatedStudentsList,
+			data: validatedStudentsList
 		});
 		return res.status(201).json(importResult);
 	} catch (error) {
 		return res.status(error.status || 500).json({
 			message: error.message,
-			status: error.status || 500,
+			status: error.status || 500
 		});
 	}
 };
