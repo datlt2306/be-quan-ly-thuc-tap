@@ -1,17 +1,13 @@
 import mongoose from 'mongoose';
 import MajorModel from '../models/major.model';
 import createHttpError from 'http-errors';
-import {
-	validateDataArrayMajor,
-	validateDataMajor,
-	validateDataUpdateMajor,
-} from '../validation/major.validation';
+import { validateDataArrayMajor, validateDataMajor, validateDataUpdateMajor } from '../validation/major.validation';
 
 // get all
 export const getAllMajors = async (campus) => {
 	try {
 		const majors = await MajorModel.find({
-			campus: campus,
+			campus: campus
 		});
 
 		return majors;
@@ -28,7 +24,7 @@ export const getOneMajor = async (id, campus) => {
 		}
 		const major = await MajorModel.findOne({
 			campus: campus,
-			_id: id,
+			_id: id
 		}).populate('campus');
 
 		if (!major) {
@@ -63,7 +59,7 @@ export const updateMajor = async (id, data, campus) => {
 
 		const majorNew = await MajorModel.findOneAndUpdate(
 			{
-				_id: id,
+				_id: id
 			},
 			data,
 			{ new: true }
@@ -86,7 +82,7 @@ export const deleteMajor = async (id, campus) => {
 		await getOneMajor(id, campus);
 
 		const major = await MajorModel.findOneAndDelete({
-			_id: id,
+			_id: id
 		});
 
 		return major;
@@ -115,12 +111,12 @@ export const createMajorList = async (data, campus) => {
 		const codeMajorList = data.map((item) => item.majorCode);
 		const majorExist = await MajorModel.find({
 			majorCode: { $in: codeMajorList },
-			campus: campus,
+			campus: campus
 		}).lean();
 
 		if (majorExist.length > 0) {
 			throw createHttpError(409, 'Các mã ngành đã tồn tại', {
-				error: majorExist.map((item) => item.majorCode),
+				error: majorExist.map((item) => item.majorCode)
 			});
 		}
 
@@ -151,7 +147,7 @@ export const createOneMajor = async (data, campus) => {
 		// check tồn tại
 		const major = await MajorModel.findOne({
 			majorCode: data.majorCode,
-			campus: campus,
+			campus: campus
 		});
 
 		if (major) {
@@ -161,7 +157,7 @@ export const createOneMajor = async (data, campus) => {
 		// create
 		return await new MajorModel({
 			...data,
-			campus: campus,
+			campus: campus
 		}).save();
 	} catch (error) {
 		throw error;

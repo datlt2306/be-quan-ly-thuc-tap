@@ -4,7 +4,7 @@ import * as ManagerServices from '../services/manager.service';
 export const getListManager = async (req, res) => {
 	try {
 		const campus = req.campusManager;
-		const result = await ManagerServices.getListManager(campus);
+		const result = await ManagerServices.getListManager(campus, req.query.limit, req.query.page);
 
 		return res.status(200).json(result);
 	} catch (error) {

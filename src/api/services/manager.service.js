@@ -7,10 +7,10 @@ import {
 } from '../validation/manager.validation';
 
 // get list
-export const getListManager = async (campus) => {
+export const getListManager = async (campus, limit, page) => {
 	const options = {
-		page: 1,
-		limit: 1000,
+		page: +page || 1,
+		limit: +limit || 10,
 		populate: ['campus_id'],
 		customLabels: {
 			totalDocs: 'total',
