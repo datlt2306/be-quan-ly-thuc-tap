@@ -18,7 +18,7 @@ export const checkStudentExist = async (id, campus) => {
 		const student = await StudentModel.findOne({
 			_id: id,
 			campus_id: campus,
-			smester_id: semester._id,
+			smester_id: semester._id
 		});
 
 		if (!student) {
@@ -36,40 +36,36 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 	try {
 		data = data.map((student) => ({ ...student, mssv: student.mssv.toUpperCase() }));
 		// Lây ra danh sách sinh viên trong kỳ hiện tại & sinh viên đã trượt/không đủ điều kiện + những sinh viên đã tồn tại
-		const [existsStudent, instanceStudentsList, notQualifiedStudentForAllTime] =
-			await Promise.all([
-				StudentModel.exists({ mssv: { $in: data } }),
-				StudentModel.find({
-					smester_id: semesterId,
-					campus_id: campusId,
-				}),
-				StudentModel.find({
-					campus_id: campusId,
-					statusCheck: { $in: [3, 12] },
-				}),
-			]);
+		const [existedStudents, instanceStudentsList, notQualifiedStudentForAllTime] = await Promise.all([
+			StudentModel.find({ email: { $in: data.map((student) => student.email) } }),
+			StudentModel.find({
+				smester_id: semesterId,
+				campus_id: campusId
+			}),
+			StudentModel.find({
+				campus_id: campusId,
+				statusCheck: { $in: [3, 12] }
+			})
+		]);
 		const isFirstStage = !instanceStudentsList.length;
 		const isSecondStage = instanceStudentsList.every((student) => student.updatedInStage === 1);
 
-		const newStudents = data.filter(
-			(student) => !instanceStudentsList.some((std) => std.mssv === student.mssv)
-		);
+		const newStudents = data.filter((student) => !instanceStudentsList.some((std) => std.mssv === student.mssv));
 		// Các sinh viên không đủ điều kiện từ kỳ trước nay có trong danh sách dự kiến ở kỳ hiện tại
 		const qualifiedStudents = notQualifiedStudentForAllTime.filter((student) =>
 			newStudents.some((std) => std.mssv === student.mssv)
 		);
 
-		/* CASE STAGE 1 */
 		if (isFirstStage) {
-			console.log('::::::::::::: Stage 1 :::::::::::::');
-			if (!!existsStudent) {
+			/* CASE STAGE 1 */
+			if (existedStudents.length) {
 				throw createHttpError.Conflict('Some students already existed!');
 			}
 			// Các sinh viên mới ngoại trừ sinh viên đã trượt từ các kỳ trước nay đã có trong danh sách
 			const newStudentsInFirstStage = newStudents
 				.map((student) => ({
 					...student,
-					updatedInStage: 1,
+					updatedInStage: 1
 				}))
 				.filter((student) => !qualifiedStudents.some((std) => std.mssv === student.mssv));
 			const newExpectedStudents = await Promise.all([
@@ -78,7 +74,7 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 					{ _id: { $in: qualifiedStudents } },
 					{ $set: { smester_id: semesterId, updatedInStage: 1, statusCheck: 10 } },
 					{ new: true, multi: true }
-				),
+				)
 			]);
 
 			return newExpectedStudents;
@@ -88,8 +84,7 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 		if (isSecondStage) {
 			// Danh sách sinh viên không đủ điều kiện trong đợt 2
 			const excludeStudentsInSecondStage = instanceStudentsList.filter(
-				(student) =>
-					!data.some((std) => std.mssv.toUpperCase() === student.mssv.toUpperCase())
+				(student) => !data.some((std) => std.mssv.toUpperCase() === student.mssv.toUpperCase())
 			);
 			console.log(excludeStudentsInSecondStage);
 			const newStudentsInSecondStage = newStudents.filter(
@@ -97,10 +92,7 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 			);
 			const resultOfUpdateAtStage2 = await Promise.all([
 				StudentModel.insertMany(newStudentsInSecondStage),
-				StudentModel.updateMany(
-					{ _id: { $in: excludeStudentsInSecondStage } },
-					{ $set: { statusCheck: 3 } }
-				),
+				StudentModel.updateMany({ _id: { $in: excludeStudentsInSecondStage } }, { $set: { statusCheck: 3 } }),
 				StudentModel.updateMany(
 					{ _id: { $in: qualifiedStudents } },
 					{ $set: { smester_id: semesterId, statusCheck: 10 } },
@@ -109,11 +101,11 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 				StudentModel.updateMany(
 					{
 						smester_id: semesterId,
-						campus_id: campusId,
+						campus_id: campusId
 					},
 					{ $set: { updatedInStage: 2 } },
 					{ multi: true, new: true }
-				),
+				)
 			]);
 
 			return resultOfUpdateAtStage2;
@@ -141,11 +133,11 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 			StudentModel.updateMany(
 				{
 					smester_id: semesterId,
-					campus_id: campusId,
+					campus_id: campusId
 				},
 				{ $set: { updatedInStage: 3 } },
 				{ multi: true, new: true }
-			),
+			)
 		]);
 		return resultOfUpdateAtAdditionalStage;
 	} catch (error) {
@@ -182,14 +174,12 @@ export const updateStatusStudent = async (data, hostname, campus) => {
 		const checkStudentListExist = await StudentModel.find({
 			_id: { $in: listIdStudent },
 			campus_id: campus,
-			smester_id: semester._id,
+			smester_id: semester._id
 		}).lean();
 
 		if (checkStudentListExist.length < listIdStudent.length) {
 			listIdStudent.forEach((idStudent) => {
-				let check = checkStudentListExist.find(
-					(student) => student._id.toString() === idStudent.toString()
-				);
+				let check = checkStudentListExist.find((student) => student._id.toString() === idStudent.toString());
 				if (!check) {
 					studentNotExist.push(idStudent);
 				}
@@ -202,14 +192,14 @@ export const updateStatusStudent = async (data, hostname, campus) => {
 		await StudentModel.updateMany(
 			{
 				_id: { $in: listIdStudent },
-				campus_id: campus,
+				campus_id: campus
 			},
 			{
 				statusCheck: statusValue,
-				note: textNote,
+				note: textNote
 			},
 			{
-				multi: true,
+				multi: true
 			}
 		);
 
@@ -217,7 +207,7 @@ export const updateStatusStudent = async (data, hostname, campus) => {
 		let content = replaceContentMail(statusStudent.contentMail, {
 			hostname,
 			note: textNote,
-			statusTitle: statusStudent.title,
+			statusTitle: statusStudent.title
 		});
 		const listEmailStudent = checkStudentListExist.map((student) => student.email);
 
@@ -225,11 +215,11 @@ export const updateStatusStudent = async (data, hostname, campus) => {
 			from: '"Phòng QHDN" <' + process.env.USER_EMAIL + '>',
 			to: listEmailStudent,
 			html: content,
-			subject: statusStudent.titleMail,
+			subject: statusStudent.titleMail
 		});
 
 		return {
-			message: 'Thay đổi trạng thái sinh viên thành công',
+			message: 'Thay đổi trạng thái sinh viên thành công'
 		};
 	} catch (error) {
 		throw error;
