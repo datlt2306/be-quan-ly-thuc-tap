@@ -2,6 +2,7 @@ import { generateEmail } from '../../utils/emailTemplate';
 import Student from '../models/student.model';
 import { uploadFile } from '../services/googleDrive.service';
 import { requestSupportSchema, selfFindSchema } from '../validation/internApplicant.validation';
+import { sendMail } from './email.controller';
 
 /*
  * Fields to include in request body:
@@ -32,23 +33,25 @@ export const signUpCVForSupport = async (req, res) => {
 
 		if (!findStudent) {
 			return res.status(500).send({
-				message: 'Thông tin của bạn không tồn tại trên hệ thống!',
+				message: 'Thông tin của bạn không tồn tại trên hệ thống!'
 			});
 		}
 		if (findStudent.statusCheck === 0 || findStudent.statusCheck === 11) {
 			return res.status(500).send({
-				message: 'Thông tin CV của bạn đã được đăng ký',
+				message: 'Thông tin CV của bạn đã được đăng ký'
 			});
 		}
 
-		if (
-			(findStudent.numberOfTime > 2 && findStudent.statusCheck === 1) ||
-			(findStudent.numberOfTime > 2 && findStudent.statusCheck <= 3)
-		) {
-			return res.status(500).send({
-				message: 'Tài khoạn của bạn đã vượt quá số lần đăng ký thông tin thực tập',
-			});
-		}
+		//! DEPRECATED
+		//TODO: REMOVE
+		// if (
+		// 	(findStudent.numberOfTime > 2 && findStudent.statusCheck === 1) ||
+		// 	(findStudent.numberOfTime > 2 && findStudent.statusCheck <= 3)
+		// ) {
+		// 	return res.status(500).send({
+		// 		message: 'Tài khoạn của bạn đã vượt quá số lần đăng ký thông tin thực tập'
+		// 	});
+		// }
 
 		let update = {
 			phoneNumber,
@@ -56,7 +59,7 @@ export const signUpCVForSupport = async (req, res) => {
 			dream,
 			majorCode,
 			support,
-			email: findStudent.email,
+			email: findStudent.email
 		};
 
 		// Lấy request body & validate
@@ -69,7 +72,7 @@ export const signUpCVForSupport = async (req, res) => {
 			const requestSupportUpdate = {
 				business,
 				CV: uploadedFile.url,
-				statusCheck: 0,
+				statusCheck: 0
 			};
 
 			update = { ...update, ...requestSupportUpdate };
@@ -79,14 +82,7 @@ export const signUpCVForSupport = async (req, res) => {
 			if (error) throw new Error(error.message);
 		} else {
 			// Cho SV tự tìm
-			const {
-				position,
-				taxCode,
-				addressCompany,
-				nameCompany,
-				phoneNumberCompany,
-				emailEnterprise,
-			} = req.body;
+			const { position, taxCode, addressCompany, nameCompany, phoneNumberCompany, emailEnterprise } = req.body;
 
 			const selfFindUpdate = {
 				position,
@@ -95,7 +91,7 @@ export const signUpCVForSupport = async (req, res) => {
 				nameCompany,
 				phoneNumberCompany,
 				emailEnterprise,
-				statusCheck: 11,
+				statusCheck: 11
 			};
 
 			update = { ...update, ...selfFindUpdate };
@@ -106,7 +102,8 @@ export const signUpCVForSupport = async (req, res) => {
 		}
 
 		// Cập nhật số lần sửa thông tin
-		update.numberOfTime = findStudent.numberOfTime + 1;
+		//! DEPRECATED
+		// update.numberOfTime = findStudent.numberOfTime + 1;
 		update.note = null;
 
 		await Student.findByIdAndUpdate(_id, update, { new: true });
@@ -122,13 +119,12 @@ export const signUpCVForSupport = async (req, res) => {
 		}
 
 		// Send email
-		// await sendMail(generateEmail(email, sharedData.name, emailType));
+		await sendMail(generateEmail(findStudent.email, emailType, findStudent.name));
 
 		return res.status(200).send({ message, support: update.support });
 	} catch (error) {
-		console.log(error.message);
 		return res.status(500).send({
-			message: 'Đã xảy ra lỗi! Đăng ký lại sau ít phút!',
+			message: 'Đã xảy ra lỗi! Đăng ký lại sau ít phút!'
 		});
 	}
 };

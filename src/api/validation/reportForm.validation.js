@@ -5,6 +5,7 @@ export const formSchema = Joi.object({
 	internshipTime: Joi.string().required(),
 	form: Joi.string().uri().required(),
 	statusCheck: Joi.number().required(),
+	note: Joi.any()
 });
 
 export const reportSchema = Joi.object({
@@ -14,5 +15,5 @@ export const reportSchema = Joi.object({
 	resultScore: Joi.number().required(),
 	report: Joi.string().uri().required(),
 	statusCheck: Joi.number().valid(7).required(),
-	signTheContract: Joi.number().required(),
+	signTheContract: Joi.number().required()
 });
