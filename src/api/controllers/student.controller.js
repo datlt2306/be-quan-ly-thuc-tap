@@ -1,13 +1,12 @@
-import StudentModel from '../models/student.model';
-import BusinessModel from '../models/business.model';
-import { sendMail } from './email.controller';
-import SemesterModel from '../models/semester.model';
-import { getCurrentSemester } from './semester.controller';
 import createHttpError from 'http-errors';
+import BusinessModel from '../models/business.model';
+import SemesterModel from '../models/semester.model';
+import StudentModel from '../models/student.model';
+import * as StudentService from '../services/student.service';
 import { checkStudentExist } from '../services/student.service';
 import { validateDataCreateStudentList } from '../validation/student.validation';
-import { StudentStatusEnum } from '../constants/studentStatus';
-import * as StudentService from '../services/student.service';
+import { sendMail } from './email.controller';
+import { getCurrentSemester } from './semester.controller';
 
 const ObjectId = require('mongodb').ObjectID;
 
@@ -27,8 +26,9 @@ export const listStudent = async (req, res) => {
 		const students = await StudentModel.find({
 			smester_id: semester || dataDefault._id,
 			campus_id: campusManager
-		}).populate({ path: 'major', select: 'name', match: { majorCode: { $exists: true } } });
-
+		})
+			.populate('business')
+			.populate({ path: 'majorCode', match: { majorCode: { $exists: true } } });
 		return res.status(200).json(students);
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
@@ -178,7 +178,7 @@ export const updateBusinessStudent = async (req, res) => {
 
 // [PATCH] /api/student/status (update trạng thái sinh viên)
 export const updateStatusStudent = async (req, res) => {
-	const { listIdStudent, status, listEmailStudent, textNote } = req.body;
+	const { listIdStudent, status, listEmailStudent, textNote, reviewerEmail } = req.body;
 	const dataEmail = {};
 	const hostname = req.get('host');
 	const listIdStudents = await listIdStudent.map((id) => ObjectId(id));
@@ -197,6 +197,7 @@ export const updateStatusStudent = async (req, res) => {
 			},
 			{
 				$set: {
+					reviewer: reviewerEmail,
 					statusCheck: status,
 					note: textNote
 				}
