@@ -1,11 +1,11 @@
 import createHttpError from 'http-errors';
 import { replaceContentMail } from '../../utils/toolkit';
+import { StudentReviewTypeEnum } from '../constants/reviewTypeEnum';
 import { transporter } from '../controllers/email.controller';
 import { getCurrentSemester } from '../controllers/semester.controller';
 import StudentModel from '../models/student.model';
 import { validateUpdateStatus } from '../validation/student.validation';
 import { selectOneStatus } from './statusStudent.service';
-import { StudentStatusEnum } from '../constants/studentStatus';
 require('dotenv').config();
 const apiKey = 'cc126cffe46824f121e00226099067e3-us21';
 
@@ -222,6 +222,43 @@ export const updateStatusStudent = async (data, hostname, campus) => {
 			message: 'Thay đổi trạng thái sinh viên thành công'
 		};
 	} catch (error) {
+		throw error;
+	}
+};
+
+export const getStudentsToReview = async ({ reviewType, campus, semester }) => {
+	try {
+		switch (reviewType) {
+			case StudentReviewTypeEnum.REVIEW_CV:
+				return await StudentModel.find({
+					CV: { $ne: null },
+					form: null,
+					report: null,
+					statusCheck: { $in: [0, 1] },
+					campus_id: campus,
+					smester_id: semester
+				});
+			case StudentReviewTypeEnum.REVIEW_RECORD:
+				return await StudentModel.find({
+					statusCheck: { $in: [4, 5] },
+					form: { $ne: null },
+					report: null,
+					smester_id: semester,
+					campus_id: campus
+				});
+			case StudentReviewTypeEnum.REVIEW_REPORT:
+				return await StudentModel.find({
+					statusCheck: { $in: [7, 8] },
+					form: { $ne: null },
+					report: { $ne: null },
+					smester_id: semester,
+					campus_id: campus
+				});
+			default:
+				return [];
+		}
+	} catch (error) {
+		console.log('error :>> ', error);
 		throw error;
 	}
 };

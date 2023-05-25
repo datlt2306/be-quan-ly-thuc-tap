@@ -8,179 +8,179 @@ const studentSchema = new mongoose.Schema(
 			require: true,
 			type: String,
 			uppercase: true,
-			unique: true,
+			unique: true
 		},
 		name: {
 			type: String,
-			require: true,
+			require: true
 		},
 		course: {
-			type: String,
+			type: String
 		},
 		majorCode: {
 			type: String,
-			require: true,
+			require: true
 		},
 		narrow: {
 			type: mongoose.Types.ObjectId,
 			ref: 'NarrowSpecialization',
-			autopopulate: true,
+			autopopulate: true
 		},
 		dream: {
 			type: String,
-			default: null,
+			default: null
 		},
 		email: {
 			type: String,
 			require: true,
-			unique: true,
+			unique: true
 		},
 		supplement: {
 			type: String,
-			default: null,
+			default: null
 		},
 		statusCheck: {
 			type: Number,
-			default: 10,
+			default: 10
 		},
 		statusStudent: {
 			type: String,
 			enum: ['HDI', 'HL', 'CHO', 'TN'],
-			uppercase: true,
+			uppercase: true
 		},
 		support: {
 			type: Number,
-			default: null,
+			default: null
 		},
 		phoneNumber: {
 			type: String,
 			require: true,
 			minLength: 10,
 			maxLength: 11,
-			default: null,
+			default: null
 		},
 		address: {
 			type: String,
-			default: null,
+			default: null
 		},
 		CV: {
 			type: String,
-			default: null,
+			default: null
 		},
 		campus_id: {
 			type: mongoose.Types.ObjectId,
-			ref: 'Campus',
+			ref: 'Campus'
 		},
 		business: {
 			type: mongoose.Types.ObjectId,
 			ref: 'Business',
 			default: null,
-			autopopulate: true,
+			autopopulate: true
 		},
 		smester_id: {
 			type: mongoose.Types.ObjectId,
 			ref: 'Semester',
-			autopopulate: true,
+			autopopulate: true
 		},
 		reviewer: {
 			type: String,
-			default: null,
+			default: null
 		},
 		updatedInStage: {
 			type: Number,
 			enum: [1, 2, 3],
-			default: 1,
+			default: 1
 		},
 		form: {
 			type: String,
-			default: null,
+			default: null
 		},
 		report: {
 			type: String,
-			default: null,
+			default: null
 		},
 		note: {
 			type: String,
-			default: '',
+			default: ''
 		},
 		numberOfTime: {
 			type: Number,
-			default: 0,
+			default: 0
 		},
 		//cong ty
 		nameCompany: {
 			type: String,
-			default: null,
+			default: null
 		},
 		addressCompany: {
 			type: String,
-			default: null,
+			default: null
 		},
 		taxCode: {
 			type: String,
-			default: null,
+			default: null
 		},
 		position: {
 			type: String,
-			default: null,
+			default: null
 		},
 		phoneNumberCompany: {
 			type: String,
-			default: null,
+			default: null
 		},
 		emailEnterprise: {
 			type: String,
-			default: null,
+			default: null
 		},
 		// bieu mau
 		internshipTime: {
 			type: Date,
-			default: null,
+			default: null
 		},
 		endInternShipTime: {
-			type: Date,
+			type: Date
 		},
 		attitudePoint: {
-			type: Number,
+			type: Number
 		},
 		resultScore: {
 			type: Number,
-			default: null,
+			default: null
 		},
 		listTimeForm: [
 			{
 				typeNumber: {
-					type: Number,
+					type: Number
 				},
 				typeName: {
 					type: String,
-					default: '',
+					default: ''
 				},
 				startTime: {
-					type: Number,
+					type: Number
 				},
 				endTime: {
-					type: Number,
-				},
-			},
+					type: Number
+				}
+			}
 		],
 		signTheContract: {
 			type: Number,
-			default: null,
-		},
+			default: null
+		}
 	},
 	{
 		timestamps: true,
-		strictPopulate: false,
+		strictPopulate: false
 	}
 );
 
 studentSchema.virtual('major', {
 	localField: 'majorCode',
 	foreignField: 'majorCode',
-	ref: 'Major',
+	ref: 'Major'
 });
 
 studentSchema.plugin(mongoosePaginate);
 studentSchema.plugin(mongooseAutoPopulate);
-module.exports = mongoose.model('Student', studentSchema);
+export default mongoose.model('Student', studentSchema);
