@@ -6,6 +6,10 @@ import StudentModel from '../models/student.model';
 import * as StudentService from '../services/student.service';
 import { checkStudentExist } from '../services/student.service';
 import { validateDataCreateStudentList } from '../validation/student.validation';
+import HttpStatusCode from '../constants/httpStatusCode';
+import { HttpException } from '../../utils/httpException';
+import { StudentReviewTypeEnum } from '../constants/reviewTypeEnum';
+import { getCurrentSemester } from './semester.controller';
 
 const ObjectId = require('mongodb').ObjectID;
 
@@ -175,6 +179,24 @@ export const updateBusinessStudent = async (req, res) => {
 	}
 };
 
+export const getStudentsToReview = async (req, res) => {
+	try {
+		const campus = req.campusManager;
+		const semester = await getCurrentSemester(campus);
+		const reviewType = req.query.type;
+		console.log(campus);
+		console.log(reviewType);
+		if (!Object.values(StudentReviewTypeEnum).includes(reviewType)) {
+			throw createHttpError.BadRequest('Invalid review type !');
+		}
+		const students = await StudentService.getStudentsToReview({ reviewType, semester: semester._id, campus });
+		return res.status(HttpStatusCode.OK).json(students);
+	} catch (error) {
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
+	}
+};
+
 // [PATCH] /api/student/status (update trạng thái sinh viên)
 export const updateStatusStudent = async (req, res) => {
 	const { listIdStudent, status, listEmailStudent, textNote, reviewerEmail } = req.body;
@@ -285,9 +307,7 @@ export const importStudents = async (req, res) => {
 		});
 		return res.status(201).json(importResult);
 	} catch (error) {
-		return res.status(error.status || 500).json({
-			message: error.message,
-			status: error.status || 500
-		});
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
