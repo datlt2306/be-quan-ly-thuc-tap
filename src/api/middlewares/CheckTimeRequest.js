@@ -1,23 +1,25 @@
 import ConfigTime from '../models/timeWindow.model';
-import { getCurrentSemester } from '../controllers/semester.controller';
+import { getCurrentSemester } from '../controllers/semester_id.controller';
 import moment from 'moment';
+import student from '../models/student.model';
 
 export const checkRequestTime = async (req, res, next) => {
 	const { typeNumber } = req.body;
-	const campus = req.campusManager || req.campusStudent;
+	const campus_id = req.campusManager || req.campusStudent;
 
 	try {
-		const semester = await getCurrentSemester(campus);
+		const { _id: semester_id } = await getCurrentSemester(campus_id);
 
-		if (!semester || !campus) throw new Error('Bạn không có quyền truy cập vào chức năng này');
+		if (!semester_id || !campus_id) throw createHttpError(403, 'Bạn không có quyền truy cập vào chức năng này');
 
+		const byPass = await student.findOne({ semester_id, campus_id, statusCheck: { $in: [1, 5, 8] } });
 		const timeWindow = await ConfigTime.findOne({
 			typeNumber,
-			semester_id: semester._id,
-			campus_id: campus,
+			semester_id: semester_id,
+			campus_id: campus_id
 		});
 
-		if (!timeWindow) return res.status(400).json('Không tìm thấy thời gian đăng ký');
+		if (!timeWindow) throw createHttpError(404, 'Không tìm thấy thời gian đăng ký');
 
 		const dateNow = moment();
 		const startTime = moment(timeWindow.startTime);
@@ -26,14 +28,14 @@ export const checkRequestTime = async (req, res, next) => {
 		// Kiểm tra nếu trong thời gian đăng ký sẽ cho phép tiếp tục
 		const isWithinTimeWindow = dateNow.isAfter(startTime) && dateNow.isBefore(endTime);
 
-		if (isWithinTimeWindow) {
+		// Sửa CV, Biên bản, Báo Cáo sẽ đc bỏ qua thời gian đăng ký
+		if (byPass || isWithinTimeWindow) {
 			next();
 		} else {
-			return res.status(400).json({
-				message: 'Hết thời gian nộp form',
-			});
+			throw createHttpError(400, 'Hết thời gian nộp form');
 		}
 	} catch (error) {
-		return res.status(400).json(error.message || 'Lỗi');
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
