@@ -15,11 +15,11 @@ export const isAuthenticateUser = async (req, res, next) => {
 		const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
 		const manager = await Manager.findOne({
 			_id: decoded.userId,
-			campus_id: decoded.campus_id,
+			campus_id: decoded.campus_id
 		});
 		const student = await Student.findOne({
 			_id: decoded.userId,
-			campus_id: decoded.campus_id,
+			campus_id: decoded.campus_id
 		});
 		if (manager) {
 			req.role = manager.role;
@@ -29,16 +29,17 @@ export const isAuthenticateUser = async (req, res, next) => {
 		} else if (student) {
 			// xác nhận cơ sở của student
 			req.campusStudent = student.campus_id;
+			req.student_id = decoded.userId;
 			req.role = 0;
 			next();
 		} else {
 			return res.status(401).json({
-				msg: 'Không có quyền truy cập',
+				msg: 'Không có quyền truy cập'
 			});
 		}
 	} catch (error) {
 		return res.json({
-			message: error,
+			message: error
 		});
 	}
 };
@@ -47,7 +48,7 @@ export const authorizeRoles = (roles) => {
 	return (req, res, next) => {
 		if (!roles.includes(req.role)) {
 			return res.status(403).json({
-				message: `Tài khoản không có quyền truy cập`,
+				message: `Tài khoản không có quyền truy cập`
 			});
 		}
 		next();
