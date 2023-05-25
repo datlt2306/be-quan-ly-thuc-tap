@@ -1,13 +1,11 @@
 import createHttpError from 'http-errors';
+import { generateEmail } from '../../utils/emailTemplate';
 import BusinessModel from '../models/business.model';
 import SemesterModel from '../models/semester.model';
 import StudentModel from '../models/student.model';
 import * as StudentService from '../services/student.service';
 import { checkStudentExist } from '../services/student.service';
 import { validateDataCreateStudentList } from '../validation/student.validation';
-import { StudentStatusEnum } from '../constants/studentStatus';
-import * as StudentService from '../services/student.service';
-import { generateEmail } from '../../utils/emailTemplate';
 
 const ObjectId = require('mongodb').ObjectID;
 
