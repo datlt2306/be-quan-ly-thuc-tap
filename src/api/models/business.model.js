@@ -5,62 +5,60 @@ const { ObjectId } = mongoose.Schema;
 const businessSchema = mongoose.Schema({
 	name: {
 		type: String,
-		required: true,
-		lowercase: true,
+		required: true
 	},
 	internship_position: {
 		type: String,
-		required: true,
+		required: true
 	},
 	major: {
 		type: ObjectId,
 		ref: 'Major',
-		required: true,
+		required: true
 	},
 	amount: {
 		type: Number,
-		default: 0,
+		default: 0
 	},
 	address: {
-		type: String,
+		type: String
 	},
 	semester_id: {
 		type: ObjectId,
-		ref: 'Semester',
+		ref: 'Semester'
 	},
 	campus_id: {
 		type: ObjectId,
-		ref: 'Campus',
+		ref: 'Campus'
 	},
 	tax_code: {
 		type: String,
-		required: true,
-		unique: true,
+		required: true
 	},
 	business_code: {
 		type: String,
-		unique: true,
-		required: true,
+		required: true
 	},
 	requirement: {
-		type: String,
+		type: String
 	},
 	description: {
-		type: String,
+		type: String
 	},
 	benefit: {
-		type: String,
+		type: String
 	},
 	status: {
 		type: Number,
-		default: 1,
+		default: 1
 	},
 	created_at: {
 		type: Date,
-		default: Date.now,
-	},
+		default: Date.now
+	}
 });
 
+businessSchema.index({ tax_code: 1, business_code: 1, campus_id: 1 }, { unique: true });
 businessSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('Business', businessSchema);
