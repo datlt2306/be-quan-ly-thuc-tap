@@ -232,8 +232,6 @@ export const getStudentsToReview = async ({ reviewType, campus, semester }) => {
 			case StudentReviewTypeEnum.REVIEW_CV:
 				return await StudentModel.find({
 					CV: { $ne: null },
-					form: null,
-					report: null,
 					statusCheck: { $in: [0, 1] },
 					campus_id: campus,
 					smester_id: semester
@@ -242,7 +240,6 @@ export const getStudentsToReview = async ({ reviewType, campus, semester }) => {
 				return await StudentModel.find({
 					statusCheck: { $in: [4, 5] },
 					form: { $ne: null },
-					report: null,
 					smester_id: semester,
 					campus_id: campus
 				});
