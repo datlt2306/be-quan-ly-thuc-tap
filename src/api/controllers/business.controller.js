@@ -178,31 +178,32 @@ export const createbusiness = async (req, res) => {
 	}
 };
 
-//! DEPRECATE
 // [PATCH] /api/business/:id
 export const updateBusiness = async (req, res) => {
 	const data = req.body;
 	const id = req.params.id;
-	const campus = req.campusManager || req.campusStudent;
+	const campus_id = req.campusManager;
+
 	try {
-		const semester = await getCurrentSemester(campus);
+		const { _id: semester_id } = await getCurrentSemester(campus);
 		const { error } = businessValidation(data);
 
 		if (error) throw createHttpError(400, { error: error.details[0].message });
+		if (!isValidObjectId(id)) throw createHttpError(400, 'ID không hợp lệ');
 
 		const business = await BusinessModel.findOne({
 			_id: id,
-			semester_id: semester._id,
-			campus_id: campus
+			semester_id,
+			campus_id
 		});
 
-		if (!business) {
-			throw createHttpError(404, 'Doanh nghiệp không tồn tại');
-		}
+		if (!business) throw createHttpError(404, 'Doanh nghiệp không tồn tại');
 
-		const itemBusinessUpdate = await BusinessModel.findByIdAndUpdate(id, data, {
-			new: true
-		});
+		const itemBusinessUpdate = await BusinessModel.findByIdAndUpdate(
+			id,
+			{ ...data, campus_id, semester_id },
+			{ new: true }
+		);
 
 		return res.status(201).json(itemBusinessUpdate);
 	} catch (error) {
