@@ -1,8 +1,11 @@
 import { generateEmail } from '../../utils/emailTemplate';
 import Student from '../models/student.model';
 import { uploadFile } from '../services/googleDrive.service';
-import { requestSupportSchema, selfFindSchema } from '../validation/internApplicant.validation';
+import { requestSupportValidate, selfFindValidate } from '../validation/internApplicant.validation';
 import { sendMail } from './email.controller';
+import { HttpException } from '../../utils/httpException';
+import createHttpError from 'http-errors';
+import { isValidObjectId } from 'mongoose';
 
 /*
  * Fields to include in request body:
@@ -27,45 +30,39 @@ import { sendMail } from './email.controller';
  */
 
 export const signUpCVForSupport = async (req, res) => {
-	const { support, _id, phoneNumber, address, dream, majorCode } = req.body;
+	const { support, _id, phoneNumber, address, dream } = req.body;
 	try {
-		const findStudent = await Student.findById(_id).exec();
+		const findStudent = await Student.findById(_id);
+
+		if (!isValidObjectId(_id)) throw createHttpError(400, 'ID không đúng định dạng');
 
 		if (!findStudent) {
-			return res.status(500).send({
-				message: 'Thông tin của bạn không tồn tại trên hệ thống!'
-			});
-		}
-		if (findStudent.statusCheck === 0 || findStudent.statusCheck === 11) {
-			return res.status(500).send({
-				message: 'Thông tin CV của bạn đã được đăng ký'
-			});
+			throw createHttpError(404, 'Thông tin của bạn không tồn tại trên hệ thống');
 		}
 
-		//! DEPRECATED
-		//TODO: REMOVE
-		// if (
-		// 	(findStudent.numberOfTime > 2 && findStudent.statusCheck === 1) ||
-		// 	(findStudent.numberOfTime > 2 && findStudent.statusCheck <= 3)
-		// ) {
-		// 	return res.status(500).send({
-		// 		message: 'Tài khoạn của bạn đã vượt quá số lần đăng ký thông tin thực tập'
-		// 	});
-		// }
+		switch (findStudent.statusCheck) {
+			case 0: // Đang chờ kiểm tra CV hoặc đã đăng ký
+			case 11:
+				throw createHttpError(409, 'Thông tin CV của bạn đã được đăng ký');
+			case 1: // Sửa lại CV
+				if (findStudent.numberOfTime < 3) break;
+				throw createHttpError(400, 'Tài khoạn của bạn đã vượt quá số lần đăng ký thông tin thực tập');
+			case 10: // Chưa đăng ký
+				break;
+			default:
+				throw createHttpError(400, 'Bạn không đủ điểu kiện đăng ký thực tập');
+		}
 
 		let update = {
 			phoneNumber,
 			address,
 			dream,
-			majorCode,
-			support,
-			email: findStudent.email
+			support
 		};
 
-		// Lấy request body & validate
+		// Cho SV đăng ký hỗ trợ
 		if (support == 1) {
 			const [file] = req.files;
-			// Cho SV đăng ký hỗ trợ
 			const { business } = req.body;
 			const uploadedFile = await uploadFile(file); // Upload & Get URL
 
@@ -77,9 +74,9 @@ export const signUpCVForSupport = async (req, res) => {
 
 			update = { ...update, ...requestSupportUpdate };
 
-			const { error } = requestSupportSchema.validate(update);
+			const { error } = requestSupportValidate(update);
 
-			if (error) throw new Error(error.message);
+			if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
 		} else {
 			// Cho SV tự tìm
 			const { position, taxCode, addressCompany, nameCompany, phoneNumberCompany, emailEnterprise } = req.body;
@@ -96,15 +93,12 @@ export const signUpCVForSupport = async (req, res) => {
 
 			update = { ...update, ...selfFindUpdate };
 
-			const { error } = selfFindSchema.validate(update);
+			const { error } = selfFindValidate(update);
 
-			if (error) throw new Error(error.message);
+			if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
+
+			update.numberOfTime = findStudent.numberOfTime + 1;
 		}
-
-		// Cập nhật số lần sửa thông tin
-		//! DEPRECATED
-		// update.numberOfTime = findStudent.numberOfTime + 1;
-		update.note = null;
 
 		await Student.findByIdAndUpdate(_id, update, { new: true });
 
@@ -123,8 +117,7 @@ export const signUpCVForSupport = async (req, res) => {
 
 		return res.status(200).send({ message, support: update.support });
 	} catch (error) {
-		return res.status(500).send({
-			message: 'Đã xảy ra lỗi! Đăng ký lại sau ít phút!'
-		});
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };

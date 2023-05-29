@@ -7,6 +7,7 @@ const transporter = nodemailer.createTransport({
 		pass: process.env.PASS_EMAIL
 	}
 });
+const createHttpError = require('http-errors');
 
 export const sendMailUser = async (req, res) => {
 	try {
@@ -39,14 +40,10 @@ export const sendMail = async (req, res) => {
 			subject: req.subject,
 			html: req.content
 		};
-		transporter.sendMail(mainOptions, function (error, succes) {
-			if (error) {
-				return res.status(500).send({ message: 'Có lỗi xảy ra, không gửi được email' });
-			} else {
-				return res.status(200).send({ message: 'Gửi email thành công' });
-			}
+		transporter.sendMail(mainOptions, function (err, success) {
+			if (err) throw createHttpError(400, 'Có lỗi xảy ra, không gửi được email');
 		});
 	} catch (error) {
-		res.status(500).json(error);
+		throw error;
 	}
 };
