@@ -15,13 +15,13 @@ export const processFile = async (unprocessedFile) => {
 		const createdFile = await drive.files.create({
 			requestBody: {
 				name: unprocessedFile.originalname,
-				parents: [process.env.FOLDER_ID],
+				parents: [process.env.FOLDER_ID]
 			},
 			/* file được upload lấy từ buffer đã được lưu trữ tạm thời trước đó */
 			media: {
-				body: bufferStream,
+				body: bufferStream
 			},
-			fields: 'id',
+			fields: 'id'
 		});
 
 		await setFilePublic(createdFile.data.id);
@@ -39,13 +39,13 @@ export const setFilePublic = async (fileId) => {
 			fileId,
 			requestBody: {
 				role: 'reader',
-				type: 'anyone',
-			},
+				type: 'anyone'
+			}
 		});
 
 		return drive.files.get({
 			fileId,
-			fields: 'webViewLink, webContentLink',
+			fields: 'webViewLink, webContentLink'
 		});
 	} catch (error) {
 		throw createHttpError(500, error.message);
@@ -63,18 +63,17 @@ export const deleteFile = async (fileId) => {
 export const uploadFile = async (file) => {
 	try {
 		if (!file) throw new Error('File must be provided!');
-		if (!AllowedMimeType.includes(file.mimetype))
-			throw new Error('File type is not allowed to upload!');
+		if (!AllowedMimeType.includes(file.mimetype)) throw createHttpError(400, 'File type is not allowed to upload!');
 
 		const uploadedFile = await processFile(file);
 		const newFile = {
 			url: process.env.DRIVE_URL + uploadedFile.data.id,
 			fileName: file.originalname,
-			mimeType: file.mimetype,
+			mimeType: file.mimetype
 		};
 
 		return newFile;
 	} catch (error) {
-		throw new Error(error.message);
+		throw error;
 	}
 };

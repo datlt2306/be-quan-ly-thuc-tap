@@ -4,24 +4,26 @@ const sharedSchema = {
 	phoneNumber: Joi.string().required(),
 	address: Joi.string().required(),
 	dream: Joi.string().required(),
-	majorCode: Joi.string().required(),
-	email: Joi.string().email().required(),
 	statusCheck: Joi.number(),
-	support: Joi.number().optional(),
+	support: Joi.number().optional()
 };
 
-export const requestSupportSchema = Joi.object({
+const requestSupportSchema = Joi.object({
 	...sharedSchema,
 	business: Joi.string().required(),
-	CV: Joi.string().required(),
+	CV: Joi.string().required()
 });
 
-export const selfFindSchema = Joi.object({
+export const requestSupportValidate = (data) => requestSupportSchema.validate(data);
+
+const selfFindSchema = Joi.object({
 	...sharedSchema,
 	position: Joi.string().required(),
 	taxCode: Joi.string().required(),
 	nameCompany: Joi.string().required(),
 	addressCompany: Joi.string().required(),
 	phoneNumberCompany: Joi.string().required(),
-	emailEnterprise: Joi.string().email().required(),
+	emailEnterprise: Joi.string().email().required()
 });
+
+export const selfFindValidate = (data) => selfFindSchema.validate(data);
