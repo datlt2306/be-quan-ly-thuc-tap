@@ -24,8 +24,7 @@ export const upsertBusinessList = async (data, semester_id, campus_id) => {
 			const update = { ...business, semester_id: semester_id.toString(), campus_id: campus_id.toString() };
 			const { error } = businessValidation(update);
 			const isExist = dupl.find(({ campus_id: CID }) => CID.equals(campus_id));
-			console.log(isExist, isExist);
-			if (error) throw createHttpError(403, 'Dữ liệu không đúng định dạng');
+			if (error) throw createHttpError(400, 'Dữ liệu không đúng định dạng');
 			if (!isExist) return { insertOne: { document: update } };
 
 			return { updateOne: { filter: { campus_id }, update, upsert: true } };
