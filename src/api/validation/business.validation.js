@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const schema = Joi.object({
 	name: Joi.string().required(),
@@ -19,5 +19,4 @@ const schema = Joi.object({
 
 export const businessValidation = (value) => schema.validate(value);
 
-export const businessListValidation = (values = [], listSchema = Joi.array().items(schema)) =>
-	listSchema.validate(values);
+export const businessListValidation = (values = [], _ = Joi.array().items(schema)) => _.validate(values);
