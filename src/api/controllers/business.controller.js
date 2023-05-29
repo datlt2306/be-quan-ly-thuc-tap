@@ -180,16 +180,22 @@ export const createbusiness = async (req, res) => {
 
 // [PATCH] /api/business/:id
 export const updateBusiness = async (req, res) => {
-	const data = req.body;
+	let data = req.body;
 	const id = req.params.id;
 	const campus_id = req.campusManager;
 
 	try {
-		const { _id: semester_id } = await getCurrentSemester(campus);
+		const { _id: semester_id } = await getCurrentSemester(campus_id);
+
+		if (!campus_id) throw createHttpError(404, 'Không tìm thấy cơ sở hiện tại');
+		if (!semester_id && !customSemester) throw createHttpError(404, 'Không tìm thấy kỳ học hiện tại');
+		if (!isValidObjectId(id)) throw createHttpError(400, 'ID không hợp lệ');
+
+		data = { ...data, semester_id: semester_id.toString(), campus_id: campus_id.toString() };
+
 		const { error } = businessValidation(data);
 
-		if (error) throw createHttpError(400, { error: error.details[0].message });
-		if (!isValidObjectId(id)) throw createHttpError(400, 'ID không hợp lệ');
+		if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ');
 
 		const business = await BusinessModel.findOne({
 			_id: id,
@@ -199,11 +205,7 @@ export const updateBusiness = async (req, res) => {
 
 		if (!business) throw createHttpError(404, 'Doanh nghiệp không tồn tại');
 
-		const itemBusinessUpdate = await BusinessModel.findByIdAndUpdate(
-			id,
-			{ ...data, campus_id, semester_id },
-			{ new: true }
-		);
+		const itemBusinessUpdate = await BusinessModel.findByIdAndUpdate(id, data, { new: true });
 
 		return res.status(201).json(itemBusinessUpdate);
 	} catch (error) {
