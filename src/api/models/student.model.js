@@ -171,13 +171,15 @@ const studentSchema = new mongoose.Schema(
 	},
 	{
 		timestamps: true,
-		strictPopulate: false
+		strictPopulate: false,
+		toJSON: { virtuals: true }
 	}
 );
 
 studentSchema.virtual('major', {
 	localField: 'majorCode',
 	foreignField: 'majorCode',
+	justOne: true,
 	ref: 'Major'
 });
 
