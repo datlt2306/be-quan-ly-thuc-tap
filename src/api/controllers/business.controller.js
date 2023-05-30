@@ -78,11 +78,8 @@ export const insertBusiness = async (req, res) => {
 
 		return res.status(201).json(result);
 	} catch (error) {
-		return res.status(error.statusCode || 500).json({
-			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
-			error: error.error
-		});
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 

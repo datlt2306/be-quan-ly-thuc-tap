@@ -10,9 +10,9 @@ const schema = Joi.object({
 	campus_id: Joi.string().required(),
 	tax_code: Joi.string().required(),
 	business_code: Joi.string().required(),
-	requirement: Joi.string(),
-	description: Joi.string(),
-	benefit: Joi.string(),
+	requirement: Joi.string().default(''),
+	description: Joi.string().default(''),
+	benefit: Joi.string().default(''),
 	status: Joi.number().default(1),
 	created_at: Joi.date().default(Date.now)
 });
