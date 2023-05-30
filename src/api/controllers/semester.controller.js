@@ -3,6 +3,7 @@ import { HttpException } from '../../utils/httpException';
 import createHttpError from 'http-errors';
 import { semesterValidation } from '../validation/semester.validation';
 import { isValidObjectId } from 'mongoose';
+import { checkValidSemesterEndTime, checkValidSemesterTime } from '../services/semester.service';
 
 //* CONSTANT
 export const SEMESTER_NAME = ['spring', 'summer', 'fall'];
@@ -14,7 +15,7 @@ export const getSemester = async (req, res) => {
 	try {
 		if (!campus_id) throw createHttpError(400, 'Cần truyền vào campus_id');
 
-		const semesters = await Semester.find({ campus_id }).sort({ createdAt: -1 });
+		const semesters = await Semester.find({ campus_id }).sort({ start_time: -1 });
 		const defaultSemester = await Semester.findOne({
 			$and: [{ start_time: { $lte: currentDate } }, { end_time: { $gte: currentDate } }],
 			campus_id
@@ -52,7 +53,6 @@ export const updateSemester = async (req, res) => {
 	try {
 		const cleanedName = name.toLowerCase().trim();
 		const isExist = await Semester.findById(id);
-
 		const { error, value } = semesterValidation({
 			name: cleanedName,
 			campus_id,
@@ -64,7 +64,13 @@ export const updateSemester = async (req, res) => {
 		if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
 		if (!isValidObjectId(id)) throw createHttpError(400, 'ID không hợp lệ');
 
-		await isStartDateValid({ ...req.body, id }); // Tìm kỳ học gần nhât theo end_time
+		const isValidSemesterTimeRange = await checkValidSemesterTime({ ...value, id });
+		if (isValidSemesterTimeRange === false) {
+			throw createHttpError.Conflict(
+				'Thời gian bắt đầu của kỳ hiện tại phải lớn hơn thời gian kết thúc của kỳ trước'
+			);
+		}
+
 		const result = await Semester.findByIdAndUpdate(id, value);
 
 		return res.status(200).json(result);
@@ -85,7 +91,12 @@ export const insertSemester = async (req, res) => {
 		if (findName) throw createHttpError(400, 'Tên kỳ đã tồn tại, vui lòng đặt tên khác!');
 		if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
 
-		await isStartDateValid(value); // Tìm kỳ học gần nhât theo end_time
+		const isValidSemesterStartTime = await checkValidSemesterTime(value);
+		if (isValidSemesterStartTime === false) {
+			throw createHttpError.Conflict(
+				'Thời gian bắt đầu của kỳ hiện tại phải lớn hơn thời gian kết thúc của kỳ trước'
+			);
+		}
 		const result = await new Semester(value).save();
 
 		return res.status(200).json(result);
@@ -108,32 +119,3 @@ export const getCurrentSemester = async (campus) => {
 		throw error;
 	}
 };
-
-async function isStartDateValid(data) {
-	try {
-		const closestSemester = await Semester.findOne({
-			name: { $ne: data.name.toLowerCase().trim() },
-			end_time: { $gte: data.start_time },
-			campus_id: data.campus_id
-		}).sort({ end_time: 1 });
-
-		if (closestSemester) {
-			throw createHttpError(
-				400,
-				`Thời gian bắt đầu phải lớn hơn thời gian kết thúc của kỳ trước: Kỳ ${closestSemester.name} ${convertDate(
-					closestSemester.end_time
-				)}`
-			);
-		}
-	} catch (error) {
-		throw error;
-	}
-}
-
-function convertDate(date) {
-	return new Intl.DateTimeFormat('vi-VN', {
-		year: 'numeric',
-		month: 'long',
-		day: '2-digit'
-	}).format(date);
-}
