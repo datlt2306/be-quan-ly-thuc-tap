@@ -1,94 +1,106 @@
-import semester from '../models/semester.model';
+import Semester from '../models/semester.model';
+import { HttpException } from '../../utils/httpException';
+import createHttpError from 'http-errors';
+import { semesterValidation } from '../validation/semester.validation';
+import { isValidObjectId } from 'mongoose';
+
+//* CONSTANT
+export const SEMESTER_NAME = ['spring', 'summer', 'fall'];
+
 export const getSemester = async (req, res) => {
 	const { campus_id } = req.query;
+	const currentDate = new Date();
+
 	try {
-		const data = await semester.find({ campus_id }).sort({ createdAt: -1 });
-		const dataDefault = await semester.findOne({
-			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
-			campus_id,
+		if (!campus_id) throw createHttpError(400, 'Cần truyền vào campus_id');
+
+		const semesters = await Semester.find({ campus_id }).sort({ createdAt: -1 });
+		const defaultSemester = await Semester.findOne({
+			$and: [{ start_time: { $lte: currentDate } }, { end_time: { $gte: currentDate } }],
+			campus_id
 		});
-		res.status(200).json({ defaultSemester: dataDefault, listSemesters: data });
+
+		return res.status(200).json({ defaultSemester, listSemesters: semesters });
 	} catch (error) {
-		res.status(400).json(error);
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 
 export const getDefaultSemester = async (req, res) => {
+	const { campus_id } = req.query;
+
 	try {
-		const { campus_id } = req.query;
-		const data = await semester.findOne({
+		if (!campus_id) throw createHttpError(400, 'Cần truyền vào campus_id');
+
+		const result = await Semester.findOne({
 			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
-			campus_id,
+			campus_id
 		});
-		res.status(200).json({
-			result: data,
-			success: true,
-			status: 'ok',
-		});
+
+		return res.status(200).json(result);
 	} catch (error) {
-		res.status(400).json({
-			result: {},
-			message: error,
-			success: false,
-			status: 'failed',
-		});
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 
 export const updateSemester = async (req, res) => {
+	const { name, campus_id, start_time, end_time } = req.body;
+	const { id } = req.params;
+
 	try {
-		const query = { _id: req.params.id };
-		const reqName = req.body.name.toLowerCase();
-		const check = await semester.findOne({
-			$and: [{ _id: { $ne: req.params.id, $exists: true } }, { name: reqName }],
+		const cleanedName = name.toLowerCase().trim();
+		const isExist = await Semester.findById(id);
+
+		const { error, value } = semesterValidation({
+			name: cleanedName,
+			campus_id,
+			start_time,
+			end_time
 		});
-		if (!reqName) {
-			return res.status(400).json({
-				message: 'Bạn phải nhập tên kỳ',
-			});
-		}
-		if (check) {
-			return res.status(400).json({
-				message: 'Tên kì đã tồn tại, vui lòng thử lại',
-			});
-		}
-		const data = await semester.findOneAndUpdate(query, req.body, {
-			new: true,
-		});
-		return res.status(200).json(data);
+
+		if (!isExist) throw createHttpError(404, 'Kỳ học không tồn tại, vui lòng thử lại');
+		if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
+		if (!isValidObjectId(id)) throw createHttpError(400, 'ID không hợp lệ');
+
+		await isStartDateValid({ ...req.body, id }); // Tìm kỳ học gần nhât theo end_time
+		const result = await Semester.findByIdAndUpdate(id, value);
+
+		return res.status(200).json(result);
 	} catch (error) {
-		res.status(500).json({
-			message: 'Có lỗi vui lòng thử lại sau',
-		});
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 
 export const insertSemester = async (req, res) => {
-	try {
-		const reqName = req.body.name.toLowerCase();
-		const findName = await semester.findOne({
-			name: reqName,
-			campus_id: req.body.campus_id,
-		});
+	const { name, campus_id, start_time, end_time } = req.body;
 
-		if (findName) {
-			return res.status(400).json({
-				code: 400,
-				message: 'Tên kỳ đã tồn tại, vui lòng đặt tên khác!',
-			});
-		}
-		const data = await new semester(req.body).save();
-		res.status(200).json(data);
+	try {
+		const cleanedName = name.toLowerCase().trim();
+		const findName = await Semester.findOne({ name: cleanedName, campus_id });
+		const { error, value } = semesterValidation({ name: cleanedName, campus_id, start_time, end_time });
+
+		if (findName) throw createHttpError(400, 'Tên kỳ đã tồn tại, vui lòng đặt tên khác!');
+		if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
+
+		await isStartDateValid(value); // Tìm kỳ học gần nhât theo end_time
+		const result = await new Semester(value).save();
+
+		return res.status(200).json(result);
 	} catch (error) {
-		console.log(error);
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 
+//! NOT A CONTROLLER
 export const getCurrentSemester = async (campus) => {
 	try {
-		const dataDefault = await semester.findOne({
+		const dataDefault = await Semester.findOne({
 			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
-			campus_id: campus,
+			campus_id: campus
 		});
 
 		return dataDefault;
@@ -96,3 +108,32 @@ export const getCurrentSemester = async (campus) => {
 		throw error;
 	}
 };
+
+async function isStartDateValid(data) {
+	try {
+		const closestSemester = await Semester.findOne({
+			name: { $ne: data.name.toLowerCase().trim() },
+			end_time: { $gte: data.start_time },
+			campus_id: data.campus_id
+		}).sort({ end_time: 1 });
+
+		if (closestSemester) {
+			throw createHttpError(
+				400,
+				`Thời gian bắt đầu phải lớn hơn thời gian kết thúc của kỳ trước: Kỳ ${closestSemester.name} ${convertDate(
+					closestSemester.end_time
+				)}`
+			);
+		}
+	} catch (error) {
+		throw error;
+	}
+}
+
+function convertDate(date) {
+	return new Intl.DateTimeFormat('vi-VN', {
+		year: 'numeric',
+		month: 'long',
+		day: '2-digit'
+	}).format(date);
+}

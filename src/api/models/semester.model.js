@@ -1,25 +1,28 @@
 const mongoose = require('mongoose');
+
 const { ObjectId } = mongoose.Schema;
 const semesterSchema = mongoose.Schema({
 	name: {
 		type: String,
 		required: true,
 		lowercase: true,
+		trim: true,
+		unique: true
 	},
 	start_time: {
-		type: Date,
+		type: Date
 	},
 	end_time: {
-		type: Date,
+		type: Date
 	},
 	createdAt: {
 		type: Date,
-		default: Date.now,
+		default: new Date()
 	},
 	campus_id: {
 		type: ObjectId,
-		ref: 'Campus',
-	},
+		ref: 'Campus'
+	}
 });
 
 module.exports = mongoose.model('Semester', semesterSchema);
