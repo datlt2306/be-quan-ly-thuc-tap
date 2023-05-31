@@ -106,10 +106,10 @@ export const signUpCVForSupport = async (req, res) => {
 
 		if (findStudent.statusCheck === 1) {
 			message = 'Sửa thông tin CV thành công!';
-			emailType = support ? 'internshipSupportUpdated' : 'selfInternshipUpdated';
+			emailType = support ? 'INTERN_SUPPORT_UPDATE' : 'INTERN_SELF_FINDING_UPDATE';
 		} else {
 			message = 'Đăng ký thông tin thành công!';
-			emailType = support ? 'internshipSupportRegistered' : 'selfInternshipRegistered';
+			emailType = support ? 'INTERN_SUPPORT_REGISTRATION' : 'INTERN_SELF_FINDING_REGISTRATION';
 		}
 
 		// Send email
