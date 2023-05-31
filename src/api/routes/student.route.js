@@ -1,22 +1,26 @@
 import express from 'express';
-import { role } from '../../utils/role';
+const router = express.Router();
+
 import {
-	getStudentsToReview,
-	importStudents,
+	insertStudent,
 	listStudent,
+	listStudentReviewCV,
 	readOneStudent,
 	removeStudent,
-	updateBusinessStudent,
 	updateReviewerStudent,
 	updateStatusStudent,
-	updateStudent
+	updateStudent,
+	updateBusinessStudent,
+	importStudents,
+	getStudentsToReview
 } from '../controllers/student.controller';
 import { authorizeRoles, isAuthenticateUser } from '../middlewares/CheckAuth';
-
-const router = express.Router();
+import student from '../models/student.model';
+import { role } from '../../utils/role';
 
 router.get('/student/reviews', isAuthenticateUser, authorizeRoles([role.manager]), getStudentsToReview);
 router.get('/student', isAuthenticateUser, authorizeRoles([role.manager]), listStudent);
+router.get('/student/reviewcv', isAuthenticateUser, authorizeRoles([role.manager]), listStudentReviewCV);
 router.get('/student/:id', isAuthenticateUser, readOneStudent);
 router.post('/student', isAuthenticateUser, authorizeRoles([role.manager]), importStudents);
 router.patch('/student', isAuthenticateUser, authorizeRoles([role.manager]), updateReviewerStudent);
@@ -24,6 +28,20 @@ router.patch('/student/business', isAuthenticateUser, authorizeRoles([role.manag
 router.patch('/student/status', isAuthenticateUser, authorizeRoles([role.manager]), updateStatusStudent);
 router.patch('/student/:id', isAuthenticateUser, authorizeRoles([role.manager]), updateStudent);
 router.delete('/student/:id', isAuthenticateUser, authorizeRoles([role.manager]), removeStudent);
-// router.get('/student/reviewcv', isAuthenticateUser, authorizeRoles([role.manager]), listStudentReviewCV);
+
+// fake data
+router.post('/generate-fake-data', () => {
+	for (let i = 0; i <= 30; i++) {
+		student.create({
+			name: 'Dương Điệp' + i,
+			CV: '61c5d4d60e722e6436118598',
+			studentCode: 'Ok' + i,
+			email: 'Còn Hàng',
+			address: 'Ngô thừa ân',
+			internshipIndustry: 'Kì 6',
+			phoneNumber: 4
+		});
+	}
+});
 
 export default router;
