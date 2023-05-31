@@ -1,16 +1,17 @@
 import createHttpError from 'http-errors';
-import { getMailTemplate } from '../../utils/emailTemplate';
-import { HttpException } from '../../utils/httpException';
-import HttpStatusCode from '../constants/httpStatusCode';
-import { StudentReviewTypeEnum } from '../constants/reviewTypeEnum';
+import { generateEmail } from '../../utils/emailTemplate';
 import BusinessModel from '../models/business.model';
 import SemesterModel from '../models/semester.model';
 import StudentModel from '../models/student.model';
-import { sendMail } from '../services/mail.service';
 import * as StudentService from '../services/student.service';
 import { checkStudentExist } from '../services/student.service';
 import { validateDataCreateStudentList } from '../validation/student.validation';
+import HttpStatusCode from '../constants/httpStatusCode';
+import { HttpException } from '../../utils/httpException';
+import { StudentReviewTypeEnum } from '../constants/reviewTypeEnum';
 import { getCurrentSemester } from './semester.controller';
+
+const ObjectId = require('mongodb').ObjectID;
 
 // [GET] /api/student?limit=20&page=1
 export const listStudent = async (req, res) => {
@@ -137,6 +138,7 @@ export const updateReviewerStudent = async (req, res) => {
 		);
 		return res.status(201).json({ listIdStudent, email });
 	} catch (error) {
+		console.log('error :>> ', error);
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
 			message: error.message || 'Internal Server Error'
@@ -182,6 +184,8 @@ export const getStudentsToReview = async (req, res) => {
 		const campus = req.campusManager;
 		const semester = await getCurrentSemester(campus);
 		const reviewType = req.query.type;
+		console.log(campus);
+		console.log(reviewType);
 		if (!Object.values(StudentReviewTypeEnum).includes(reviewType)) {
 			throw createHttpError.BadRequest('Invalid review type !');
 		}
@@ -196,12 +200,21 @@ export const getStudentsToReview = async (req, res) => {
 // [PATCH] /api/student/status (update trạng thái sinh viên)
 export const updateStatusStudent = async (req, res) => {
 	const { listIdStudent, status, listEmailStudent, textNote, reviewerEmail } = req.body;
-	const link = req.protocol + '://' + req.get('host');
+	const dataEmail = {};
+	const hostname = req.get('host');
+	const listIdStudents = await listIdStudent.map((id) => ObjectId(id));
+	const newArr = [];
+	if (listEmailStudent) {
+		listEmailStudent.forEach((value) => {
+			newArr.push(value.email);
+		});
+	}
+	dataEmail.mail = newArr;
 
 	try {
-		const updatedStudents = await StudentModel.updateMany(
+		await StudentModel.updateMany(
 			{
-				_id: { $in: listIdStudent }
+				_id: { $in: listIdStudents }
 			},
 			{
 				$set: {
@@ -212,58 +225,44 @@ export const updateStatusStudent = async (req, res) => {
 			},
 			{ multi: true, new: true }
 		);
+		const listStudentChangeStatus = await StudentModel.find({
+			_id: { $in: listIdStudent },
+			statusCheck: status,
+			note: textNote
+		}).select('name');
 
-		switch (+status) {
+		switch (status) {
 			case 1:
-				await sendMail({
-					recipients: listEmailStudent,
-					...getMailTemplate('CV_CHANGE_REQUEST', textNote, link)
-				});
+				await sendMail(generateEmail(dataEmail, 'cvCorrectionNotif', textNote, hostname));
 				break;
 			case 2:
-				await sendMail({
-					recipients: listEmailStudent,
-					...getMailTemplate('RECEIVED_CV', link)
-				});
+				await sendMail(generateEmail(dataEmail, 'cvReceivedNotif', hostname));
 				break;
 			case 3:
-				await sendMail({
-					recipients: listEmailStudent,
-					...getMailTemplate('INTERN_FAILURE', textNote)
-				});
+				await sendMail(generateEmail(dataEmail, 'failedInternshipNotif', textNote));
 				break;
 			case 5:
-				await sendMail({
-					recipients: listEmailStudent,
-					...getMailTemplate('RECORD_CHANGE_REQUEST', textNote)
-				});
+				await sendMail(generateEmail(dataEmail, 'updateReportNotif', textNote));
 				break;
 			case 6:
-				await sendMail({
-					recipients: listEmailStudent,
-					...getMailTemplate('RECEIVE_REPORT', link)
-				});
+				await sendMail(generateEmail(dataEmail, 'reportReceivedNotif', hostname));
 				break;
 			case 8:
-				await sendMail({
-					recipients: listEmailStudent,
-					...getMailTemplate('REPORT_REGISTRATION', textNote, link)
-				});
+				await sendMail(generateEmail(dataEmail, 'minutesRegistered', textNote, hostname));
 				break;
 			case 9:
-				await sendMail({
-					recipients: listEmailStudent,
-					...getMailTemplate('RECEIVE_REPORT', link)
-				});
+				await sendMail(generateEmail(dataEmail, 'minutesReceivedNotif', hostname));
 				break;
 			default:
 				break;
 		}
 
-		return res.status(201).json(updatedStudents);
+		return res.status(201).json({ listStudentChangeStatus, status });
 	} catch (error) {
-		const httpException = new HttpException(error);
-		return res.status(httpException.statusCode).json(httpException);
+		return res.status(error.statusCode || 500).json({
+			statusCode: error.statusCode || 500,
+			message: error.message || 'Internal Server Error'
+		});
 	}
 };
 

@@ -1,6 +1,5 @@
-import 'dotenv/config';
-import nodemailer from 'nodemailer';
-
+require('dotenv').config();
+const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
 	service: 'gmail',
 	auth: {
@@ -8,6 +7,7 @@ const transporter = nodemailer.createTransport({
 		pass: process.env.PASS_EMAIL
 	}
 });
+const createHttpError = require('http-errors');
 
 export const sendMailUser = async (req, res) => {
 	try {
@@ -29,5 +29,21 @@ export const sendMailUser = async (req, res) => {
 		// res.status(200).json(req.body.mail);
 	} catch (error) {
 		return res.status(500).json(error);
+	}
+};
+
+export const sendMail = async (req, res) => {
+	try {
+		let mainOptions = {
+			from: '"Phòng QHDN" <PhongQHDN@fpt.eduv.vn>',
+			to: req.mail,
+			subject: req.subject,
+			html: req.content
+		};
+		transporter.sendMail(mainOptions, function (err, success) {
+			if (err) throw createHttpError(400, 'Có lỗi xảy ra, không gửi được email');
+		});
+	} catch (error) {
+		throw error;
 	}
 };
