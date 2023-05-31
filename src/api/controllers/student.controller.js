@@ -9,7 +9,7 @@ import { validateDataCreateStudentList } from '../validation/student.validation'
 import HttpStatusCode from '../constants/httpStatusCode';
 import { HttpException } from '../../utils/httpException';
 import { StudentReviewTypeEnum } from '../constants/reviewTypeEnum';
-import { getCurrentSemester } from './semester.controller';
+import { getCurrentSemester } from '../services/semester.service';
 
 const ObjectId = require('mongodb').ObjectID;
 

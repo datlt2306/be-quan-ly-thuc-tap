@@ -1,5 +1,5 @@
 import ConfigTime from '../models/timeWindow.model';
-import { getCurrentSemester } from '../controllers/semester.controller';
+import { getCurrentSemester } from '../services/semester.service';
 import moment from 'moment';
 
 export const checkRequestTime = async (req, res, next) => {
@@ -14,7 +14,7 @@ export const checkRequestTime = async (req, res, next) => {
 		const timeWindow = await ConfigTime.findOne({
 			typeNumber,
 			semester_id: semester._id,
-			campus_id: campus,
+			campus_id: campus
 		});
 
 		if (!timeWindow) return res.status(400).json('Không tìm thấy thời gian đăng ký');
@@ -30,7 +30,7 @@ export const checkRequestTime = async (req, res, next) => {
 			next();
 		} else {
 			return res.status(400).json({
-				message: 'Hết thời gian nộp form',
+				message: 'Hết thời gian nộp form'
 			});
 		}
 	} catch (error) {

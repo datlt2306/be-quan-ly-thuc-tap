@@ -1,10 +1,10 @@
 import createHttpError from 'http-errors';
 import TimeWindowModel from '../models/timeWindow.model';
-import { getCurrentSemester } from '../controllers/semester.controller';
+import { getCurrentSemester } from './semester.service';
 import {
 	validateConfigTimeCreateData,
 	validateConfigTimeUpdateData,
-	TimeWindowSchema,
+	TimeWindowSchema
 } from '../validation/configTime.validation';
 import mongoose from 'mongoose';
 
@@ -53,7 +53,7 @@ export const createConfigTime = async (data, campus) => {
 			semester_id: semester._id,
 			campus_id: campus,
 			endTime: data.endTime,
-			startTime: data.startTime,
+			startTime: data.startTime
 		});
 
 		if (checkExist) {
@@ -63,7 +63,7 @@ export const createConfigTime = async (data, campus) => {
 		return await new TimeWindowModel({
 			...data,
 			semester_id: semester._id,
-			campus_id: campus,
+			campus_id: campus
 		}).save();
 	} catch (error) {
 		throw error;
@@ -78,7 +78,7 @@ export const getListConfigTime = async (campus) => {
 
 		return await TimeWindowModel.find({
 			campus_id: campus,
-			semester_id: semester._id,
+			semester_id: semester._id
 		});
 	} catch (error) {
 		throw error;
@@ -97,7 +97,7 @@ export const getOneConfigTime = async (id, campus) => {
 		const configTime = await TimeWindowModel.findOne({
 			campus_id: campus,
 			semester_id: semester._id,
-			_id: id,
+			_id: id
 		});
 
 		if (!configTime) {
@@ -127,7 +127,7 @@ export const updateConfigTime = async (id, data, campus) => {
 
 		return await TimeWindowModel.findOneAndUpdate(
 			{
-				_id: id,
+				_id: id
 			},
 			data,
 			{ new: true }
@@ -144,7 +144,7 @@ export const deleteConfigTime = async (id, campus) => {
 		await getOneConfigTime(id, campus);
 
 		return await TimeWindowModel.findOneAndDelete({
-			_id: id,
+			_id: id
 		});
 	} catch (error) {
 		throw error;
