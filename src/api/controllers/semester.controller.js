@@ -3,13 +3,11 @@ import { HttpException } from '../../utils/httpException';
 import createHttpError from 'http-errors';
 import { semesterValidation } from '../validation/semester.validation';
 import { isValidObjectId } from 'mongoose';
-import { checkValidSemesterEndTime, checkValidSemesterTime } from '../services/semester.service';
-
-//* CONSTANT
-export const SEMESTER_NAME = ['spring', 'summer', 'fall'];
+import { checkValidSemesterTime } from '../services/semester.service';
+import { getDefaultSemester } from '../services/semester.service';
 
 export const getSemester = async (req, res) => {
-	const { campus_id } = req.query;
+	const campus_id = req?.query?.campus_id;
 	const currentDate = new Date();
 
 	try {
@@ -22,24 +20,6 @@ export const getSemester = async (req, res) => {
 		});
 
 		return res.status(200).json({ defaultSemester, listSemesters: semesters });
-	} catch (error) {
-		const httpException = new HttpException(error);
-		return res.status(httpException.statusCode).json(httpException);
-	}
-};
-
-export const getDefaultSemester = async (req, res) => {
-	const { campus_id } = req.query;
-
-	try {
-		if (!campus_id) throw createHttpError(400, 'Cần truyền vào campus_id');
-
-		const result = await Semester.findOne({
-			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
-			campus_id
-		});
-
-		return res.status(200).json(result);
 	} catch (error) {
 		const httpException = new HttpException(error);
 		return res.status(httpException.statusCode).json(httpException);
@@ -106,16 +86,15 @@ export const insertSemester = async (req, res) => {
 	}
 };
 
-//! NOT A CONTROLLER
-export const getCurrentSemester = async (campus) => {
+export const defaultSemester = async (req, res) => {
 	try {
-		const dataDefault = await Semester.findOne({
-			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
-			campus_id: campus
-		});
+		const { campus_id } = req.query;
+		const result = await getDefaultSemester(campus_id);
 
-		return dataDefault;
+		if (!result) throw createHttpError(404, 'Không tìm thấy kỳ học');
+		return res.status(200).json(result);
 	} catch (error) {
-		throw error;
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };

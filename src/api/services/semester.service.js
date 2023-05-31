@@ -1,5 +1,7 @@
+import createHttpError from 'http-errors';
 import Semester from '../models/semester.model';
 import _ from 'lodash';
+
 export const checkValidSemesterTime = async (data) => {
 	try {
 		const semestersByCampus = await Semester.find({ campus_id: data.campus_id }).sort({ end_time: 1 });
@@ -21,6 +23,36 @@ export const checkValidSemesterTime = async (data) => {
 				const nextSemesterStartTime = new Date(semestersByCampus.at(currentSemesterIndex + 1).start_time).getTime();
 				return currentSemesterStartTime > previousSemesterEndTime && currentSemesterEndTime < nextSemesterStartTime;
 		}
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const getDefaultSemester = async (campus_id) => {
+	try {
+		if (!campus_id) throw createHttpError(400, 'Cần truyền vào campus_id');
+
+		const result = await Semester.findOne({
+			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
+			campus_id
+		});
+
+		return result;
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const getCurrentSemester = async (campus_id) => {
+	try {
+		if (!campus_id) throw createHttpError(400, 'Cần truyền vào campus_id');
+
+		const dataDefault = await Semester.findOne({
+			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
+			campus_id
+		});
+
+		return dataDefault;
 	} catch (error) {
 		throw error;
 	}
