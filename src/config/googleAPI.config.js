@@ -1,18 +1,25 @@
 import { google } from 'googleapis';
+import { JWT } from 'google-auth-library';
 
 const credentials = require('../credentials/credentials.json');
-const authClient = new google.auth.JWT(
-	credentials.client_email,
-	null,
-	credentials.private_key.replace(/\\n/g, '\n'),
-	['https://www.googleapis.com/auth/drive']
-);
 
-const { token } = authClient.authorize();
+const authClient = new JWT({
+	email: credentials.client_email,
+	key: credentials.private_key,
+	scopes: ['https://www.googleapis.com/auth/drive']
+});
 
-authClient.setCredentials(token);
+async function authorize() {
+	const token = await authClient.authorize();
+	authClient.setCredentials(token);
+}
+
+authorize();
+
+// Refresh token every 55 minutes
+setInterval(authorize, 55 * 60 * 1000);
 
 export const drive = google.drive({
 	version: 'v3',
-	auth: authClient,
+	auth: authClient
 });
