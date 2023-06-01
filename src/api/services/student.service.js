@@ -2,7 +2,7 @@ import createHttpError from 'http-errors';
 import { replaceContentMail } from '../../utils/toolkit';
 import { StudentReviewTypeEnum } from '../constants/reviewTypeEnum';
 import { transporter } from '../controllers/email.controller';
-import { getCurrentSemester } from '../controllers/semester.controller';
+import { getCurrentSemester } from './semester.service';
 import StudentModel from '../models/student.model';
 import { validateUpdateStatus } from '../validation/student.validation';
 import { selectOneStatus } from './statusStudent.service';

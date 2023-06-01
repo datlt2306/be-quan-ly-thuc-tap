@@ -1,6 +1,6 @@
 import * as timeWindowService from '../services/timeWindow.service';
 import ConfigTime from '../models/timeWindow.model';
-import { getCurrentSemester } from './semester.controller';
+import { getCurrentSemester } from '../services/semester.service';
 import { validateConfigTimeCreateData } from '../validation/configTime.validation';
 
 // [PUT] /api/settime
@@ -15,7 +15,7 @@ export const setTimeWindow = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -33,7 +33,7 @@ export const handleSetTimeRequest = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -49,16 +49,16 @@ export const getListTypeSetTime = async (req, res) => {
 
 		const time = await ConfigTime.find({
 			semester_id: req.query.semester_id || semester._id,
-			campus_id: campus,
+			campus_id: campus
 		});
 		return res.status(200).json({
 			message: 'time success',
-			time: time,
+			time: time
 		});
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -75,7 +75,7 @@ export const getOneTypeSetTime = async (req, res) => {
 		const timeWindow = await ConfigTime.findOne({
 			typeNumber,
 			semester_id: semester._id,
-			campus_id: campus,
+			campus_id: campus
 		})
 			.sort({ startTime: -1, endTime: -1 })
 			.exec();
@@ -84,12 +84,12 @@ export const getOneTypeSetTime = async (req, res) => {
 
 		return res.status(200).json({
 			message: 'Time window retrieved successfully',
-			time: timeWindow,
+			time: timeWindow
 		});
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -98,19 +98,19 @@ export const getTimeWindowByID = async (req, res) => {
 	try {
 		const { id } = req.params;
 		const timeWindow = await ConfigTime.findOne({
-			_id: id,
+			_id: id
 		});
 
 		if (!timeWindow) throw new Error('Time window not found');
 
 		return res.status(200).json({
 			message: 'Time window retrieved successfully',
-			time: timeWindow,
+			time: timeWindow
 		});
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -127,7 +127,7 @@ export const updateSetTime = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -143,7 +143,7 @@ export const deleteSetTime = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };

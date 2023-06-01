@@ -1,6 +1,6 @@
 import BusinessModel from '../models/business.model';
 import Student from '../models/student.model';
-import { getCurrentSemester, getDefaultSemester } from './semester.controller';
+import { getDefaultSemester, getCurrentSemester } from '../services/semester.service';
 import createHttpError from 'http-errors';
 import { businessListValidation, businessValidation } from '../validation/business.validation';
 import { upsertBusinessList } from '../services/business.service';
@@ -83,11 +83,13 @@ export const insertBusiness = async (req, res) => {
 	}
 };
 
+//* Role Student & Manager
 // [GET] /api/business
 export const listBusiness = async (req, res) => {
 	const { page = 1, limit = 30, semester_id: customSemesterID, ...optionalQuery } = req.query;
+
 	const campus_id = req.campusManager || req.campusStudent;
-	const semester_id = customSemesterID || getDefaultSemester(campus_id);
+	const semester_id = customSemesterID || (await getDefaultSemester(campus_id));
 
 	try {
 		// lấy ra học kỳ hiện tại
@@ -107,7 +109,8 @@ export const listBusiness = async (req, res) => {
 
 		let filters = {
 			campus_id,
-			semester_id
+			semester_id,
+			optionalQuery
 		};
 
 		if (optionalQuery) filters = { ...filters, ...optionalQuery };
@@ -136,7 +139,7 @@ export const removeBusiness = async (req, res) => {
 
 		if (!deletedBusiness) throw createHttpError(404, 'Doanh nghiệp này không tồn tại!');
 
-		return res.status(200).json(businessDelete);
+		return res.status(200).json(deletedBusiness);
 	} catch (error) {
 		const httpException = new HttpException(error);
 		return res.status(httpException.statusCode).json(httpException);

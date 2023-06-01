@@ -10,7 +10,7 @@ import { sendMail } from '../services/mail.service';
 import * as StudentService from '../services/student.service';
 import { checkStudentExist } from '../services/student.service';
 import { validateDataCreateStudentList } from '../validation/student.validation';
-import { getCurrentSemester } from './semester.controller';
+import { getCurrentSemester } from '../services/semester.service';
 
 // [GET] /api/student?limit=20&page=1
 export const listStudent = async (req, res) => {
