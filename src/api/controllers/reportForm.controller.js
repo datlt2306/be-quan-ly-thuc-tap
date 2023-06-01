@@ -51,7 +51,7 @@ export const report = async (req, res) => {
 					new: true
 				});
 
-				await sendMail(generateEmail(email, 'minutesRegistered', findStudent.name));
+				await sendMail(generateEmail(email, 'REPORT_REGISTRATION', findStudent.name));
 				return res.status(200).json({ message: 'Nộp báo cáo thành công', result });
 
 			// Đã nộp báo cáo
@@ -82,7 +82,7 @@ export const report = async (req, res) => {
 				result = await studentModel.findOneAndUpdate(filter, data, {
 					new: true
 				});
-				await sendMail(generateEmail(email, 'minutesUpdated', findStudent.name));
+				await sendMail(generateEmail(email, 'UPDATED_REPORT', findStudent.name));
 				return res.status(200).json({ message: 'Sửa báo cáo thành công', result });
 			default:
 				throw createHttpError(403, 'Bạn không đủ điều kiện nộp báo cáo');
