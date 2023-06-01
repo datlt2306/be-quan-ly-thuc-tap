@@ -86,7 +86,7 @@ export const insertBusiness = async (req, res) => {
 //* Role Student & Manager
 // [GET] /api/business
 export const listBusiness = async (req, res) => {
-	const { page = 1, limit = 30, semester_id: customSemesterID, ...optionalQuery } = req.query;
+	const { page = 1, limit = 10, semester_id: customSemesterID, ...optionalQuery } = req.query;
 
 	const campus_id = req.campusManager || req.campusStudent;
 	const semester_id = customSemesterID || (await getDefaultSemester(campus_id));
@@ -102,8 +102,8 @@ export const listBusiness = async (req, res) => {
 			sort: { created_at: 'desc' },
 			populate: ['major'],
 			customLabels: {
-				totalDocs: 'total',
-				docs: 'list'
+				totalDocs: 'pageSize',
+				docs: 'data'
 			}
 		};
 
