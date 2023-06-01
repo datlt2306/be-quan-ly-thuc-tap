@@ -1,10 +1,7 @@
 import createHttpError from 'http-errors';
 import ManagerModel from '../models/manager.model';
 import mongoose from 'mongoose';
-import {
-	validateManagerDataCreate,
-	validateManagerDataUpdate,
-} from '../validation/manager.validation';
+import { validateManagerDataCreate, validateManagerDataUpdate } from '../validation/manager.validation';
 
 // get list
 export const getListManager = async (campus, limit, page) => {
@@ -13,15 +10,15 @@ export const getListManager = async (campus, limit, page) => {
 		limit: +limit || 10,
 		populate: ['campus_id'],
 		customLabels: {
-			totalDocs: 'total',
-			docs: 'list',
-		},
+			totalDocs: 'pageSize',
+			docs: 'data'
+		}
 	};
 
 	try {
 		return await ManagerModel.paginate(
 			{
-				campus_id: campus,
+				campus_id: campus
 			},
 			options
 		);
@@ -31,15 +28,16 @@ export const getListManager = async (campus, limit, page) => {
 };
 
 // get one
+//! burn this heresy to the ground after demo
 export const getOneManager = async (id, campus) => {
 	const options = {
 		page: 1,
 		limit: 1,
 		populate: ['campus_id'],
 		customLabels: {
-			totalDocs: 'total',
-			docs: 'list',
-		},
+			totalDocs: 'pageSize',
+			docs: 'data'
+		}
 	};
 
 	try {
@@ -50,7 +48,7 @@ export const getOneManager = async (id, campus) => {
 		const { list } = await ManagerModel.paginate(
 			{
 				campus_id: campus,
-				_id: id,
+				_id: id
 			},
 			options
 		);
@@ -80,7 +78,7 @@ export const createManager = async (data, campus) => {
 		// check tồn tại
 		const manager = await ManagerModel.findOne({
 			email: data.email,
-			campus_id: campus,
+			campus_id: campus
 		});
 
 		if (manager) {
@@ -90,7 +88,7 @@ export const createManager = async (data, campus) => {
 		// create
 		const result = await new ManagerModel({
 			...data,
-			campus_id: campus,
+			campus_id: campus
 		}).save();
 
 		return result;
@@ -119,11 +117,11 @@ export const updateManager = async (id, data, campus) => {
 		const result = await ManagerModel.findOneAndUpdate(
 			{
 				_id: id,
-				campus_id: campus,
+				campus_id: campus
 			},
 			data,
 			{
-				new: true,
+				new: true
 			}
 		);
 
@@ -142,7 +140,7 @@ export const deleteManager = async (id, campus) => {
 		// update
 		const result = await ManagerModel.findOneAndDelete({
 			_id: id,
-			campus_id: campus,
+			campus_id: campus
 		});
 
 		return result;

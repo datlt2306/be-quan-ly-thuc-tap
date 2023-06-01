@@ -6,8 +6,7 @@ const semesterSchema = mongoose.Schema({
 		type: String,
 		required: true,
 		lowercase: true,
-		trim: true,
-		unique: true
+		trim: true
 	},
 	start_time: {
 		type: Date
@@ -24,5 +23,7 @@ const semesterSchema = mongoose.Schema({
 		ref: 'Campus'
 	}
 });
+
+semesterSchema.index({ campus_id: 1, name: 1 }, { unique: true });
 
 module.exports = mongoose.model('Semester', semesterSchema);
