@@ -1,3 +1,4 @@
+import createHttpError from 'http-errors';
 import Manager from '../models/manager.model';
 import semester from '../models/semester.model';
 import Student from '../models/student.model';
@@ -7,10 +8,7 @@ const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const ObjectId = require('mongodb').ObjectID;
 const generateAccessToken = (user) => {
-	return jwt.sign(
-		{ userId: user._id, campus_id: user.campus_id },
-		process.env.ACCESS_TOKEN_SECRET
-	);
+	return jwt.sign({ userId: user._id, campus_id: user.campus_id }, process.env.ACCESS_TOKEN_SECRET);
 };
 
 //login
@@ -23,19 +21,19 @@ export const loginGoogle = async (req, res) => {
 
 		const ticket = await client.verifyIdToken({
 			idToken: token,
-			requiredAudience: process.env.GOOGLE_CLIENT_ID,
+			requiredAudience: process.env.GOOGLE_CLIENT_ID
 		});
 
 		const { email, name, picture } = ticket.getPayload();
 
 		const manager = await Manager.findOne({
 			email: email,
-			campus_id: campus_id,
+			campus_id: campus_id
 		});
 		const student = await Student.findOne({
 			email: email,
 			campus_id: campus_id,
-			smester_id: smester_id,
+			smester_id: smester_id
 		});
 
 		if (manager) {
@@ -48,7 +46,7 @@ export const loginGoogle = async (req, res) => {
 				isAdmin: true,
 				message: 'Đăng nhập thành công',
 				accessToken: accessToken,
-				success: true,
+				success: true
 			};
 			res.status(200).json(data);
 		} else if (student) {
@@ -61,10 +59,9 @@ export const loginGoogle = async (req, res) => {
 				isAdmin: false,
 				message: 'Đăng nhập thành công',
 				accessToken: accessToken,
-				success: true,
+				success: true
 			});
 		} else {
-			
 			res.status(400).json({ token: '', message: 'Dang nhap that bai', success: false });
 		}
 	} catch (error) {
@@ -72,12 +69,51 @@ export const loginGoogle = async (req, res) => {
 	}
 };
 
-//logout
+// Admin Login
+export const loginAdmin = async (req, res) => {
+	try {
+		const { token } = req.body;
+		if (!token) throw createHttpError(400, 'Chưa chuyền vào token');
+
+		const ticket = await client.verifyIdToken({
+			idToken: token,
+			requiredAudience: process.env.GOOGLE_CLIENT_ID
+		});
+
+		const { email, name, picture } = ticket.getPayload();
+
+		const manager = await Manager.findOne({
+			email,
+			role: 3
+		});
+
+		if (!manager) throw createHttpError(404, 'Không tìm thấy Admin');
+
+		const accessToken = generateAccessToken(manager);
+		const data = {
+			manager,
+			token,
+			name,
+			picture,
+			isAdmin: true,
+			message: 'Đăng nhập thành công',
+			accessToken: accessToken,
+			success: true
+		};
+
+		return res.status(200).json(data);
+	} catch (error) {
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
+	}
+};
+
+// Logout
 export const logout = async (req, res) => {
 	try {
 		res.status(201).json({
 			message: 'Logout successfully',
-			token: '',
+			token: ''
 		});
 	} catch (error) {
 		res.status(500).json({ token: '', message: 'Lỗi server' });
@@ -90,7 +126,7 @@ export const getManagers = async (req, res) => {
 	try {
 		res.status(201).json({
 			managers,
-			message: 'Get all manager',
+			message: 'Get all manager'
 		});
 	} catch (error) {
 		res.status(500).json({ token: '', message: 'Lỗi server' });
