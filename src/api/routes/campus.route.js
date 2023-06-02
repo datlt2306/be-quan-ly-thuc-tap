@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.get('/campus', getListCampus);
 router.get('/campus/:id', getCampus);
-router.post('/campus', isAuthenticateUser, authorizeRoles([role.manager]), createCampus);
-router.patch('/campus/:id', isAuthenticateUser, authorizeRoles([role.manager]), updateCampus);
-router.delete('/campus/:id', isAuthenticateUser, authorizeRoles([role.manager]), removeCampus);
+router.post('/campus', isAuthenticateUser, authorizeRoles([role.admin]), createCampus);
+router.patch('/campus/:id', isAuthenticateUser, authorizeRoles([role.admin]), updateCampus);
+router.delete('/campus/:id', isAuthenticateUser, authorizeRoles([role.admin]), removeCampus);
 
 export default router;
