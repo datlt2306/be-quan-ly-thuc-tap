@@ -1,7 +1,7 @@
 import * as ManagerServices from '../services/manager.service';
 import { HttpException } from '../../utils/httpException';
 import createHttpError from 'http-errors';
-
+import { role } from '../../utils/role';
 // [GET] /api/manager/:id
 export const getManager = async (req, res) => {
 	try {
@@ -71,7 +71,7 @@ export const getListManager = async (req, res) => {
 
 		if (!campus_id) throw createHttpError(400, 'Không tìm thấy cơ sở');
 
-		const result = await ManagerServices.getListManager(limit, page, campus_id, { role: 2 });
+		const result = await ManagerServices.getListManager(limit, page, campus_id, { role: role.staff });
 
 		return res.status(200).json(result);
 	} catch (error) {
@@ -87,7 +87,7 @@ export const permittedListManager = async (req, res) => {
 		if (!req.bypass) throw createHttpError(400, 'Không có quyền cho thao tác này');
 
 		const { limit, page } = req.query;
-		const result = await ManagerServices.getListManager(limit, page, { role: 1 });
+		const result = await ManagerServices.getListManager(limit, page, { role: role.manager });
 
 		return res.status(200).json(result);
 	} catch (error) {
@@ -100,6 +100,7 @@ export const permittedListManager = async (req, res) => {
 export const permittedCreateManager = async (req, res) => {
 	try {
 		const data = req.body;
+		data.role = role.manager;
 		// Double check admin permission
 		if (!req.bypass) throw createHttpError(400, 'Không có quyền cho thao tác này');
 		if (!data.campus_id) throw createHttpError(400, 'Không tìm thấy cơ sở');
@@ -113,9 +114,11 @@ export const permittedCreateManager = async (req, res) => {
 	}
 };
 
+// [PATCH] /api/admin/manager/:id
 export const permittedUpdateManager = async (req, res) => {
 	const data = req.body;
 	const id = req.params.id;
+	data.role = role.manager;
 
 	try {
 		const result = await ManagerServices.updateManager(id, data);
