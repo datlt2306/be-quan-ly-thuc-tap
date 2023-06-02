@@ -15,15 +15,15 @@ import { authorizeRoles, isAuthenticateUser } from '../middlewares/CheckAuth';
 
 const router = express.Router();
 
-router.get('/student/reviews', isAuthenticateUser, authorizeRoles([role.manager]), getStudentsToReview);
-router.get('/student', isAuthenticateUser, authorizeRoles([role.manager]), listStudent);
+router.get('/student/reviews', isAuthenticateUser, authorizeRoles([role.staff]), getStudentsToReview);
+router.get('/student', isAuthenticateUser, authorizeRoles([role.staff]), listStudent);
 router.get('/student/:id', isAuthenticateUser, readOneStudent);
-router.post('/student', isAuthenticateUser, authorizeRoles([role.manager]), importStudents);
-router.patch('/student', isAuthenticateUser, authorizeRoles([role.manager]), updateReviewerStudent);
-router.patch('/student/business', isAuthenticateUser, authorizeRoles([role.manager]), updateBusinessStudent);
-router.patch('/student/status', isAuthenticateUser, authorizeRoles([role.manager]), updateStatusStudent);
-router.patch('/student/:id', isAuthenticateUser, authorizeRoles([role.manager]), updateStudent);
-router.delete('/student/:id', isAuthenticateUser, authorizeRoles([role.manager]), removeStudent);
-// router.get('/student/reviewcv', isAuthenticateUser, authorizeRoles([role.manager]), listStudentReviewCV);
+router.post('/student', isAuthenticateUser, authorizeRoles([role.staff]), importStudents);
+router.patch('/student', isAuthenticateUser, authorizeRoles([role.staff]), updateReviewerStudent);
+router.patch('/student/business', isAuthenticateUser, authorizeRoles([role.staff]), updateBusinessStudent);
+router.patch('/student/status', isAuthenticateUser, authorizeRoles([role.staff]), updateStatusStudent);
+router.patch('/student/:id', isAuthenticateUser, authorizeRoles([role.staff]), updateStudent);
+router.delete('/student/:id', isAuthenticateUser, authorizeRoles([role.staff]), removeStudent);
+// router.get('/student/reviewcv', isAuthenticateUser, authorizeRoles([role.staff]), listStudentReviewCV);
 
 export default router;

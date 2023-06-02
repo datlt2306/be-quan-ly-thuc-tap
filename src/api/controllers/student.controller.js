@@ -11,7 +11,8 @@ import * as StudentService from '../services/student.service';
 import { checkStudentExist } from '../services/student.service';
 import { validateDataCreateStudentList } from '../validation/student.validation';
 import { getCurrentSemester } from '../services/semester.service';
-
+import 'dotenv/config';
+import MailTypes from '../constants/mailTypes';
 // [GET] /api/student?limit=20&page=1
 export const listStudent = async (req, res) => {
 	const semester = req.query.semester;
@@ -196,7 +197,7 @@ export const getStudentsToReview = async (req, res) => {
 // [PATCH] /api/student/status (update trạng thái sinh viên)
 export const updateStatusStudent = async (req, res) => {
 	const { listIdStudent, status, listEmailStudent, textNote, reviewerEmail } = req.body;
-	const link = req.protocol + '://' + req.get('host');
+	const link = process.env.FE_ORIGIN;
 
 	try {
 		const updatedStudents = await StudentModel.updateMany(
@@ -214,46 +215,46 @@ export const updateStatusStudent = async (req, res) => {
 		);
 
 		switch (+status) {
-			case 1:
+			case 1: // Yêu cầu sửa CV
 				await sendMail({
 					recipients: listEmailStudent,
-					...getMailTemplate('CV_CHANGE_REQUEST', textNote, link)
+					...getMailTemplate(MailTypes.CV_CHANGE_REQUEST, textNote, link)
 				});
 				break;
-			case 2:
+			case 2: // Tiếp nhận CV
 				await sendMail({
 					recipients: listEmailStudent,
-					...getMailTemplate('RECEIVED_CV', link)
+					...getMailTemplate(MailTypes.RECEIVED_CV, link)
 				});
 				break;
-			case 3:
+			case 3: // Thông báo sinh viên trượt thực tập
 				await sendMail({
 					recipients: listEmailStudent,
-					...getMailTemplate('INTERN_FAILURE', textNote)
+					...getMailTemplate(MailTypes.INTERN_FAILURE, textNote)
 				});
 				break;
-			case 5:
+			case 5: // Yêu cầu sửa biên bản
 				await sendMail({
 					recipients: listEmailStudent,
-					...getMailTemplate('RECORD_CHANGE_REQUEST', textNote)
+					...getMailTemplate(MailTypes.RECORD_CHANGE_REQUEST, textNote)
 				});
 				break;
-			case 6:
+			case 6: // Tiếp nhận biên bản
 				await sendMail({
 					recipients: listEmailStudent,
-					...getMailTemplate('RECEIVE_REPORT', link)
+					...getMailTemplate(MailTypes.RECEIVED_RECORD, link)
 				});
 				break;
-			case 8:
+			case 8: // Yêu cầu sửa báo cáo
 				await sendMail({
 					recipients: listEmailStudent,
-					...getMailTemplate('REPORT_REGISTRATION', textNote, link)
+					...getMailTemplate(MailTypes.REPORT_CHANGE_REQUEST, textNote, link)
 				});
 				break;
-			case 9:
+			case 9: // Hoàn thành thực tập
 				await sendMail({
 					recipients: listEmailStudent,
-					...getMailTemplate('RECEIVE_REPORT', link)
+					...getMailTemplate(MailTypes.INTERN_COMPLETION, link)
 				});
 				break;
 			default:

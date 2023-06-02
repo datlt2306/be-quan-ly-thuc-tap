@@ -1,5 +1,9 @@
 import transporter from '../../config/nodemailer.config';
 
+/**
+ * @param {{recipients: Array<string>|string, subject: string, html: string}}
+ * @returns {Promise<any>}
+ */
 export const sendMail = async ({ recipients, subject, html }) => {
 	try {
 		if (Array.isArray(recipients)) {
@@ -13,8 +17,12 @@ export const sendMail = async ({ recipients, subject, html }) => {
 							html
 						};
 						transporter.sendMail(options, (err, info) => {
-							if (err) reject(err);
-							else resolve(info);
+							if (err) {
+								reject(err);
+							} else {
+								console.log('info :>> ', info);
+								resolve(info);
+							}
 						});
 					})
 			);
@@ -29,8 +37,12 @@ export const sendMail = async ({ recipients, subject, html }) => {
 		};
 		return new Promise((resolve, reject) =>
 			transporter.sendMail(options, (err, info) => {
-				if (err) reject(err);
-				else resolve(info);
+				if (err) {
+					reject(err);
+				} else {
+					console.log('info :>> ', info);
+					resolve(info);
+				}
 			})
 		);
 	} catch (error) {
