@@ -5,6 +5,7 @@ import {
 	getManager,
 	permittedCreateManager,
 	permittedListManager,
+	permittedUpdateManager,
 	removeManager,
 	updateManager
 } from '../controllers/manager.controller';
@@ -16,6 +17,7 @@ const router = express.Router();
 // * ADMIN ROUTE
 router.get('/admin/manager', isAuthenticateUser, authorizeRoles([role.admin]), permittedListManager);
 router.post('/admin/manager', isAuthenticateUser, authorizeRoles([role.admin]), permittedCreateManager);
+router.patch('/admin/manager/:id', isAuthenticateUser, authorizeRoles([role.admin]), permittedUpdateManager);
 
 router.get('/manager', isAuthenticateUser, authorizeRoles([role.student], true), getListManager);
 router.get('/manager/:id', isAuthenticateUser, authorizeRoles([role.student], true), getManager);

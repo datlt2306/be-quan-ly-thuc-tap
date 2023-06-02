@@ -33,10 +33,12 @@ export const createManager = async (req, res) => {
 
 // [PATCH] /api/manager/:id
 export const updateManager = async (req, res) => {
-	const campus = req.campusManager;
 	const data = req.body;
+	const campus = req.campusManager;
 	const id = req.params.id;
+
 	try {
+		if (!campus) throw createHttpError(400, 'Không tìm thấy cơ sở');
 		const result = await ManagerServices.updateManager(id, data, campus);
 
 		return res.status(201).json(result);
@@ -69,7 +71,7 @@ export const getListManager = async (req, res) => {
 
 		if (!campus_id) throw createHttpError(400, 'Không tìm thấy cơ sở');
 
-		const result = await ManagerServices.getListManager(limit, page, campus_id, { role: 1 });
+		const result = await ManagerServices.getListManager(limit, page, campus_id, { role: 2 });
 
 		return res.status(200).json(result);
 	} catch (error) {
@@ -85,7 +87,7 @@ export const permittedListManager = async (req, res) => {
 		if (!req.bypass) throw createHttpError(400, 'Không có quyền cho thao tác này');
 
 		const { limit, page } = req.query;
-		const result = await ManagerServices.getListManager(limit, page, { role: 2 });
+		const result = await ManagerServices.getListManager(limit, page, { role: 1 });
 
 		return res.status(200).json(result);
 	} catch (error) {
@@ -98,14 +100,25 @@ export const permittedListManager = async (req, res) => {
 export const permittedCreateManager = async (req, res) => {
 	try {
 		const data = req.body;
-		const { campus_id, ...cleanedData } = data;
-
 		// Double check admin permission
 		if (!req.bypass) throw createHttpError(400, 'Không có quyền cho thao tác này');
-		if (!campus_id) throw createHttpError(400, 'Không tìm thấy cơ sở');
+		if (!data.campus_id) throw createHttpError(400, 'Không tìm thấy cơ sở');
 
-		const result = await ManagerServices.createManager(cleanedData, campus_id);
+		const result = await ManagerServices.createManager(data);
 
+		return res.status(201).json(result);
+	} catch (error) {
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
+	}
+};
+
+export const permittedUpdateManager = async (req, res) => {
+	const data = req.body;
+	const id = req.params.id;
+
+	try {
+		const result = await ManagerServices.updateManager(id, data);
 		return res.status(201).json(result);
 	} catch (error) {
 		const httpException = new HttpException(error);

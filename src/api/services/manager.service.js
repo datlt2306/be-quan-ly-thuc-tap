@@ -7,6 +7,7 @@ export const getListManager = async (limit, page, ...query) => {
 	const options = {
 		page: +page || 1,
 		limit: +limit || 10,
+		populate: ['campus_id'],
 		customLabels: {
 			totalDocs: 'pageSize',
 			docs: 'data'
@@ -15,7 +16,6 @@ export const getListManager = async (limit, page, ...query) => {
 	const filter = Object.assign({}, ...query);
 
 	try {
-		if (filter.campus) options.populate = ['campus_id'];
 		return await ManagerModel.paginate(filter, options);
 	} catch (error) {
 		throw new Error(error.message || 'Lỗi');
@@ -25,12 +25,10 @@ export const getListManager = async (limit, page, ...query) => {
 // get one
 export const getOneManager = async (id, ...query) => {
 	try {
-		let filter = Object.assign({}, ...query);
-		filter._id = id;
+		let filter = Object.assign({ _id: id }, ...query);
 		let result = await ManagerModel.findOne(filter).populate('campus_id').exec();
 
-		if (!result) throw createHttpError(404, 'Tài liệu không tồn tại');
-
+		if (!result) throw createHttpError(404, 'Không tìm thấy cơ sở của tài khoản');
 		return result;
 	} catch (error) {
 		throw error;
@@ -38,17 +36,17 @@ export const getOneManager = async (id, ...query) => {
 };
 
 // create
-export const createManager = async (data, campus_id) => {
+export const createManager = async (data) => {
 	try {
 		const { error } = validateManagerDataCreate(data);
 
 		if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
 
-		const duplicate = await ManagerModel.findOne({ email: data.email, campus_id }); // check tồn tại
+		const duplicate = await ManagerModel.findOne({ email: data.email, campus_id: data.campus_id }); // check tồn tại
 
 		if (duplicate) throw createHttpError(409, 'Manager đã tồn tại vui lòng kiểm tra lại');
 
-		const result = await new ManagerModel({ ...data, campus_id }).save();
+		const result = await new ManagerModel(data).save();
 
 		return result;
 	} catch (error) {
@@ -57,16 +55,15 @@ export const createManager = async (data, campus_id) => {
 };
 
 // update
-export const updateManager = async (_id, data, campus_id) => {
+export const updateManager = async (_id, data) => {
 	try {
 		const { error } = validateManagerDataUpdate(data);
 
 		if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
-		await getOneManager(id, campus_id); // check tồn tại
 
-		const filter = { _id, campus_id };
-		const options = { new: true };
-		const result = await ManagerModel.findOneAndUpdate(filter, data, options);
+		await getOneManager(_id); // check tồn tại
+		const filter = { _id };
+		const result = await ManagerModel.findOneAndUpdate(filter, data, { new: true });
 
 		return result;
 	} catch (error) {
@@ -75,16 +72,10 @@ export const updateManager = async (_id, data, campus_id) => {
 };
 
 // delete
-export const deleteManager = async (id, campus) => {
+export const deleteManager = async (id) => {
 	try {
-		// check tồn tại
-		await getOneManager(id, campus);
-
-		// update
-		const result = await ManagerModel.findOneAndDelete({
-			_id: id,
-			campus_id: campus
-		});
+		await getOneManager(id); // check tồn tại
+		const result = await ManagerModel.findByIdAndDelete(id);
 
 		return result;
 	} catch (error) {
