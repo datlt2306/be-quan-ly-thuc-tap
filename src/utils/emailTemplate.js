@@ -52,7 +52,7 @@ export const emailTemplates = {
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
 	},
-	UPDATED_REPORT: {
+	UPDATED_RECORD: {
 		subject: 'Sửa thông tin biên bản thành công',
 		content: () => /* html */ `
         <p>
@@ -165,7 +165,7 @@ export const emailTemplates = {
             Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để sửa biên bản
         </p>`
 	},
-	RECEIVE_REPORT: {
+	RECEIVED_RECORD: {
 		subject: 'Thông báo nhận biên bản sinh viên thành công',
 		content: (hostname) => /*html*/ `
         <p>
@@ -193,7 +193,7 @@ export const emailTemplates = {
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
 	},
-	RECEIVE_REPORT: {
+	INTERN_COMPLETION: {
 		subject: 'Thông báo hoàn thành thông tin thực tập sinh viên thành công',
 		content: (link) => /* html */ `
         <p>
@@ -214,16 +214,20 @@ export const getMailTemplate = (type, ...args) => {
 	const template = emailTemplates[type];
 	if (!template) throw new Error(`Invalid email type`);
 
-	const content = /* html */ `
-		<div style="background-color: #fff; color: #212121">
-			<img src="https://i.imgur.com/q7xM8RP.png" width="120" alt="logo" class="CToWUd" />
-			<h5>Phòng QHDN gửi tới sinh viên</h5>
-			${template.content(...args)}
-			<hr style="background: #ccc; width:100%; height: 1px" />
-			<span>
-				Lưu ý: đây là email tự động vui lòng không phản hồi lại email này, mọi thắc mắc xin liên hệ phòng QHDN qua số điện thoại: <b>024.6264713</b>
-			</span>
-		</div>`;
+	const content = /* html */ ` <div style="background-color: #fff; color: #212121; font-size: 16px">
+		<img
+			src="https://i.imgur.com/q7xM8RP.png"
+			style="max-width: 160px; object-fit: cover"
+			alt="logo"
+			class="CToWUd" />
+		<h5 style="font-size: 18px; font-weight: 600; margin-bottom: 0">Phòng QHDN gửi tới sinh viên</h5>
+		${template.content(...args)}
+		<hr style="width: 100%; border-bottom: 1px; border-color: #ccc" />
+		<span>
+			Lưu ý: đây là email tự động vui lòng không phản hồi lại email này, mọi thắc mắc xin liên hệ phòng QHDN qua số
+			điện thoại: <b>024.6264713</b>
+		</span>
+	</div>`;
 
 	return {
 		subject: template.subject,
