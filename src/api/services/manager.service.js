@@ -1,95 +1,54 @@
 import createHttpError from 'http-errors';
 import ManagerModel from '../models/manager.model';
-import mongoose from 'mongoose';
 import { validateManagerDataCreate, validateManagerDataUpdate } from '../validation/manager.validation';
 
 // get list
-export const getListManager = async (campus, limit, page) => {
+export const getListManager = async (limit, page, ...query) => {
 	const options = {
 		page: +page || 1,
 		limit: +limit || 10,
-		populate: ['campus_id'],
 		customLabels: {
 			totalDocs: 'pageSize',
 			docs: 'data'
 		}
 	};
+	const filter = Object.assign({}, ...query);
 
 	try {
-		return await ManagerModel.paginate(
-			{
-				campus_id: campus
-			},
-			options
-		);
+		if (filter.campus) options.populate = ['campus_id'];
+		return await ManagerModel.paginate(filter, options);
 	} catch (error) {
 		throw new Error(error.message || 'Lỗi');
 	}
 };
 
 // get one
-//! burn this heresy to the ground after demo
-export const getOneManager = async (id, campus) => {
-	const options = {
-		page: 1,
-		limit: 1,
-		populate: ['campus_id'],
-		customLabels: {
-			totalDocs: 'pageSize',
-			docs: 'data'
-		}
-	};
-
+export const getOneManager = async (id, ...query) => {
 	try {
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			throw createHttpError(400, 'Id không phải type objectId');
-		}
+		let filter = Object.assign({}, ...query);
+		filter._id = id;
+		let result = await ManagerModel.findOne(filter).populate('campus_id').exec();
 
-		const { list } = await ManagerModel.paginate(
-			{
-				campus_id: campus,
-				_id: id
-			},
-			options
-		);
+		if (!result) throw createHttpError(404, 'Tài liệu không tồn tại');
 
-		if (!list) {
-			throw createHttpError(404, 'Tài liệu không tồn tại');
-		}
-
-		return list[0] || {};
+		return result;
 	} catch (error) {
 		throw error;
 	}
 };
 
 // create
-export const createManager = async (data, campus) => {
+export const createManager = async (data, campus_id) => {
 	try {
-		if (Object.keys(data).length === 0) {
-			throw createHttpError(204);
-		}
-
 		const { error } = validateManagerDataCreate(data);
-		if (error) {
-			throw createHttpError(400, error.message);
-		}
 
-		// check tồn tại
-		const manager = await ManagerModel.findOne({
-			email: data.email,
-			campus_id: campus
-		});
+		if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
 
-		if (manager) {
-			throw createHttpError(409, 'Manager đã tồn tại vui lòng kiểm tra lại');
-		}
+		const duplicate = await ManagerModel.findOne({ email: data.email, campus_id }); // check tồn tại
 
-		// create
-		const result = await new ManagerModel({
-			...data,
-			campus_id: campus
-		}).save();
+		if (duplicate) throw createHttpError(409, 'Manager đã tồn tại vui lòng kiểm tra lại');
+
+		const result = await new ManagerModel({ ...data, campus_id }).save();
 
 		return result;
 	} catch (error) {
@@ -98,32 +57,16 @@ export const createManager = async (data, campus) => {
 };
 
 // update
-export const updateManager = async (id, data, campus) => {
+export const updateManager = async (_id, data, campus_id) => {
 	try {
-		if (Object.keys(data).length === 0) {
-			throw createHttpError(304);
-		}
-
-		// validate
 		const { error } = validateManagerDataUpdate(data);
-		if (error) {
-			throw createHttpError(400, error.message);
-		}
 
-		// check tồn tại
-		await getOneManager(id, campus);
+		if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
+		await getOneManager(id, campus_id); // check tồn tại
 
-		// update
-		const result = await ManagerModel.findOneAndUpdate(
-			{
-				_id: id,
-				campus_id: campus
-			},
-			data,
-			{
-				new: true
-			}
-		);
+		const filter = { _id, campus_id };
+		const options = { new: true };
+		const result = await ManagerModel.findOneAndUpdate(filter, data, options);
 
 		return result;
 	} catch (error) {

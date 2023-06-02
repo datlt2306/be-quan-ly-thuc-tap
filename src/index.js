@@ -16,7 +16,7 @@ app.use(cors());
 app.use(morgan('tiny'));
 app.use(compression({ level: 6, threshold: 1024 })); // compress data if payload is too large
 app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Swagger
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerOptions));
 

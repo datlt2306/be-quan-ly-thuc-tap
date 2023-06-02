@@ -14,7 +14,6 @@ export const isAuthenticateUser = async (req, res, next) => {
 		}
 		const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
 		const admin = await Manager.findOne({ _id: decoded.userId, role: 3 });
-
 		const manager = await Manager.findOne({
 			_id: decoded.userId,
 			campus_id: decoded.campus_id
@@ -51,13 +50,13 @@ export const isAuthenticateUser = async (req, res, next) => {
 	}
 };
 
-export const authorizeRoles = (roles) => {
-	return (req, res, next) => {
-		if (!roles.includes(req.role)) {
-			return res.status(403).json({
-				message: `Tài khoản không có quyền truy cập`
-			});
-		}
+export const authorizeRoles =
+	(roles, blacklist = false) =>
+	(req, res, next) => {
+		//* blacklist = false => ban quyền cho role truyền vào.
+		//* blacklist = true => ngược lại, chỉ ban quyền cho role không truyền vào
+
+		const isUnauthorized = (blacklist && roles.includes(req.role)) || (!blacklist && !roles.includes(req.role));
+		if (isUnauthorized) return res.status(403).send('Tài khoản không có quyền truy cập');
 		next();
 	};
-};
