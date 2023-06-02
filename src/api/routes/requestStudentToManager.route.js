@@ -1,38 +1,20 @@
-
-const { sendRequestToManager, getRequestOfStudent, resetStudent, cancelResetStudent } = require('../controllers/requestStudent.controller');
+const {
+	sendRequestToManager,
+	getRequestOfStudent,
+	resetStudent,
+	cancelResetStudent
+} = require('../controllers/requestStudent.controller');
 const { isAuthenticateUser, authorizeRoles } = require('../middlewares/CheckAuth');
-  const { role } = require('../../utils/role');
-  
-  const router = require('express').Router();
-  
-  router.post(
-    "/request",
-    isAuthenticateUser,
-    authorizeRoles([role.student]),
-    sendRequestToManager
-  );
+const { role } = require('../../utils/role');
 
-  router.get(
-    "/getRequest",
-    isAuthenticateUser,
-    authorizeRoles([role.manager]),
-    getRequestOfStudent
-  );
+const router = require('express').Router();
 
-  router.patch(
-    "/resetStudent/:id",
-    isAuthenticateUser,
-    authorizeRoles([role.manager]),
-    resetStudent
-  );
+router.post('/request', isAuthenticateUser, authorizeRoles([role.student]), sendRequestToManager);
 
-  router.patch(
-    "/removeRequest/:id",
-    isAuthenticateUser,
-    authorizeRoles([role.manager]),
-    cancelResetStudent
-)
-  
+router.get('/getRequest', isAuthenticateUser, authorizeRoles([role.staff]), getRequestOfStudent);
+
+router.patch('/resetStudent/:id', isAuthenticateUser, authorizeRoles([role.staff]), resetStudent);
+
+router.patch('/removeRequest/:id', isAuthenticateUser, authorizeRoles([role.staff]), cancelResetStudent);
+
 export default router;
-
-  
