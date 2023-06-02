@@ -1,5 +1,6 @@
 export const role = {
-    dev: 2,
-    manager:1,
-    student: 0
-}
+	staff: 1,
+	manager: 2,
+	admin: 3,
+	student: 0
+};
