@@ -1,11 +1,12 @@
-import { generateEmail } from '../../utils/emailTemplate';
-import Student from '../models/student.model';
-import { uploadFile } from '../services/googleDrive.service';
-import { requestSupportValidate, selfFindValidate } from '../validation/internApplicant.validation';
-import { sendMail } from './email.controller';
-import { HttpException } from '../../utils/httpException';
 import createHttpError from 'http-errors';
 import { isValidObjectId } from 'mongoose';
+import { getMailTemplate } from '../../utils/emailTemplate';
+import { HttpException } from '../../utils/httpException';
+import MailTypes from '../constants/mailTypes';
+import Student from '../models/student.model';
+import { uploadFile } from '../services/googleDrive.service';
+import { sendMail } from '../services/mail.service';
+import { requestSupportValidate, selfFindValidate } from '../validation/internApplicant.validation';
 
 /*
  * Fields to include in request body:
@@ -32,20 +33,20 @@ import { isValidObjectId } from 'mongoose';
 export const signUpCVForSupport = async (req, res) => {
 	const { support, _id, phoneNumber, address, dream } = req.body;
 	try {
-		const findStudent = await Student.findById(_id);
+		const student = await Student.findById(_id);
 
 		if (!isValidObjectId(_id)) throw createHttpError(400, 'ID không đúng định dạng');
 
-		if (!findStudent) {
+		if (!student) {
 			throw createHttpError(404, 'Thông tin của bạn không tồn tại trên hệ thống');
 		}
 
-		switch (findStudent.statusCheck) {
+		switch (student.statusCheck) {
 			case 0: // Đang chờ kiểm tra CV hoặc đã đăng ký
 			case 11:
 				throw createHttpError(409, 'Thông tin CV của bạn đã được đăng ký');
 			case 1: // Sửa lại CV
-				if (findStudent.numberOfTime < 3) break;
+				if (student.numberOfTime < 3) break;
 				throw createHttpError(400, 'Tài khoạn của bạn đã vượt quá số lần đăng ký thông tin thực tập');
 			case 10: // Chưa đăng ký
 				break;
@@ -97,23 +98,21 @@ export const signUpCVForSupport = async (req, res) => {
 
 			if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
 
-			update.numberOfTime = findStudent.numberOfTime + 1;
+			update.numberOfTime = student.numberOfTime + 1;
 		}
 
 		await Student.findByIdAndUpdate(_id, update, { new: true });
 
 		let message, emailType;
 
-		if (findStudent.statusCheck === 1) {
-			message = 'Sửa thông tin CV thành công!';
-			emailType = support ? 'INTERN_SUPPORT_UPDATE' : 'INTERN_SELF_FINDING_UPDATE';
+		if (student.statusCheck === 1) {
+			emailType = support ? MailTypes.INTERN_SUPPORT_UPDATE : MailTypes.INTERN_SELF_FINDING_UPDATE;
 		} else {
-			message = 'Đăng ký thông tin thành công!';
-			emailType = support ? 'INTERN_SUPPORT_REGISTRATION' : 'INTERN_SELF_FINDING_REGISTRATION';
+			emailType = support ? MailTypes.INTERN_SUPPORT_REGISTRATION : MailTypes.INTERN_SELF_FINDING_REGISTRATION;
 		}
 
 		// Send email
-		await sendMail(generateEmail(findStudent.email, emailType, findStudent.name));
+		await sendMail({ recipients: student.email, ...getMailTemplate(emailType) });
 
 		return res.status(200).send({ message, support: update.support });
 	} catch (error) {

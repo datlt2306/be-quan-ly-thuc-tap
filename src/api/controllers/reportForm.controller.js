@@ -1,10 +1,11 @@
 import moment from 'moment';
-import { sendMail } from './email.controller';
-import { uploadFile } from '../services/googleDrive.service';
-import studentModel from '../models/student.model';
-import { generateEmail } from '../../utils/emailTemplate';
-import { formSchema, reportSchema } from '../validation/reportForm.validation';
+
 import createHttpError from 'http-errors';
+import { getMailTemplate } from '../../utils/emailTemplate';
+import studentModel from '../models/student.model';
+import { uploadFile } from '../services/googleDrive.service';
+import { formSchema, reportSchema } from '../validation/reportForm.validation';
+import MailTypes from '../constants/mailTypes';
 
 export const report = async (req, res) => {
 	let data, error, result, uploadedFile;
@@ -13,22 +14,22 @@ export const report = async (req, res) => {
 
 	try {
 		const filter = { mssv: mssv, email: email, _id };
-		const findStudent = await studentModel.findOne(filter);
+		const student = await studentModel.findOne(filter);
 
-		if (!findStudent) throw createHttpError(403, 'Không tìm thấy thông tin sinh viên');
+		if (!student) throw createHttpError(403, 'Không tìm thấy thông tin sinh viên');
 
-		if (!findStudent.internshipTime) throw createHttpError(403, 'Không tìm thấy thời gian thực tập');
+		if (!student.internshipTime) throw createHttpError(403, 'Không tìm thấy thời gian thực tập');
 
 		if (!endInternShipTime) throw createHttpError(403, 'Chưa nhập thời gian kết thúc thực tập');
 
-		const startTimeReport = moment(findStudent.internshipTime).valueOf();
+		const startTimeReport = moment(student.internshipTime).valueOf();
 		const endTimeReport = moment(endInternShipTime).valueOf();
 		const checkTimeReport = endTimeReport > startTimeReport;
 		const [file] = req.files;
 
 		if (!checkTimeReport) throw createHttpError(403, 'Thời gian kết thúc thực tập phải lớn hơn thời gian bắt đầu!');
 
-		switch (findStudent.statusCheck) {
+		switch (student.statusCheck) {
 			// Đang thực tập
 			case 6:
 				uploadedFile = await uploadFile(file);
@@ -51,12 +52,12 @@ export const report = async (req, res) => {
 					new: true
 				});
 
-				await sendMail(generateEmail(email, 'REPORT_REGISTRATION', findStudent.name));
+				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.RECORD_REGISTRATION) });
 				return res.status(200).json({ message: 'Nộp báo cáo thành công', result });
 
 			// Đã nộp báo cáo
 			case 7:
-				if (!findStudent.report) throw createHttpError(500, 'Không tìm thấy thông tin báo cáo');
+				if (!student.report) throw createHttpError(500, 'Không tìm thấy thông tin báo cáo');
 
 				throw createHttpError(403, 'Thông tin báo cáo đã tồn tại và đang chờ xác nhận!');
 
@@ -82,7 +83,7 @@ export const report = async (req, res) => {
 				result = await studentModel.findOneAndUpdate(filter, data, {
 					new: true
 				});
-				await sendMail(generateEmail(email, 'UPDATED_REPORT', findStudent.name));
+				await sendMail({ recipients: email, ...getMailTemplate(MailTypes.UPDATED_REPORT) });
 				return res.status(200).json({ message: 'Sửa báo cáo thành công', result });
 			default:
 				throw createHttpError(403, 'Bạn không đủ điều kiện nộp báo cáo');
