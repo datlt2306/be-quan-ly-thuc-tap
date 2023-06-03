@@ -1,24 +1,19 @@
+import { OAuth2Client } from 'google-auth-library';
 import createHttpError from 'http-errors';
+import generateAccessToken from '../../utils/generateAccessToken';
+import { HttpException } from '../../utils/httpException';
 import Manager from '../models/manager.model';
-import semester from '../models/semester.model';
 import Student from '../models/student.model';
-const jwt = require('jsonwebtoken');
 
-const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-const ObjectId = require('mongodb').ObjectID;
-const generateAccessToken = (user) => {
-	return jwt.sign({ userId: user._id, campus_id: user.campus_id }, process.env.ACCESS_TOKEN_SECRET);
-};
 
 //login
 export const loginGoogle = async (req, res) => {
-	const { token, campus_id, smester_id } = req.body;
 	try {
+		const { token, campus_id, smester_id } = req.body;
 		if (!token) {
 			return res.status(401).json({ message: 'Vui lòng đăng nhập tài khoản' });
 		}
-
 		const ticket = await client.verifyIdToken({
 			idToken: token,
 			requiredAudience: process.env.GOOGLE_CLIENT_ID
@@ -38,7 +33,7 @@ export const loginGoogle = async (req, res) => {
 
 		if (manager) {
 			const accessToken = generateAccessToken(manager);
-			const data = {
+			res.status(200).json({
 				manager,
 				token,
 				name,
@@ -47,7 +42,7 @@ export const loginGoogle = async (req, res) => {
 				message: 'Đăng nhập thành công',
 				accessToken: accessToken,
 				success: true
-			};
+			});
 			res.status(200).json(data);
 		} else if (student) {
 			const accessToken = generateAccessToken(student);
@@ -65,7 +60,8 @@ export const loginGoogle = async (req, res) => {
 			res.status(400).json({ token: '', message: 'Dang nhap that bai', success: false });
 		}
 	} catch (error) {
-		res.status(500).json({ token: '', message: 'Lỗi server' });
+		const httpException = new HttpException(error);
+		res.status(httpException.statusCode).json(httpException);
 	}
 };
 
