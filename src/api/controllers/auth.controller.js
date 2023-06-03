@@ -43,7 +43,6 @@ export const loginGoogle = async (req, res) => {
 				accessToken: accessToken,
 				success: true
 			});
-			res.status(200).json(data);
 		} else if (student) {
 			const accessToken = generateAccessToken(student);
 			res.status(200).json({
