@@ -2,7 +2,6 @@ import authRouter from './auth.route';
 import businessRouter from './business.route';
 import applyInterRouter from './applyIntern.route';
 import campusRouter from './campus.route.js';
-import emailRouter from './email.route';
 import googleDriveRouter from './googleDrive.route';
 import majorRouter from './major.route';
 import managerRouter from './manager.route';
@@ -27,7 +26,6 @@ const appRouters = [
 	businessRouter,
 	applyInterRouter,
 	campusRouter,
-	emailRouter,
 	googleDriveRouter,
 	majorRouter,
 	managerRouter,
@@ -41,7 +39,7 @@ const appRouters = [
 	statusStudentRouter,
 	studentRouter,
 	timeWindowRouter,
-	tokenDeviceRouter,
+	tokenDeviceRouter
 ];
 
 appRouters.forEach((route) => router.use(route));
