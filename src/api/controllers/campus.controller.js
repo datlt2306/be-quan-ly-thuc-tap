@@ -2,13 +2,13 @@ import Campus from '../models/campus.model';
 
 export const createCampus = async (req, res) => {
 	const campusValid = await Campus.findOne({
-		name: req.body.name,
+		name: req.body.name
 	});
 	try {
 		if (campusValid !== null) {
 			res.status(202).json({
 				success: false,
-				message: 'Cơ sở đã tồn tại',
+				message: 'Cơ sở đã tồn tại'
 			});
 			return;
 		} else {
@@ -16,7 +16,7 @@ export const createCampus = async (req, res) => {
 			return res.status(200).json({
 				campus,
 				success: true,
-				message: 'Thành công',
+				message: 'Thành công'
 			});
 		}
 	} catch (error) {
@@ -27,10 +27,7 @@ export const createCampus = async (req, res) => {
 export const getListCampus = async (req, res) => {
 	try {
 		const listCampus = await Campus.find().sort({ createdAt: -1 }).exec();
-		return res.status(200).json({
-			listCampus,
-			message: 'Get list campus successfully',
-		});
+		return res.status(200).json(listCampus);
 	} catch (error) {
 		return res.status(400).json(error);
 	}
@@ -41,7 +38,7 @@ export const getCampus = async (req, res) => {
 		const campus = await Campus.findById(req.params.id);
 		return res.status(200).json({
 			campus,
-			message: 'Get campus successfully',
+			message: 'Get campus successfully'
 		});
 	} catch (error) {
 		return res.status(400).json(error);
@@ -50,13 +47,13 @@ export const getCampus = async (req, res) => {
 
 export const updateCampus = async (req, res) => {
 	const campusValid = await Campus.findOne({
-		name: req.body.name,
+		name: req.body.name
 	});
 	try {
 		if (campusValid !== null) {
 			res.status(202).json({
 				success: false,
-				message: 'Cơ sở đã tồn tại',
+				message: 'Cơ sở đã tồn tại'
 			});
 			return;
 		} else {
@@ -64,12 +61,12 @@ export const updateCampus = async (req, res) => {
 			res.status(200).json({
 				campus,
 				success: true,
-				message: 'Sửa cơ sở thành công',
+				message: 'Sửa cơ sở thành công'
 			});
 		}
 	} catch (error) {
 		res.json({
-			error,
+			error
 		});
 	}
 };
@@ -80,11 +77,11 @@ export const removeCampus = async (req, res) => {
 		res.status(200).json({
 			campus,
 			success: false,
-			message: 'Xóa cơ sở thành công',
+			message: 'Xóa cơ sở thành công'
 		});
 	} catch (error) {
 		res.json({
-			error,
+			error
 		});
 	}
 };
