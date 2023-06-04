@@ -112,6 +112,10 @@ const studentSchema = new mongoose.Schema(
 			type: String,
 			default: null
 		},
+		employer: {
+			type: String,
+			default: null
+		},
 		addressCompany: {
 			type: String,
 			default: null
@@ -147,23 +151,6 @@ const studentSchema = new mongoose.Schema(
 			type: Number,
 			default: null
 		},
-		listTimeForm: [
-			{
-				typeNumber: {
-					type: Number
-				},
-				typeName: {
-					type: String,
-					default: ''
-				},
-				startTime: {
-					type: Number
-				},
-				endTime: {
-					type: Number
-				}
-			}
-		],
 		signTheContract: {
 			type: Number,
 			default: null

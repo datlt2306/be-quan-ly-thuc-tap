@@ -15,7 +15,6 @@ import { requestSupportValidate, selfFindValidate } from '../validation/internAp
  * - dream (string): applicant's desired position
  * - CV (file): applicant's CV file
  * - phoneNumber: applicant's phone number
- * - majorCode (string):  applicant's major ID
  * - support: support type
  *
  * COMPANY INFO
@@ -25,6 +24,7 @@ import { requestSupportValidate, selfFindValidate } from '../validation/internAp
  * - position (string): position being applied for
  * - phoneNumberCompany (string): phone number of company being applied to
  * - emailEnterprise (string): email of company being applied to
+ * - employer (string): employer of company being applied to
  * - business (string): business type of company being applied to. (FOR SUPPORT)
  * - signTheContract (file/string): signed contract file. USE STRING FOR NOW
  * *
@@ -80,13 +80,15 @@ export const signUpCVForSupport = async (req, res) => {
 			if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
 		} else {
 			// Cho SV tự tìm
-			const { position, taxCode, addressCompany, nameCompany, phoneNumberCompany, emailEnterprise } = req.body;
+			const { position, taxCode, addressCompany, nameCompany, phoneNumberCompany, employer, emailEnterprise } =
+				req.body;
 
 			const selfFindUpdate = {
 				position,
 				addressCompany,
 				taxCode,
 				nameCompany,
+				employer,
 				phoneNumberCompany,
 				emailEnterprise,
 				statusCheck: 11

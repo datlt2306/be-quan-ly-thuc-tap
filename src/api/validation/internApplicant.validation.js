@@ -21,6 +21,7 @@ const selfFindSchema = Joi.object({
 	position: Joi.string().required(),
 	taxCode: Joi.string().required(),
 	nameCompany: Joi.string().required(),
+	employer: Joi.string().required(),
 	addressCompany: Joi.string().required(),
 	phoneNumberCompany: Joi.string().required(),
 	emailEnterprise: Joi.string().email().required()
