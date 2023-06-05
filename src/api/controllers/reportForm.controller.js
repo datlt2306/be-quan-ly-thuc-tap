@@ -75,8 +75,7 @@ export const report = async (req, res) => {
 					resultScore,
 					report: uploadedFile.url,
 					statusCheck: 7,
-					signTheContract,
-					note: null
+					signTheContract
 				};
 
 				error = reportSchema.validate(data).error;
@@ -85,7 +84,7 @@ export const report = async (req, res) => {
 
 				result = await studentModel.findOneAndUpdate(
 					filter,
-					{ ...data, numberOfTime: student.numberOfTime + 1 },
+					{ ...data, numberOfTime: student.numberOfTime + 1, note: null },
 					{
 						new: true
 					}
@@ -159,8 +158,7 @@ export const form = async (req, res) => {
 					nameCompany,
 					internshipTime,
 					form: uploadedFile.url,
-					statusCheck: 4,
-					note: null
+					statusCheck: 4
 				};
 
 				error = formSchema.validate(data).error;
