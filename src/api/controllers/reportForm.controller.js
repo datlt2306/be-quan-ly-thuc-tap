@@ -52,7 +52,7 @@ export const report = async (req, res) => {
 					new: true
 				});
 
-				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.RECORD_REGISTRATION) });
+				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.REPORT_REGISTRATION) });
 				return res.status(200).json({ message: 'Nộp báo cáo thành công', result });
 
 			// Đã nộp báo cáo
