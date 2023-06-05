@@ -1,11 +1,11 @@
 import moment from 'moment';
-
 import createHttpError from 'http-errors';
 import { getMailTemplate } from '../../utils/emailTemplate';
 import studentModel from '../models/student.model';
 import { uploadFile } from '../services/googleDrive.service';
 import { formSchema, reportSchema } from '../validation/reportForm.validation';
 import MailTypes from '../constants/mailTypes';
+import { sendMail } from '../services/mail.service';
 
 export const report = async (req, res) => {
 	let data, error, result, uploadedFile;
