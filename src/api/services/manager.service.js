@@ -9,7 +9,7 @@ export const getListManager = async (limit, page, ...query) => {
 		limit: +limit || 10,
 		populate: ['campus_id'],
 		customLabels: {
-			totalDocs: 'pageSize',
+			limit: 'pageSize',
 			docs: 'data'
 		}
 	};
@@ -36,7 +36,7 @@ export const getOneManager = async (id, ...query) => {
 };
 
 // create
-export const createManager = async (data) => {
+export const createManager = async (data, campus) => {
 	try {
 		const { error } = validateManagerDataCreate(data);
 
@@ -46,8 +46,7 @@ export const createManager = async (data) => {
 
 		if (duplicate) throw createHttpError(409, 'Manager đã tồn tại vui lòng kiểm tra lại');
 
-		const result = await new ManagerModel(data).save();
-
+		const result = await new ManagerModel({ ...data, campus_id: campus }).save();
 		return result;
 	} catch (error) {
 		throw error;
