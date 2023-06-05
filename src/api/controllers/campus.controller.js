@@ -4,23 +4,12 @@ import { HttpException } from '../../utils/httpException';
 
 export const createCampus = async (req, res) => {
 	try {
-		const campusValid = await Campus.findOne({
+		const campusValid = await Campus.exists({
 			name: req.body.name
 		});
-		if (campusValid !== null) {
-			res.status(202).json({
-				success: false,
-				message: 'Cơ sở đã tồn tại'
-			});
-			return;
-		} else {
-			const campus = await Campus.create(req.body);
-			return res.status(200).json({
-				campus,
-				success: true,
-				message: 'Thành công'
-			});
-		}
+		if (campusValid) throw createHttpError.Conflict('Cơ sở đã tồn tại !');
+		const newCampus = await new Campus(req.body).save();
+		return res.status(200).json(newCampus);
 	} catch (error) {
 		return res.status(400).json(error);
 	}
