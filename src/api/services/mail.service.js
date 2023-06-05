@@ -9,25 +9,18 @@ export const sendMail = async ({ recipients, subject, html }) => {
 		if (Array.isArray(recipients)) {
 			const sendMailPromises = recipients.map(
 				(recipient) =>
-					new Promise((resolve, reject) => {
+					new Promise((resolve) => {
 						const options = {
 							from: { address: process.env.USER_EMAIL, name: 'Phòng Quan Hệ Doanh Nghiệp' },
 							to: recipient,
 							subject,
 							html
 						};
-						transporter.sendMail(options, (err, info) => {
-							if (err) {
-								reject(err);
-							} else {
-								console.log('info :>> ', info);
-								resolve(info);
-							}
-						});
+						transporter.sendMail(options, (err, info) => (err ? resolve(null) : resolve(info)));
 					})
 			);
 
-			return await Promise.race(sendMailPromises);
+			return await Promise.allSettled(sendMailPromises);
 		}
 		const options = {
 			from: { address: process.env.USER_EMAIL, name: 'Phòng Quan Hệ Doanh Nghiệp' },
@@ -35,15 +28,8 @@ export const sendMail = async ({ recipients, subject, html }) => {
 			subject,
 			html
 		};
-		return new Promise((resolve, reject) =>
-			transporter.sendMail(options, (err, info) => {
-				if (err) {
-					reject(err);
-				} else {
-					console.log('info :>> ', info);
-					resolve(info);
-				}
-			})
+		return new Promise((resolve) =>
+			transporter.sendMail(options, (err, info) => (err ? resolve(null) : resolve(info)))
 		);
 	} catch (error) {
 		throw error;
