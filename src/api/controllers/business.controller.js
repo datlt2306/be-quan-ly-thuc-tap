@@ -102,7 +102,7 @@ export const listBusiness = async (req, res) => {
 			sort: { created_at: 'desc' },
 			populate: ['major'],
 			customLabels: {
-				totalDocs: 'pageSize',
+				limit: 'pageSize',
 				docs: 'data'
 			}
 		};
