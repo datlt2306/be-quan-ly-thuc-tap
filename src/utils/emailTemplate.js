@@ -109,7 +109,7 @@ export const emailTemplates = {
 		content: (textNote, link) => /*html*/ `
         <p>
           Phòng QHDN yêu cầu bạn sửa lại thông tin CV<br>
-          Lý do SV phải sửa CV: ${textNote} 
+          Lý do SV phải sửa CV: ${textNote || `Không có`} 
           <br>
           Trạng thái hiện tại của dịch vụ là <b style="color:orange">Sửa CV </b>
           <br>
@@ -142,7 +142,7 @@ export const emailTemplates = {
             <br>
             Bạn đã trượt thực tập. Phòng QHDN <b><span>Xác</span> <span>Nhận</span></b>
             <br>
-            Lý do SV trượt: ${textNote}<br>
+            Lý do SV trượt: ${textNote || `Không có`} <br>
             Trạng thái hiện tại của dịch vụ là <b style="color:orange">Trượt thực tập </b>
             <br>
             Sinh viên vui long đăng ký thực tập lại vào kỳ sau trên hệ thống <a href="https://ap.poly.edu.vn/">ap.poly.edu.vn</a>
@@ -158,7 +158,7 @@ export const emailTemplates = {
             <br>
             Phòng QHDN yêu cầu bạn sửa lại thông tin biên bản
             <br>
-            Lý do SV phải sửa báo cáo: ${textNote}
+            Lý do SV phải sửa báo cáo: ${textNote || `Không có`} 
             <br>
             Trạng thái hiện tại của dịch vụ là <b style="color:orange">Sửa biên bản </b>
             <br>
@@ -186,7 +186,7 @@ export const emailTemplates = {
             Xin chào Sinh viên,<br>
             Phòng QHDN yêu cầu bạn sửa lại thông tin báo cáo.
             <br>
-            Lý do SV phải sửa báo cáo: ${textNote}<br>
+            Lý do SV phải sửa báo cáo: ${textNote || `Không có`} <br>
             Trạng thái hiện tại của dịch vụ là <b style="color:orange">Sửa báo cáo </b><br>
             Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để sửa báo cáo
             <br>
