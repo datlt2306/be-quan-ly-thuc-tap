@@ -1,10 +1,12 @@
+import createHttpError from 'http-errors';
 import Campus from '../models/campus.model';
+import { HttpException } from '../../utils/httpException';
 
 export const createCampus = async (req, res) => {
-	const campusValid = await Campus.findOne({
-		name: req.body.name
-	});
 	try {
+		const campusValid = await Campus.findOne({
+			name: req.body.name
+		});
 		if (campusValid !== null) {
 			res.status(202).json({
 				success: false,
@@ -46,28 +48,19 @@ export const getCampus = async (req, res) => {
 };
 
 export const updateCampus = async (req, res) => {
-	const campusValid = await Campus.findOne({
-		name: req.body.name
-	});
 	try {
-		if (campusValid !== null) {
-			res.status(202).json({
-				success: false,
-				message: 'Cơ sở đã tồn tại'
-			});
-			return;
-		} else {
-			const campus = await Campus.findByIdAndUpdate(req.params.id, req.body, { new: true });
-			res.status(200).json({
-				campus,
-				success: true,
-				message: 'Sửa cơ sở thành công'
-			});
-		}
-	} catch (error) {
-		res.json({
-			error
+		const existedCampus = await Campus.exists({
+			_id: { $ne: req.params.id },
+			name: req.body.name
 		});
+		if (existedCampus) {
+			throw createHttpError.Conflict('Tên cơ sở đã tồn tại !');
+		}
+		const campus = await Campus.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+		return res.status(201).json(campus);
+	} catch (error) {
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 
