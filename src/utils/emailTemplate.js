@@ -167,14 +167,14 @@ export const emailTemplates = {
 	},
 	RECEIVED_RECORD: {
 		subject: 'Thông báo nhận biên bản sinh viên thành công',
-		content: (hostname) => /*html*/ `
+		content: (link) => /*html*/ `
         <p>
             Xin chào Sinh viên,<br>
             Biên bản của bạn đã được phòng QHDN <b><span>Xác</span> <span>Nhận</span></b>
             <br>
             Trạng thái hiện tại của dịch vụ là <b style="color:orange">Đang thực tập </b>
             <br>
-            Sinh viên vui lòng đăng nhập vào trang web <a href="http://${hostname}">${hostname}</a>&nbsp;xem trạng thái báo cáo
+            Sinh viên vui lòng đăng nhập vào trang web <a href="${link}">${link}</a>&nbsp;xem trạng thái báo cáo
         </p>
 
         `
@@ -222,7 +222,7 @@ export const getMailTemplate = (type, ...args) => {
 			class="CToWUd" />
 		<h5 style="font-size: 18px; font-weight: 600; margin-bottom: 0">Phòng QHDN gửi tới sinh viên</h5>
 		${template.content(...args)}
-		<hr style="width: 100%; border-bottom: 1px; border-color: #ccc" />
+		<hr style="width: 100%; border-bottom: 1px; border-color: #cccc" />
 		<span>
 			Lưu ý: đây là email tự động vui lòng không phản hồi lại email này, mọi thắc mắc xin liên hệ phòng QHDN qua số
 			điện thoại: <b>024.6264713</b>
