@@ -53,7 +53,6 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 
 		/* PROVISONAL STAGE */
 		if (isFirstStage) {
-			// Các sinh viên mới ngoại trừ sinh viên đã trượt từ các kỳ trước nay đã có trong danh sách
 			const newExpectedStudents = await Promise.all([
 				addOrUpdateStudents(data.map((std) => ({ ...std, updatedInStage: 1 }))),
 				StudentModel.updateMany(
