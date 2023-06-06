@@ -71,7 +71,7 @@ export const getListManager = async (req, res) => {
 
 		if (!campus_id) throw createHttpError(400, 'Không tìm thấy cơ sở');
 
-		const result = await ManagerServices.getListManager(limit, page, campus_id, { role: role.staff });
+		const result = await ManagerServices.getListManager(limit, page, campus_id);
 
 		return res.status(200).json(result);
 	} catch (error) {

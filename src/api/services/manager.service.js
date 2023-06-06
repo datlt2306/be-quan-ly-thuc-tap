@@ -3,22 +3,20 @@ import ManagerModel from '../models/manager.model';
 import { validateManagerDataCreate, validateManagerDataUpdate } from '../validation/manager.validation';
 
 // get list
-export const getListManager = async (limit, page, ...query) => {
-	const options = {
-		page: +page || 1,
-		limit: +limit || 10,
-		populate: ['campus_id'],
-		customLabels: {
-			limit: 'pageSize',
-			docs: 'data'
-		}
-	};
-	const filter = Object.assign({}, ...query);
-
+export const getListManager = async (limit, page, campus) => {
 	try {
-		return await ManagerModel.paginate(filter, options);
+		const options = {
+			page: +page || 1,
+			limit: +limit || 10,
+			populate: ['campus_id'],
+			customLabels: {
+				limit: 'pageSize',
+				docs: 'data'
+			}
+		};
+		return await ManagerModel.paginate({ campus_id: campus }, options);
 	} catch (error) {
-		throw new Error(error.message || 'Lỗi');
+		throw error;
 	}
 };
 
