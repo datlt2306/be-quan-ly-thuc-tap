@@ -32,28 +32,27 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 			email: student.email.toLowerCase(),
 			mssv: student.mssv.toUpperCase()
 		}));
-		// Lây ra danh sách sinh viên trong kỳ hiện tại & sinh viên đã trượt/không đủ điều kiện + những sinh viên đã tồn tại
-		const [instanceStudentsList, notQualifiedStudentForAllTime] = await Promise.all([
+		/**
+		 * * Lấy ra các list sinh viên bao gồm:
+		 * 	-> List sinh viên kỳ hiện tại
+		 * 	-> List sinh viên không đủ điều kiện từ trước đến nay
+		 */
+		const [instanceStudentsList, qualifiedStudents] = await Promise.all([
 			StudentModel.find({
 				smester_id: semesterId,
 				campus_id: campusId
 			}),
 			StudentModel.find({
 				campus_id: campusId,
-				statusCheck: { $in: [3, 12] }
+				statusCheck: { $in: [3, 12] },
+				email: { $in: data.map((student) => student.email) }
 			})
 		]);
 		const isFirstStage = !instanceStudentsList.length;
 		const isSecondStage = instanceStudentsList.every((student) => student.updatedInStage === 1);
 
-		// Các sinh viên không đủ điều kiện từ kỳ trước nay có trong danh sách dự kiến ở kỳ hiện tại
-		const qualifiedStudents = notQualifiedStudentForAllTime.filter((student) =>
-			data.some((std) => std.email === student.email)
-		);
-
 		/* PROVISONAL STAGE */
 		if (isFirstStage) {
-			// Các sinh viên mới ngoại trừ sinh viên đã trượt từ các kỳ trước nay đã có trong danh sách
 			const newExpectedStudents = await Promise.all([
 				addOrUpdateStudents(data.map((std) => ({ ...std, updatedInStage: 1 }))),
 				StudentModel.updateMany(
@@ -129,7 +128,7 @@ const addOrUpdateStudents = async (students) => {
 	try {
 		const bulkOperations = students.map((student) => ({
 			updateOne: {
-				filter: { email: student.email, mssv: student.mssv },
+				filter: { $or: [{ email: student.email }, { mssv: student.mssv }] },
 				update: student,
 				upsert: true
 			}
