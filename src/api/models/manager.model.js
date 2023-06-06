@@ -4,25 +4,25 @@ const paginate = require('mongoose-paginate-v2');
 const managerSchema = mongoose.Schema({
 	name: {
 		type: String,
-		required: true,
+		required: true
 	},
 	email: {
 		type: String,
-		required: true,
+		required: true
 	},
 	campus_id: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'Campus',
-		require: true,
+		required: true
 	},
 	role: {
 		type: Number,
-		required: true,
+		required: true
 	},
 	createdAt: {
 		type: Date,
-		default: Date.now,
-	},
+		default: Date.now
+	}
 });
 
 managerSchema.plugin(paginate);

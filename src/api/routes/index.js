@@ -9,7 +9,7 @@ import myWorkRouter from './myWork.route';
 import narrowRouter from './narrow.route';
 import notificationRouter from './notification.route';
 import reportFormRouter from './reportForm.route';
-import requestStudentRouter from './requestStudentToManager.route';
+import requestStudentRouter from './requestStudent.route';
 import semesterRouter from './semester.route';
 import specializationRouter from './specialization.route';
 import statusStudentRouter from './student.route';

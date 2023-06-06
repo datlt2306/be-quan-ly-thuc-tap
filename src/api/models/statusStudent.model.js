@@ -5,28 +5,28 @@ const StatusSchema = Schema(
 	{
 		value: {
 			type: Number,
-			require: true,
+			required: true
 		},
 		title: {
 			type: String,
-			require: true,
+			required: true
 		},
 		contentMail: {
 			type: String,
-			require: true,
+			required: true
 		},
 		titleMail: {
 			type: String,
-			require: true,
+			required: true
 		},
 		campus: {
 			type: ObjectId,
-			require: true,
-			ref: 'Campus',
-		},
+			required: true,
+			ref: 'Campus'
+		}
 	},
 	{
-		timestamps: true,
+		timestamps: true
 	}
 );
 

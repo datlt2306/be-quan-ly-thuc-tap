@@ -5,21 +5,21 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 const studentSchema = new mongoose.Schema(
 	{
 		mssv: {
-			require: true,
+			required: true,
 			type: String,
 			uppercase: true,
 			unique: true
 		},
 		name: {
 			type: String,
-			require: true
+			required: true
 		},
 		course: {
 			type: String
 		},
 		majorCode: {
 			type: String,
-			require: true
+			required: true
 		},
 		narrow: {
 			type: mongoose.Types.ObjectId,
@@ -32,7 +32,7 @@ const studentSchema = new mongoose.Schema(
 		},
 		email: {
 			type: String,
-			require: true,
+			required: true,
 			unique: true,
 			lowercase: true
 		},
@@ -55,7 +55,7 @@ const studentSchema = new mongoose.Schema(
 		},
 		phoneNumber: {
 			type: String,
-			require: true,
+			required: true,
 			minLength: 10,
 			maxLength: 11,
 			default: null

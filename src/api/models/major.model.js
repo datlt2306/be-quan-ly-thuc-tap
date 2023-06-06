@@ -5,23 +5,23 @@ const majorSchema = mongoose.Schema(
 	{
 		name: {
 			type: String,
-			required: true,
+			required: true
 		},
 		majorCode: {
 			type: String,
-			require: true,
+			required: true
 		},
 		campus: {
 			type: ObjectId,
-			ref: 'Campus',
+			ref: 'Campus'
 		},
 		createdAt: {
 			type: Date,
-			default: Date.now,
-		},
+			default: Date.now
+		}
 	},
 	{
-		strictPopulate: false,
+		strictPopulate: false
 	}
 );
 
