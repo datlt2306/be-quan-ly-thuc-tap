@@ -52,6 +52,7 @@ export const setFilePublic = async (fileId) => {
 	}
 };
 
+// Delete file on google drive
 export const deleteFile = async (fileId) => {
 	try {
 		return await drive.files.delete({ fileId });
@@ -76,4 +77,11 @@ export const uploadFile = async (file) => {
 	} catch (error) {
 		throw error;
 	}
+};
+
+// get google drive file id from URL link
+export const extractFileID = (link) => {
+	if (!link) return null;
+	let match = link.match(/\/d\/([a-zA-Z0-9-_]+)/);
+	return match ? match[1] : null;
 };

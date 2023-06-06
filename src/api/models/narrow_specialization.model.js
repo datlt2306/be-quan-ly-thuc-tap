@@ -5,23 +5,23 @@ const NarrowSpecializationSchema = mongoose.Schema(
 	{
 		name: {
 			type: String,
-			require: true,
+			required: true,
 			lowercase: true,
-			unique: true,
+			unique: true
 		},
 		id_majors: {
 			type: ObjectId,
 			require,
-			ref: 'Major',
+			ref: 'Major'
 		},
 		campus: {
 			type: String,
-			require: true,
-			ref: 'Campus',
-		},
+			required: true,
+			ref: 'Campus'
+		}
 	},
 	{
-		timestamps: true,
+		timestamps: true
 	}
 );
 

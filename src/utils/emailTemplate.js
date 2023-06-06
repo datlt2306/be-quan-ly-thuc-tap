@@ -209,6 +209,29 @@ export const emailTemplates = {
             <br>
             Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để xem trạng thái báo cáo
         </p>`
+	},
+	ACCEPTED_REQUEST: {
+		subject: 'Thông báo chấp nhận yêu cầu sinh viên',
+		content: (type, status, link) => /*html*/ `
+        <p>Xin chào Sinh viên,
+        <br>
+        Phòng QHDN đã chấp nhận yêu cầu sửa ${type}
+        <br>
+        Trạng thái hiện tại của dịch vụ là <b style="color:mediumspringgreen">${status}</b>
+        Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để sửa ${type}
+    </p>`
+	},
+	DENIED_REQUEST: {
+		subject: 'Thông báo từ chối yêu cầu sinh viên',
+		content: (type, reason = 'Thời gian đăng ký đã quá hạn') => /*html*/ `
+            <p>Xin chào Sinh viên,
+            <br>
+            Phòng QHDN không thể chấp nhận yêu cầu sửa ${type} của bạn.
+            <br>
+            Lý do từ chối: ${reason}
+            <br>
+            Vui lòng liên hệ Phòng QHDN nếu bạn cần hỗ trợ hoặc có câu hỏi.
+        </p>`
 	}
 };
 

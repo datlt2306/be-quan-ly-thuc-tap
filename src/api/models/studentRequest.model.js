@@ -10,11 +10,11 @@ const StudentRequestSchema = mongoose.Schema(
 		},
 		description: {
 			type: String,
-			require: true
+			required: true
 		},
 		type: {
 			type: String,
-			require: true
+			required: true
 		},
 		status: {
 			type: Number,
