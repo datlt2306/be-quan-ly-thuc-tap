@@ -18,10 +18,6 @@ export async function sendRequestToManager(req, res) {
 	});
 
 	try {
-		if (findRequest && findRequest.type === req.body.type) {
-			throw createHttpError(409, 'Yêu cầu đã tồn tại');
-		}
-
 		await Request.create(req.body);
 
 		return res.status(201).json({
