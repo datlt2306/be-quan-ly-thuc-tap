@@ -7,7 +7,7 @@ export const emailTemplates = {
             <br>
             Bạn vừa <i>đăng ký thực tập thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Chờ kiểm tra </b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Chờ kiểm tra</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -20,7 +20,7 @@ export const emailTemplates = {
 				<br />
 				Bạn vừa <i>sửa thành công thông tin đăng ký thực tập.</i>
 				<br />
-				Trạng thái hiện tại của dịch vụ là <b style="color:orange">Chờ kiểm tra </b>
+				Trạng thái hiện tại của dịch vụ là <b style="color:orange">Chờ kiểm tra</b>
 				<br />
 				Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh
 				nghiệp
@@ -47,7 +47,7 @@ export const emailTemplates = {
             <br>
             Bạn vừa <i>đăng ký thực tập thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Chờ kiểm tra</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đã đăng ký</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -60,7 +60,7 @@ export const emailTemplates = {
             <br>
             Bạn vừa <i>chỉnh sửa biên bản thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Đã nộp biên bản </b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đã nộp biên bản</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -69,11 +69,11 @@ export const emailTemplates = {
 		subject: 'Đăng ký thông tin biên bản thành công',
 		content: () => /* html */ `
         <p>
-           Xin chào Sinh viên,
+            Xin chào Sinh viên,
             <br>
-            Bạn <i>đã nộp biên bản thành công</i>
+            Bạn <i>đã nộp biên bản thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Đã nộp biên bản</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đã nộp biên bản</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -86,7 +86,7 @@ export const emailTemplates = {
             <br>
             Bạn <i>đã nộp báo cáo thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Đã nộp báo cáo</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đã nộp báo cáo</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -99,7 +99,7 @@ export const emailTemplates = {
             <br>
             Bạn <i>đã sửa cáo thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Đã nộp báo cáo </b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đã nộp báo cáo </b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -108,10 +108,11 @@ export const emailTemplates = {
 		subject: 'Thông báo sửa CV thực tập doanh nghiệp',
 		content: (textNote, link) => /*html*/ `
         <p>
-          Phòng QHDN yêu cầu bạn sửa lại thông tin CV<br>
-          Lý do SV phải sửa CV: ${textNote || `Không có`} 
+          Phòng QHDN yêu cầu bạn sửa lại thông tin CV
           <br>
-          Trạng thái hiện tại của dịch vụ là <b style="color:orange">Sửa CV </b>
+          Lý do SV phải sửa CV: ${textNote || `Không có`}
+          <br>
+          Trạng thái hiện tại của dịch vụ là <b style="color:orange">Sửa CV</b>
           <br>
            Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> để sửa CV
           <br>
@@ -126,7 +127,7 @@ export const emailTemplates = {
             <br>
             CV của bạn đã được phòng QHDN xác nhận.
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Nhận CV </b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Nhận CV</b>
             <br>
             Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để xem trạng thái CV
             <br>
@@ -140,10 +141,10 @@ export const emailTemplates = {
         <p>
             Xin chào Sinh viên,
             <br>
-            Bạn đã trượt thực tập. Phòng QHDN <b><span>Xác</span> <span>Nhận</span></b>
+            Phòng QHDN thông báo: Bạn đã trượt thực tập.
             <br>
             Lý do SV trượt: ${textNote || `Không có`} <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Trượt thực tập </b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:crimson">Trượt thực tập </b>
             <br>
             Sinh viên vui long đăng ký thực tập lại vào kỳ sau trên hệ thống <a href="https://ap.poly.edu.vn/">ap.poly.edu.vn</a>
             <br>
@@ -169,12 +170,13 @@ export const emailTemplates = {
 		subject: 'Thông báo nhận biên bản sinh viên thành công',
 		content: (link) => /*html*/ `
         <p>
-            Xin chào Sinh viên,<br>
-            Biên bản của bạn đã được phòng QHDN <b><span>Xác</span> <span>Nhận</span></b>
+            Xin chào Sinh viên,
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Đang thực tập </b>
+            Biên bản của bạn đã được phòng QHDN xác nhận.
             <br>
-            Sinh viên vui lòng đăng nhập vào trang web <a href="${link}">${link}</a>&nbsp;xem trạng thái báo cáo
+            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đang thực tập</b>
+            <br>
+            Sinh viên vui lòng đăng nhập vào trang web <a href="${link}">${link}</a> xem trạng thái báo cáo
         </p>
 
         `
@@ -187,7 +189,8 @@ export const emailTemplates = {
             Phòng QHDN yêu cầu bạn sửa lại thông tin báo cáo.
             <br>
             Lý do SV phải sửa báo cáo: ${textNote || `Không có`} <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Sửa báo cáo </b><br>
+            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Sửa báo cáo</b>
+            <br>
             Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để sửa báo cáo
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
@@ -200,7 +203,7 @@ export const emailTemplates = {
             Xin chào Sinh viên,<br>
             Bạn đã hoành thành thông tin thực tập.
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Hoàn thành báo cáo thực tập </b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:mediumspringgreen">Hoàn thành báo cáo thực tập </b>
             <br>
             Điểm của bạn sẽ được phòng QHDN cập nhật sau 1-2 ngày trên hệ thống  <a href="https://ap.poly.edu.vn/">ap.poly.edu.vn</a>
             <br>
@@ -212,7 +215,7 @@ export const emailTemplates = {
 // Tạo email mới dựa theo template
 export const getMailTemplate = (type, ...args) => {
 	const template = emailTemplates[type];
-	if (!template) throw new Error(`Invalid email type`);
+	if (!template) return;
 
 	const content = /* html */ ` <div style="background-color: #fff; color: #212121; font-size: 16px">
 		<img
