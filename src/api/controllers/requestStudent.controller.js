@@ -1,11 +1,10 @@
-import requestStudentToManagerModel from '../models/requestStudentToManager.model';
-import Student from '../models/student.model';
 import { defaultCvStudent, defaultForm, defaultReport } from '../../utils/defaultValueStudent';
-import studentModel from '../models/student.model';
+import StudentRequestModel from '../models/studentRequest.model';
+import Student from '../models/student.model';
 export function getListRequestStudent(req, res) {}
 
 export async function sendRequestToManager(req, res) {
-	const findRequest = await requestStudentToManagerModel.findOne({
+	const findRequest = await StudentRequestModel.findOne({
 		userId: req.body.userId
 	});
 
@@ -16,7 +15,7 @@ export async function sendRequestToManager(req, res) {
 				message: 'Yêu cầu đã tồn tại'
 			});
 		} else {
-			await requestStudentToManagerModel.create(req.body);
+			await StudentRequestModel.create(req.body);
 			res.status(201).json({
 				success: true,
 				message: 'Thành công'
@@ -33,7 +32,7 @@ export async function sendRequestToManager(req, res) {
 
 export async function getRequestOfStudent(req, res) {
 	try {
-		const data = await requestStudentToManagerModel.find(req.query).populate('userId');
+		const data = await StudentRequestModel.find(req.query).populate('userId');
 		res.status(200).json({
 			success: true,
 			data: data
@@ -62,7 +61,7 @@ export async function resetStudent(req, res) {
 	try {
 		Student.findOneAndUpdate({ _id: req.params.id }, valueReset, { new: true })
 			.then((r) =>
-				requestStudentToManagerModel.findByIdAndUpdate(
+				StudentRequestModel.findByIdAndUpdate(
 					id,
 					{
 						status: 2
@@ -86,7 +85,7 @@ export async function resetStudent(req, res) {
 
 export async function cancelResetStudent(req, res) {
 	try {
-		await requestStudentToManagerModel.findByIdAndUpdate(req.params.id, {
+		await StudentRequestModel.findByIdAndUpdate(req.params.id, {
 			status: 3
 		});
 
