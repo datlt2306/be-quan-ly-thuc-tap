@@ -129,7 +129,7 @@ const addOrUpdateStudents = async (students) => {
 	try {
 		const bulkOperations = students.map((student) => ({
 			updateOne: {
-				filter: { email: student.email, mssv: student.mssv },
+				filter: { $or: [{ email: student.email }, { mssv: student.mssv }] },
 				update: student,
 				upsert: true
 			}
