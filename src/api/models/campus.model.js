@@ -1,13 +1,19 @@
-const mongoose = require('mongoose');
-const campusSchema = mongoose.Schema({
-	name: {
-		type: String,
-		required: true,
-	},
-	createdAt: {
-		type: Date,
-		default: Date.now,
-	},
-});
+import mongoose from 'mongoose';
 
-module.exports = mongoose.model('Campus', campusSchema);
+const CampusSchema = mongoose.Schema(
+	{
+		name: {
+			type: String,
+			required: true,
+			lowercase: true
+		}
+	},
+	{
+		timestamps: true,
+		versionKey: false
+	}
+);
+
+const CampusModel = mongoose.model('Campus', CampusSchema);
+
+export default CampusModel;
