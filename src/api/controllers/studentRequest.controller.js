@@ -71,7 +71,7 @@ export async function resetStudent(req, res) {
 			message: 'Thành công'
 		});
 	} catch (error) {
-		rres.status({
+		res.status({
 			success: false,
 			message: 'Có lỗi sảy ra'
 		});
