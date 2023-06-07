@@ -3,7 +3,14 @@ import ManagerModel from '../models/manager.model';
 import { validateManagerDataCreate, validateManagerDataUpdate } from '../validation/manager.validation';
 
 // get list
-export const getListManager = async (limit, page, campus) => {
+/**
+ *
+ * @param {string | number} limit
+ * @param {string | number} page
+ * @param {{[key: string]: any}} filter
+ * @returns
+ */
+export const getListManager = async (limit, page, filter) => {
 	try {
 		const options = {
 			page: +page || 1,
@@ -14,7 +21,8 @@ export const getListManager = async (limit, page, campus) => {
 				docs: 'data'
 			}
 		};
-		return await ManagerModel.paginate({ campus_id: campus }, options);
+		const query = filter ?? {};
+		return await ManagerModel.paginate(query, options);
 	} catch (error) {
 		throw error;
 	}
