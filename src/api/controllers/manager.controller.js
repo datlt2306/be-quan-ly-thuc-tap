@@ -71,7 +71,7 @@ export const getListManager = async (req, res) => {
 
 		if (!campus_id) throw createHttpError(400, 'Không tìm thấy cơ sở');
 
-		const result = await ManagerServices.getListManager(limit, page, campus_id);
+		const result = await ManagerServices.getListManager(limit, page, { campus_id });
 
 		return res.status(200).json(result);
 	} catch (error) {
@@ -85,7 +85,7 @@ export const permittedListManager = async (req, res) => {
 	try {
 		// Double check admin permission
 		if (!req.bypass) throw createHttpError(400, 'Không có quyền cho thao tác này');
-
+		console.log('manager campus:>>>>', req.campusManager);
 		const { limit, page } = req.query;
 		const result = await ManagerServices.getListManager(limit, page, { role: role.manager });
 

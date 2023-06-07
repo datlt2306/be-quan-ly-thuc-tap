@@ -159,6 +159,8 @@ export const form = async (req, res) => {
 						new: true
 					}
 				);
+				await sendMail({ recipients: findStudent.email, ...getMailTemplate(MailTypes.RECORD_CHANGE_REQUEST) });
+
 				return res.status(200).json({ message: 'Sửa biên bản thành công', result });
 
 			// Đã đăng ký

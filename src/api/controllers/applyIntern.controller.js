@@ -108,11 +108,11 @@ export const signUpCVForSupport = async (req, res) => {
 		let message, emailType;
 
 		if (student.statusCheck === 1) {
-			message = 'Đăng ký thành công';
-			emailType = support ? MailTypes.INTERN_SUPPORT_UPDATE : MailTypes.INTERN_SELF_FINDING_UPDATE;
-		} else {
 			message = 'Sửa thông tin thành công';
-			emailType = support ? MailTypes.INTERN_SUPPORT_REGISTRATION : MailTypes.INTERN_SELF_FINDING_REGISTRATION;
+			emailType = support == 1 ? MailTypes.INTERN_SUPPORT_UPDATE : MailTypes.INTERN_SELF_FINDING_UPDATE;
+		} else {
+			message = 'Đăng ký thành công';
+			emailType = support == 1 ? MailTypes.INTERN_SUPPORT_REGISTRATION : MailTypes.INTERN_SELF_FINDING_REGISTRATION;
 		}
 
 		// Send email
