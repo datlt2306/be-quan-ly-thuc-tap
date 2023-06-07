@@ -12,7 +12,15 @@ import { deleteFile, extractFileID } from '../services/googleDrive.service';
 import { isValidObjectId } from 'mongoose';
 import studentModel from '../models/student.model';
 
-export const getRequest = async (filter) => await StudentRequestModel.find(filter);
+export const getRequest = async (filter) => {
+	try {
+		const result = await StudentRequestModel.find(filter);
+		if (!result) throw createHttpError(404, 'Không tìm thấy yêu cầu sinh viên');
+		return result;
+	} catch (error) {
+		throw error;
+	}
+};
 
 export const createRequest = async (data) => {
 	try {
@@ -41,11 +49,8 @@ export const processRequest = async (body, params) => {
 		if (!isValidObjectId(id)) throw createHttpError(400, 'ID sai định dạng');
 		if (action === undefined || !type) throw createHttpError(400, 'Thông tin sai hoặc thiếu');
 
-		const isRequestValid = await getRequest({ userId: id, type });
-
-		if (!isRequestValid) throw createHttpError(404, 'Không tìm thấy yêu cầu của sinh viên');
-
 		const result = await handleAction(action, id, type);
+
 		return result;
 	} catch (error) {
 		throw error;
@@ -53,28 +58,32 @@ export const processRequest = async (body, params) => {
 };
 
 // Action Handler
-const handleAction = async (action, id, type, student) => {
+const handleAction = async (action, id, type) => {
 	try {
+		const studentRequest = await StudentRequestModel.findOne({ _id: id, type });
+		if (!studentRequest) throw createHttpError(404, 'Không tìm thấy yêu cầu sinh viên');
+
+		const student = studentRequest.userId;
+		if (!student) throw createHttpError(404, 'Không tìm thấy thông tin sinh viên');
+
 		if (action === 0) {
-			return await handleDenied(id, type); // denied
+			return await handleDenied(id, type, student); // denied
 		} else if (action === 1) {
-			return await handleApproved(id, type); // approved
+			return await handleApproved(id, type, student); // approved
 		} else if (action === 2) {
-			return await handleReset(id, type); // hard reset
-		}
+			return await handleReset(id, type, student); // hard reset
+		} else throw createHttpError(400, 'action không hợp lệ');
 	} catch (error) {
 		throw error;
 	}
 };
 
 // Handle rejected student request
-const handleDenied = async (id, type) => {
-	let emailType = MailTypes.DENIED_REQUEST;
-
+const handleDenied = async (id, type, student) => {
 	try {
 		// Delete request after rejection
-		await StudentRequestModel.findOneAndDelete({ userId: id, type });
-		await sendMail({ recipients: student.email, ...getMailTemplate(emailType) });
+		await StudentRequestModel.findOneAndDelete({ _id: id, type });
+		await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.DENIED_REQUEST, type) });
 
 		return { status: 200, data: 'Huỷ yêu cầu thành công' };
 	} catch (error) {
@@ -83,39 +92,39 @@ const handleDenied = async (id, type) => {
 };
 
 // Handle approved student request
-const handleApproved = async (id, type) => {
-	let fileID,
-		updateStudentStatus,
-		emailType = MailTypes.ACCEPTED_REQUEST;
+const handleApproved = async (id, type, student) => {
+	let fileID, studentStatus;
 
 	try {
 		// Check request type
 		switch (type) {
 			case StudentReviewTypeEnum.REVIEW_CV:
 				fileID = extractFileID(student.CV);
-				updateStudentStatus = 10; // Chưa đăng ký
+				studentStatus = 10; // Chưa đăng ký
 				break;
 			case StudentReviewTypeEnum.REVIEW_RECORD:
 				fileID = extractFileID(student.form);
-				updateStudentStatus = 2; // Nhận CV
+				studentStatus = 2; // Nhận CV
 				break;
 			case StudentReviewTypeEnum.REVIEW_REPORT:
 				fileID = extractFileID(student.report);
-				updateStudentStatus = 6; // Đang thực tập
+				studentStatus = 6; // Đang thực tập
 				break;
 			default:
-				throw createHttpError(400, `Không tìm thấy type: ${type}`);
+				throw createHttpError(404, `Không tìm thấy type: ${type}`);
 		}
 
 		// Delete file on Google Drive. No user notification needed
 		if (fileID) await deleteFile(fileID);
 
-		const result = await StudentModel.findByIdAndUpdate(id, { statusCheck: updateStudentStatus }, { new: true });
+		// Delete request
+		await StudentRequestModel.findOneAndDelete({ _id: id, type });
 
-		await StudentRequestModel.findOneAndDelete({ userId: id, type });
+		await StudentModel.findByIdAndUpdate(student._id, { statusCheck: studentStatus }, { new: true });
+
 		await sendMail({
 			recipients: student.email,
-			...getMailTemplate(type, StudentStatusEnum[result.statusCheck])
+			...getMailTemplate(MailTypes.ACCEPTED_REQUEST, type, StudentStatusEnum[student.statusCheck])
 		});
 
 		return { status: 200, data: 'Châp nhận yêu cầu thành công' };
@@ -125,24 +134,37 @@ const handleApproved = async (id, type) => {
 };
 
 // Reset student's information
-const handleReset = async (id, type) => {
-	let resetValue;
-	let student = await studentModel.findById(id);
+const handleReset = async (id, type, student) => {
+	let resetValue, fileID;
 
-	switch (type) {
-		case StudentReviewTypeEnum.REVIEW_CV:
-			fileID = extractFileID(student.CV);
-			resetValue = defaultValue.defaultCvStudent;
-			break;
-		case StudentReviewTypeEnum.REVIEW_RECORD:
-			fileID = extractFileID(student.form);
-			resetValue = defaultValue.defaultForm;
-			break;
-		case StudentReviewTypeEnum.REVIEW_REPORT:
-			throw createHttpError(400, 'Báo cáo không được reset');
-		default:
-			throw createHttpError(400, `Không tìm thấy type: ${type}`);
+	try {
+		if (!student) throw createHttpError(404, 'Không tìm thấy thông tin sinh viên');
+
+		switch (type) {
+			case StudentReviewTypeEnum.REVIEW_CV:
+				fileID = extractFileID(student.CV);
+				resetValue = defaultValue.defaultCvStudent;
+				break;
+			case StudentReviewTypeEnum.REVIEW_RECORD:
+				fileID = extractFileID(student.form);
+				resetValue = defaultValue.defaultForm;
+				break;
+			case StudentReviewTypeEnum.REVIEW_REPORT:
+				throw createHttpError(400, 'Báo cáo không được reset');
+			default:
+				throw createHttpError(400, `Không tìm thấy type: ${type}`);
+		}
+
+		if (fileID) await deleteFile(fileID);
+
+		await studentModel.findByIdAndUpdate(id, resetValue, { new: true });
+
+		await sendMail({
+			recipients: student.email,
+			...getMailTemplate(MailTypes.ACCEPTED_REQUEST, type, StudentStatusEnum[student.statusCheck])
+		});
+		return { status: 200, data: 'Xác nhận yêu cầu thành công' };
+	} catch (error) {
+		throw error;
 	}
-	const result = await studentModel.findByIdAndUpdate(id, resetValue, { new: true });
-	return { status: 200, data: 'Xác nhận yêu cầu thành công' };
 };
