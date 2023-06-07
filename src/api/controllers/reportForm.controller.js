@@ -66,8 +66,7 @@ export const report = async (req, res) => {
 
 			// Sửa báo cáo
 			case 8:
-				if (findStudent.numberOfTime > 3)
-					throw createHttpError(400, 'Tài khoạn của bạn đã vượt quá số lần đăng ký');
+				if (student.numberOfTime > 3) throw createHttpError(400, 'Tài khoạn của bạn đã vượt quá số lần đăng ký');
 				uploadedFile = await uploadFile(file);
 
 				data = {
