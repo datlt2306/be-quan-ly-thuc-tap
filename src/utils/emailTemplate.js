@@ -47,7 +47,7 @@ export const emailTemplates = {
             <br>
             Bạn vừa <i>đăng ký thực tập thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đã đăng ký</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đã đăng ký</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -60,7 +60,7 @@ export const emailTemplates = {
             <br>
             Bạn vừa <i>chỉnh sửa biên bản thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đã nộp biên bản</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đã nộp biên bản</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -73,7 +73,7 @@ export const emailTemplates = {
             <br>
             Bạn <i>đã nộp biên bản thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đã nộp biên bản</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đã nộp biên bản</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -86,7 +86,7 @@ export const emailTemplates = {
             <br>
             Bạn <i>đã nộp báo cáo thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đã nộp báo cáo</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đã nộp báo cáo</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -99,7 +99,7 @@ export const emailTemplates = {
             <br>
             Bạn <i>đã sửa cáo thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đã nộp báo cáo </b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đã nộp báo cáo </b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -127,7 +127,7 @@ export const emailTemplates = {
             <br>
             CV của bạn đã được phòng QHDN xác nhận.
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Nhận CV</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:green">Nhận CV</b>
             <br>
             Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để xem trạng thái CV
             <br>
@@ -174,7 +174,7 @@ export const emailTemplates = {
             <br>
             Biên bản của bạn đã được phòng QHDN xác nhận.
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:aquamarine">Đang thực tập</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đang thực tập</b>
             <br>
             Sinh viên vui lòng đăng nhập vào trang web <a href="${link}">${link}</a> xem trạng thái báo cáo
         </p>
