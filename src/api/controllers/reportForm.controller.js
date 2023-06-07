@@ -105,12 +105,10 @@ export const report = async (req, res) => {
 export const form = async (req, res) => {
 	try {
 		let data, result, uploadedFile, error;
-
 		const { nameCompany, internshipTime, mssv, email, _id } = req.body;
 		const filter = { mssv: mssv, email: email, _id };
 		const [file] = req.files;
 		const findStudent = await studentModel.findOne(filter);
-
 		if (!findStudent) throw createHttpError(404, 'Đã xảy ra lỗi! Vui lòng đăng ký lại!');
 
 		switch (findStudent.statusCheck) {
@@ -118,56 +116,43 @@ export const form = async (req, res) => {
 			case 0:
 				if (!findStudent.CV) throw createHttpError(404, 'CV không tồn tại trên hệ thống');
 				throw createHttpError(400, 'CV phải được duyệt trước khi nộp biên bản!');
-
 			// Nhận CV
 			case 2:
 				if (!findStudent.support == 1) throw createHttpError(400, 'Bạn chưa gửi form nhờ nhà trường hỗ trợ');
-
 				uploadedFile = await uploadFile(file);
-
 				data = {
 					nameCompany,
 					internshipTime,
 					form: uploadedFile.url,
 					statusCheck: 4
 				};
-
 				error = formSchema.validate(data).error;
 				if (error) throw createHttpError(400, 'Sai dữ liệu: ' + error.message);
-
 				result = await studentModel.findOneAndUpdate(filter, data, {
 					new: true
 				});
 
 				return res.status(200).json({ message: 'Nộp biên bản thành công', result });
-
 			// Không đủ điều kiện
 			case 3:
 			case 10:
 				throw createHttpError(400, 'Bạn không đủ điều kiện nộp biên bản!');
-
 			// Đã nộp biên bản
 			case 4:
 				throw createHttpError(400, 'Bạn đã nộp biên bản!');
-
 			// Sửa biên bản
 			case 5:
 				if (findStudent.numberOfTime > 3)
 					throw createHttpError(400, 'Tài khoạn của bạn đã vượt quá số lần đăng ký');
-
 				uploadedFile = await uploadFile(file);
-
 				data = {
 					nameCompany,
 					internshipTime,
 					form: uploadedFile.url,
 					statusCheck: 4
 				};
-
 				error = formSchema.validate(data).error;
-
 				if (error) throw createHttpError(400, 'Sai dữ liệu: ' + error.message);
-
 				result = await studentModel.findOneAndUpdate(
 					filter,
 					{ ...data, note: null, numberOfTime: findStudent.numberOfTime + 1 },
@@ -181,26 +166,22 @@ export const form = async (req, res) => {
 			case 11:
 				if (!findStudent.support == 0)
 					throw createHttpError(400, 'Form tự tìm của bạn chưa được duyệt hoặc server bị lỗi!');
-
 				uploadedFile = await uploadFile(file);
-
 				data = {
 					nameCompany,
 					internshipTime,
 					form: uploadedFile.url,
 					statusCheck: 4
 				};
-
 				error = formSchema.validate(data).error;
 
 				if (error) throw createHttpError(400, 'Sai dữ liệu: ' + error.message);
-
 				data.numberOfTime = 0;
-
 				result = await studentModel.findOneAndUpdate(filter, data, {
 					new: true
 				});
 
+				await sendMail({ recipients: findStudent.email, ...getMailTemplate(MailTypes.RECORD_REGISTRATION) });
 				return res.status(200).json({ message: 'Nộp biên bản thành công', result });
 
 			default:
