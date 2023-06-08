@@ -88,36 +88,17 @@ export const insertBusiness = async (req, res) => {
 //* Role Student & Manager
 // [GET] /api/business
 export const listBusiness = async (req, res) => {
-	const { page = 1, limit = 10, semester_id: customSemesterID, ...optionalQuery } = req.query;
-
-	const campus_id = req.campusManager || req.campusStudent;
-	const semester_id = customSemesterID || (await getDefaultSemester(campus_id));
-
 	try {
+		const campus_id = req.campusManager || req.campusStudent;
+		const { semester_id } = req.query;
 		// lấy ra học kỳ hiện tại
 		if (!campus_id) throw createHttpError(400, 'Không tìm thấy cơ sở');
 		if (!semester_id) throw createHttpError(400, 'Không tìm thấy kỳ học');
 
-		let options = {
-			page: Number(page),
-			limit: Number(limit),
-			sort: { created_at: 'desc' },
-			populate: ['major'],
-			customLabels: {
-				limit: 'pageSize',
-				docs: 'data'
-			}
-		};
-
-		let filters = {
+		const result = await BusinessModel.find({
 			campus_id,
-			semester_id,
-			optionalQuery
-		};
-
-		if (optionalQuery) filters = { ...filters, ...optionalQuery };
-
-		const result = await BusinessModel.paginate(filters, options);
+			semester_id
+		});
 
 		return res.status(200).json(result);
 	} catch (error) {
