@@ -13,10 +13,9 @@ const schema = Joi.object({
 	requirement: Joi.string().default(''),
 	description: Joi.string().default(''),
 	benefit: Joi.string().default(''),
-	status: Joi.number().default(1),
-	created_at: Joi.date().default(Date.now)
+	status: Joi.number().default(1)
 });
-
+const arraySchema = Joi.array().items(schema);
 export const businessValidation = (value) => schema.validate(value);
 
-export const businessListValidation = (values = [], _ = Joi.array().items(schema)) => _.validate(values);
+export const businessListValidation = (values) => arraySchema.validate(values);

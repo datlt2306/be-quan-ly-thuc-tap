@@ -1,6 +1,6 @@
 import createHttpError from 'http-errors';
-import businessModel from '../models/business.model';
-import { businessValidation, businessListValidation } from '../validation/business.validation';
+import BusinessModel from '../models/business.model';
+import { businessValidation } from '../validation/business.validation';
 
 // TODO: refactor this after release
 export const upsertBusinessList = async (data, semester_id, campus_id) => {
@@ -9,7 +9,7 @@ export const upsertBusinessList = async (data, semester_id, campus_id) => {
 		const dupl = (
 			await Promise.all(
 				data.map(async ({ tax_code, business_code }) => {
-					const checkDuplicate = await businessModel.findOne({
+					const checkDuplicate = await BusinessModel.findOne({
 						$or: [{ tax_code }, { business_code }]
 					});
 					return checkDuplicate ? { tax_code, business_code, campus_id: checkDuplicate.campus_id } : null;
@@ -30,11 +30,30 @@ export const upsertBusinessList = async (data, semester_id, campus_id) => {
 			return { updateOne: { filter: { campus_id }, update, upsert: true } };
 		});
 
-		const result = await businessModel.bulkWrite(bulkOperations);
+		const result = await BusinessModel.bulkWrite(bulkOperations);
 		const message = `Thêm mới ${result.insertedCount} doanh nghiệp. Sửa ${result.modifiedCount} doanh nghiệp. Chèn mới ${result.upsertedCount} doanh nghiệp.`;
 		const isChange = result.insertedCount + result.modifiedCount + result.upsertedCount;
 
 		return isChange ? [200, message] : [304, 'Dữ liệu không thay đổi'];
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const addOrUpdateBusiness = async (data) => {
+	try {
+		const bulkWriteOption = data.map((business) => ({
+			updateOne: {
+				filter: {
+					business_code: business.business_code,
+					tax_code: business.tax_code,
+					campus_id: business.campus_id
+				},
+				update: business,
+				upsert: true
+			}
+		}));
+		return await BusinessModel.bulkWrite(bulkWriteOption);
 	} catch (error) {
 		throw error;
 	}
