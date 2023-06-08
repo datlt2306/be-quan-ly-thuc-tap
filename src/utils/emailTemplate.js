@@ -7,7 +7,7 @@ export const emailTemplates = {
             <br>
             Bạn vừa <i>đăng ký thực tập thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Chờ kiểm tra</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#fb923c">Chờ kiểm tra</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -20,7 +20,7 @@ export const emailTemplates = {
 				<br />
 				Bạn vừa <i>sửa thành công thông tin đăng ký thực tập.</i>
 				<br />
-				Trạng thái hiện tại của dịch vụ là <b style="color:orange">Chờ kiểm tra</b>
+				Trạng thái hiện tại của dịch vụ là <b style="color:#fb923c">Chờ kiểm tra</b>
 				<br />
 				Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh
 				nghiệp
@@ -34,7 +34,7 @@ export const emailTemplates = {
             <br>
             Bạn vừa <i>sửa thành công thông tin đăng ký thực tập.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Chờ kiểm tra</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#fb923c">Chờ kiểm tra</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -47,7 +47,7 @@ export const emailTemplates = {
             <br>
             Bạn vừa <i>đăng ký thực tập thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đã đăng ký</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#34d399">Đã đăng ký</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -60,7 +60,7 @@ export const emailTemplates = {
             <br>
             Bạn vừa <i>chỉnh sửa biên bản thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đã nộp biên bản</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#34d399">Đã nộp biên bản</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -73,7 +73,7 @@ export const emailTemplates = {
             <br>
             Bạn <i>đã nộp biên bản thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đã nộp biên bản</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#34d399">Đã nộp biên bản</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -86,7 +86,7 @@ export const emailTemplates = {
             <br>
             Bạn <i>đã nộp báo cáo thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đã nộp báo cáo</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#34d399">Đã nộp báo cáo</b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -99,7 +99,7 @@ export const emailTemplates = {
             <br>
             Bạn <i>đã sửa cáo thành công.</i>
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đã nộp báo cáo </b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#34d399">Đã nộp báo cáo </b>
             <br>
             Nội dung(nếu có): Lưu ý mỗi sinh viên sẽ giới hạn 3 lần được hỗ trợ tìm nơi thực tập từ phòng quan hệ doanh nghiệp
         </p>`
@@ -112,7 +112,7 @@ export const emailTemplates = {
           <br>
           Lý do SV phải sửa CV: ${textNote || `Không có`}
           <br>
-          Trạng thái hiện tại của dịch vụ là <b style="color:orange">Sửa CV</b>
+          Trạng thái hiện tại của dịch vụ là <b style="color:#fb923c">Sửa CV</b>
           <br>
            Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> để sửa CV
           <br>
@@ -127,7 +127,7 @@ export const emailTemplates = {
             <br>
             CV của bạn đã được phòng QHDN xác nhận.
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:green">Nhận CV</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#34d399">Nhận CV</b>
             <br>
             Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để xem trạng thái CV
             <br>
@@ -144,7 +144,7 @@ export const emailTemplates = {
             Phòng QHDN thông báo: Bạn đã trượt thực tập.
             <br>
             Lý do SV trượt: ${textNote || `Không có`} <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:crimson">Trượt thực tập </b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#f43f5e">Trượt thực tập </b>
             <br>
             Sinh viên vui long đăng ký thực tập lại vào kỳ sau trên hệ thống <a href="https://ap.poly.edu.vn/">ap.poly.edu.vn</a>
             <br>
@@ -161,7 +161,7 @@ export const emailTemplates = {
             <br>
             Lý do SV phải sửa báo cáo: ${textNote || `Không có`} 
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Sửa biên bản </b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#fb923c">Sửa biên bản </b>
             <br>
             Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để sửa biên bản
         </p>`
@@ -174,7 +174,7 @@ export const emailTemplates = {
             <br>
             Biên bản của bạn đã được phòng QHDN xác nhận.
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:green">Đang thực tập</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#34d399">Đang thực tập</b>
             <br>
             Sinh viên vui lòng đăng nhập vào trang web <a href="${link}">${link}</a> xem trạng thái báo cáo
         </p>
@@ -189,7 +189,7 @@ export const emailTemplates = {
             Phòng QHDN yêu cầu bạn sửa lại thông tin báo cáo.
             <br>
             Lý do SV phải sửa báo cáo: ${textNote || `Không có`} <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:orange">Sửa báo cáo</b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:#fb923c">Sửa báo cáo</b>
             <br>
             Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để sửa báo cáo
             <br>
@@ -203,7 +203,7 @@ export const emailTemplates = {
             Xin chào Sinh viên,<br>
             Bạn đã hoành thành thông tin thực tập.
             <br>
-            Trạng thái hiện tại của dịch vụ là <b style="color:mediumspringgreen">Hoàn thành báo cáo thực tập </b>
+            Trạng thái hiện tại của dịch vụ là <b style="color:mediumspring#34d399">Hoàn thành báo cáo thực tập </b>
             <br>
             Điểm của bạn sẽ được phòng QHDN cập nhật sau 1-2 ngày trên hệ thống  <a href="https://ap.poly.edu.vn/">ap.poly.edu.vn</a>
             <br>
@@ -217,7 +217,8 @@ export const emailTemplates = {
         <br>
         Phòng QHDN đã chấp nhận yêu cầu sửa ${type}
         <br>
-        Trạng thái hiện tại của dịch vụ là <b style="color:mediumspringgreen">${status}</b>
+        Trạng thái hiện tại của dịch vụ là <b style="color:mediumspring#34d399">${status}</b>
+        <br>
         Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để sửa ${type}
     </p>`
 	},
@@ -248,7 +249,7 @@ export const getMailTemplate = (type, ...args) => {
 			class="CToWUd" />
 		<h5 style="font-size: 18px; font-weight: 600; margin-bottom: 0">Phòng QHDN gửi tới sinh viên</h5>
 		${template.content(...args)}
-		<hr style="width: 100%; border-bottom: 1px; border-color: #cccc" />
+		<hr style="width: 100%; border-bottom: 1px; border-color: #e5e7eb" />
 		<span>
 			Lưu ý: đây là email tự động vui lòng không phản hồi lại email này, mọi thắc mắc xin liên hệ phòng QHDN qua số
 			điện thoại: <b>024.6264713</b>

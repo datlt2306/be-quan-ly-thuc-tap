@@ -2,7 +2,6 @@ import StudentModel from '../models/student.model';
 import StudentRequestModel from '../models/studentRequest.model';
 import MailTypes from '../constants/mailTypes';
 import createHttpError from 'http-errors';
-
 import * as defaultValue from '../../utils/defaultValueStudent';
 import { getMailTemplate } from '../../utils/emailTemplate';
 import { sendMail } from '../services/mail.service';
@@ -26,9 +25,9 @@ export const createRequest = async (data) => {
 	try {
 		const requestExist = await StudentRequestModel.findOne({ userId: data.userId, type: data.type });
 
-		if (requestExist.status === 3) throw createHttpError(400, 'Bạn đã vượt quá số lần gửi yêu cầu (tối đa 3 lần)');
+		if (requestExist?.status === 3) throw createHttpError(400, 'Bạn đã vượt quá số lần gửi yêu cầu (tối đa 3 lần)');
 
-		return await new StudentRequestModel({ ...data, status: requestExist.status + 1 || 0 }).save();
+		return await new StudentRequestModel({ ...data, status: requestExist?.status + 1 || 0 }).save();
 	} catch (error) {
 		throw error;
 	}
