@@ -13,7 +13,7 @@ import studentModel from '../models/student.model';
 
 export const getRequest = async (filter) => {
 	try {
-		const result = await StudentRequestModel.find(filter);
+		const result = await StudentRequestModel.find(filter).sort({ status: -1 }).exec();
 		if (!result) throw createHttpError(404, 'Không tìm thấy yêu cầu sinh viên');
 		return result;
 	} catch (error) {
@@ -23,11 +23,41 @@ export const getRequest = async (filter) => {
 
 export const createRequest = async (data) => {
 	try {
-		const requestExist = await StudentRequestModel.findOne({ userId: data.userId, type: data.type });
+		let currentStatus;
 
-		if (requestExist?.status === 3) throw createHttpError(400, 'Bạn đã vượt quá số lần gửi yêu cầu (tối đa 3 lần)');
+		const requestExist = await StudentRequestModel.findOne({ userId: data.userId, type: data.type })
+			.sort({ status: -1 })
+			.exec();
 
-		return await new StudentRequestModel({ ...data, status: requestExist?.status + 1 || 0 }).save();
+		currentStatus = requestExist ? requestExist.status + 1 : 0;
+
+		if (currentStatus > 2) throw createHttpError(400, 'Bạn đã vượt quá số lần gửi yêu cầu (tối đa 3 lần)');
+
+		return await new StudentRequestModel({ ...data, status: currentStatus }).save();
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const deleteRequest = async (id) => {
+	try {
+		const requestToDelete = await StudentRequestModel.findByIdAndDelete(id);
+
+		if (!requestToDelete) throw createHttpError(404, 'Không tìm thấy yêu cầu sinh viên');
+
+		// Check for duplicates
+		const duplicates = await StudentRequestModel.find({
+			userId: requestToDelete.userId,
+			type: requestToDelete.type
+		});
+
+		// Update the duplicate documents
+		if (requestToDelete.status != 2) {
+			for (const duplicate of duplicates) {
+				duplicate.status = Math.max(0, duplicate.status - 1);
+				await duplicate.save();
+			}
+		}
 	} catch (error) {
 		throw error;
 	}
@@ -65,13 +95,19 @@ const handleAction = async (action, id, type) => {
 		const student = studentRequest.userId;
 		if (!student) throw createHttpError(404, 'Không tìm thấy thông tin sinh viên');
 
+		let result;
 		if (action === 0) {
-			return await handleDenied(id, type, student); // denied
+			result = await handleDenied(id, type, student); // denied
 		} else if (action === 1) {
-			return await handleApproved(id, type, student); // approved
+			result = await handleApproved(id, type, student); // approved
 		} else if (action === 2) {
-			return await handleReset(id, type, student); // hard reset
+			result = await handleReset(id, type, student); // hard reset
 		} else throw createHttpError(400, 'action không hợp lệ');
+
+		// Delete request after action executed
+		await deleteRequest(id);
+
+		return result;
 	} catch (error) {
 		throw error;
 	}
@@ -80,10 +116,7 @@ const handleAction = async (action, id, type) => {
 // Handle rejected student request
 const handleDenied = async (id, type, student) => {
 	try {
-		// Delete request after rejection
-		await StudentRequestModel.findOneAndDelete({ _id: id, type });
 		await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.DENIED_REQUEST, type) });
-
 		return { status: 200, data: 'Huỷ yêu cầu thành công' };
 	} catch (error) {
 		throw error;
@@ -116,11 +149,7 @@ const handleApproved = async (id, type, student) => {
 		// Delete file on Google Drive. No user notification needed
 		if (fileID) await deleteFile(fileID);
 
-		// Delete request
-		await StudentRequestModel.findOneAndDelete({ _id: id, type });
-
 		await StudentModel.findByIdAndUpdate(student._id, { statusCheck: studentStatus }, { new: true });
-
 		await sendMail({
 			recipients: student.email,
 			...getMailTemplate(MailTypes.ACCEPTED_REQUEST, type, StudentStatusEnum[student.statusCheck])
@@ -156,8 +185,7 @@ const handleReset = async (id, type, student) => {
 
 		if (fileID) await deleteFile(fileID);
 
-		await studentModel.findByIdAndUpdate(id, resetValue, { new: true });
-
+		await studentModel.findByIdAndUpdate(student._id, resetValue, { new: true });
 		await sendMail({
 			recipients: student.email,
 			...getMailTemplate(MailTypes.ACCEPTED_REQUEST, type, StudentStatusEnum[student.statusCheck])
