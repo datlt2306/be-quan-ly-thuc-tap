@@ -3,10 +3,11 @@ import Student from '../models/student.model';
 import { getDefaultSemester, getCurrentSemester } from '../services/semester.service';
 import createHttpError from 'http-errors';
 import { businessListValidation, businessValidation } from '../validation/business.validation';
-import { upsertBusinessList } from '../services/business.service';
+import { addOrUpdateBusiness, upsertBusinessList } from '../services/business.service';
 import { HttpException } from '../../utils/httpException';
 import { isValidObjectId } from 'mongoose';
-
+import HttpStatusCode from '../constants/httpStatusCode';
+import _ from 'lodash';
 //* New Route
 // [PUT] /api/business
 export const insertBusinessList = async (req, res) => {
@@ -32,8 +33,8 @@ export const insertBusinessList = async (req, res) => {
 	}
 };
 
-//! DEPRECATE
 // [POST] /api/business
+// #region DEPRECATE
 export const insertBusiness = async (req, res) => {
 	const data = req.body;
 	const campus = req.campusManager || req.campusStudent;
@@ -82,6 +83,7 @@ export const insertBusiness = async (req, res) => {
 		return res.status(httpException.statusCode).json(httpException);
 	}
 };
+// #endregion
 
 //* Role Student & Manager
 // [GET] /api/business
@@ -259,6 +261,32 @@ export const updateMany = async (req, res) => {
 		return res.status(201).json({
 			message: `Đã chuyển doanh nghiệp sang kỳ học ${semester.name}!`
 		});
+	} catch (error) {
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
+	}
+};
+
+export const importBusiness = async (req, res) => {
+	try {
+		const campusId = req.campusManager;
+		if (_.isNil(campusId)) {
+			throw createHttpError.Forbidden();
+		}
+		if (!req.body || !Array.isArray(req.body)) {
+			throw createHttpError.UnprocessableEntity('Payload must be an array!');
+		}
+		const payload = req.body.map((business) => ({
+			...business,
+			campus_id: campusId.toString()
+		}));
+
+		const { error, value } = businessListValidation(payload);
+		if (error) {
+			throw createHttpError.BadRequest(error.message);
+		}
+		const importResult = await addOrUpdateBusiness(value);
+		return res.status(HttpStatusCode.CREATED).json(importResult);
 	} catch (error) {
 		const httpException = new HttpException(error);
 		return res.status(httpException.statusCode).json(httpException);
