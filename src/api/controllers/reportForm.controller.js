@@ -157,7 +157,7 @@ export const submitRecordForm = async (req, res) => {
 						new: true
 					}
 				);
-				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.RECORD_CHANGE_REQUEST) });
+				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.RECORD_REGISTRATION) });
 
 				return res.status(200).json({ message: 'Sửa biên bản thành công', result });
 
