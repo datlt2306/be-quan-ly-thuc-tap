@@ -15,7 +15,8 @@ const businessSchema = mongoose.Schema(
 		major: {
 			type: mongoose.Types.ObjectId,
 			ref: 'Major',
-			required: true
+			required: true,
+			autopopulate: true
 		},
 		amount: {
 			type: Number,
