@@ -30,10 +30,7 @@ export async function getRequestOfStudent(req, res) {
 
 		if (!data) throw createHttpError(404, 'Không tìm thấy yêu cầu của học sinh');
 
-		return res.status(200).json({
-			success: true,
-			data: data
-		});
+		return res.status(200).json(data);
 	} catch (err) {
 		const httpException = new HttpException(error);
 		return res.status(httpException.statusCode).json(httpException);
