@@ -106,7 +106,6 @@ export const permittedCreateManager = async (req, res) => {
 		if (!data.campus_id) throw createHttpError(400, 'Không tìm thấy cơ sở');
 
 		const result = await ManagerServices.createManager(data);
-
 		return res.status(201).json(result);
 	} catch (error) {
 		const httpException = new HttpException(error);
