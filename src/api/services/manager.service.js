@@ -42,7 +42,7 @@ export const getOneManager = async (id, ...query) => {
 };
 
 // create
-export const createManager = async (data, campus) => {
+export const createManager = async (data) => {
 	try {
 		const { error } = validateManagerDataCreate(data);
 		if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
