@@ -45,14 +45,10 @@ export const getOneManager = async (id, ...query) => {
 export const createManager = async (data, campus) => {
 	try {
 		const { error } = validateManagerDataCreate(data);
-
 		if (error) throw createHttpError(400, 'Dữ liệu không hợp lệ: ' + error.message);
-
-		const duplicate = await ManagerModel.findOne({ email: data.email, campus_id: data.campus_id }); // check tồn tại
-
+		const duplicate = await ManagerModel.findOne({ email: data.email }); // check tồn tại
 		if (duplicate) throw createHttpError(409, 'Manager đã tồn tại vui lòng kiểm tra lại');
-
-		const result = await new ManagerModel({ ...data, campus_id: campus }).save();
+		const result = await new ManagerModel(data).save();
 		return result;
 	} catch (error) {
 		throw error;
