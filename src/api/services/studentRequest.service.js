@@ -1,34 +1,31 @@
 import StudentModel from '../models/student.model';
 import StudentRequestModel from '../models/studentRequest.model';
-import MailTypes from '../constants/mailTypes';
-import createHttpError from 'http-errors';
-import * as defaultValue from '../../utils/defaultValueStudent';
-import { getMailTemplate } from '../../utils/emailTemplate';
-import { sendMail } from '../services/mail.service';
+import { deleteFile, extractFileID } from '../services/googleDrive.service';
+
+// Enums and Templates
 import { StudentStatusEnum } from '../constants/studentStatus';
 import { StudentReviewTypeEnum } from '../constants/reviewTypeEnum';
-import { deleteFile, extractFileID } from '../services/googleDrive.service';
+import { RequestActionEnum } from '../constants/requestAction';
+import { getMailTemplate } from '../../utils/emailTemplate';
+import { sendMail } from '../services/mail.service';
+import MailTypes from '../constants/mailTypes';
+import * as defaultValue from '../../utils/defaultValueStudent';
+
+// Utils
 import { isValidObjectId } from 'mongoose';
-import studentModel from '../models/student.model';
+import createHttpError from 'http-errors';
 import { studentRequestValidation } from '../validation/studentRequest.validation';
 
 export const getRequest = async (filter) => {
 	try {
-		const result = await StudentRequestModel.find(filter).sort({ status: -1 }).exec();
+		const result = await StudentRequestModel.find(filter);
+
 		if (!result) throw createHttpError(404, 'Không tìm thấy yêu cầu sinh viên');
 		return result;
 	} catch (error) {
 		throw error;
 	}
 };
-
-/**
- * processRequest expects an object
- *
- * @param {action} number value, denied = 0, approved = 1, hard reset = 2
- * @param {type} StudentReviewTypeEnum 'cv', 'report', or 'record'
- *
- */
 
 export const createRequest = async (data) => {
 	try {
@@ -41,7 +38,7 @@ export const createRequest = async (data) => {
 
 		if (duplicates.length > 2) throw createHttpError(400, 'Bạn đã vượt quá số lần gửi yêu cầu (tối đa 3 lần)');
 
-		return await new StudentRequestModel({ ...data, status: 2 }).save();
+		return await new StudentRequestModel({ ...data, status: RequestActionEnum.PENDING }).save();
 	} catch (error) {
 		throw error;
 	}
@@ -79,20 +76,21 @@ const handleAction = async (action, id, type) => {
 		const student = studentRequest.userId;
 		if (!student) throw createHttpError(404, 'Không tìm thấy thông tin sinh viên');
 
-		let result;
+		let result, requestStatus;
 
 		if (action === 0) {
 			result = await handleDenied(type, student); // denied
+			requestStatus = RequestActionEnum.REJECTED;
 		} else if (action === 1) {
 			result = await handleApproved(type, student); // approved
+			requestStatus = RequestActionEnum.ACCEPTED;
 		} else if (action === 2) {
 			result = await handleReset(type, student); // hard reset
+			requestStatus = RequestActionEnum.ACCEPTED;
 		} else throw createHttpError(400, 'action không hợp lệ');
 
-		//* Update request status. 0 = rejected, 1 = approved, 2 = pending
-		// For handleReset, handleApproved -> status = 1
-		// For handleDenied -> status = 0
-		studentRequest.status = action % 2;
+		//* Update request status.
+		studentRequest.status = requestStatus;
 		await studentRequest.save();
 
 		return result;
@@ -156,11 +154,11 @@ const handleReset = async (type, student) => {
 
 	try {
 		switch (type) {
-			case StudentReviewTypeEnum.REVIEW_CV:
+			case StudentReviewTypeEnum.REVIEW_CV: // Reset CV
 				fileID = extractFileID(student.CV);
 				resetValue = defaultValue.defaultCvStudent;
 				break;
-			case StudentReviewTypeEnum.REVIEW_RECORD:
+			case StudentReviewTypeEnum.REVIEW_RECORD: // Reset Both CV & Record
 				fileID = extractFileID(student.form);
 				resetValue = { ...defaultValue.defaultCvStudent, ...defaultValue.defaultForm };
 				break;
@@ -172,7 +170,7 @@ const handleReset = async (type, student) => {
 
 		if (fileID) await deleteFile(fileID);
 
-		await studentModel.findByIdAndUpdate(student._id, resetValue, { new: true });
+		await StudentModel.findByIdAndUpdate(student._id, resetValue, { new: true });
 		await sendMail({
 			recipients: student.email,
 			...getMailTemplate(MailTypes.ACCEPTED_REQUEST, type, StudentStatusEnum[student.statusCheck])
