@@ -10,6 +10,7 @@ import { StudentReviewTypeEnum } from '../constants/reviewTypeEnum';
 import { deleteFile, extractFileID } from '../services/googleDrive.service';
 import { isValidObjectId } from 'mongoose';
 import studentModel from '../models/student.model';
+import { studentRequestValidation } from '../validation/studentRequest.validation';
 
 export const getRequest = async (filter) => {
 	try {
@@ -21,43 +22,26 @@ export const getRequest = async (filter) => {
 	}
 };
 
+/**
+ * processRequest expects an object
+ *
+ * @param {action} number value, denied = 0, approved = 1, hard reset = 2
+ * @param {type} StudentReviewTypeEnum 'cv', 'report', or 'record'
+ *
+ */
+
 export const createRequest = async (data) => {
 	try {
-		let currentStatus;
-
-		const requestExist = await StudentRequestModel.findOne({ userId: data.userId, type: data.type })
-			.sort({ status: -1 })
-			.exec();
-
-		currentStatus = requestExist ? requestExist.status + 1 : 0;
-
-		if (currentStatus > 2) throw createHttpError(400, 'Bạn đã vượt quá số lần gửi yêu cầu (tối đa 3 lần)');
-
-		return await new StudentRequestModel({ ...data, status: currentStatus }).save();
-	} catch (error) {
-		throw error;
-	}
-};
-
-export const deleteRequest = async (id) => {
-	try {
-		const requestToDelete = await StudentRequestModel.findByIdAndDelete(id);
-
-		if (!requestToDelete) throw createHttpError(404, 'Không tìm thấy yêu cầu sinh viên');
-
 		// Check for duplicates
-		const duplicates = await StudentRequestModel.find({
-			userId: requestToDelete.userId,
-			type: requestToDelete.type
-		});
+		const { error, value } = studentRequestValidation(data);
 
-		// Update the duplicate documents
-		if (requestToDelete.status != 2) {
-			for (const duplicate of duplicates) {
-				duplicate.status = Math.max(0, duplicate.status - 1);
-				await duplicate.save();
-			}
-		}
+		if (error) throw createHttpError(400, 'Thông tin sai: ' + error.message);
+
+		const duplicates = await getRequest({ userId: value.userId, type: value.type });
+
+		if (duplicates.length > 2) throw createHttpError(400, 'Bạn đã vượt quá số lần gửi yêu cầu (tối đa 3 lần)');
+
+		return await new StudentRequestModel({ ...data, status: 2 }).save();
 	} catch (error) {
 		throw error;
 	}
@@ -66,7 +50,7 @@ export const deleteRequest = async (id) => {
 /**
  * processRequest expects an object
  *
- * @param {action} boolean value, denied = 0, approved = 1, hard reset = 2
+ * @param {action} number value, denied = 0, approved = 1, hard reset = 2
  * @param {type} StudentReviewTypeEnum 'cv', 'report', or 'record'
  *
  */
@@ -96,16 +80,20 @@ const handleAction = async (action, id, type) => {
 		if (!student) throw createHttpError(404, 'Không tìm thấy thông tin sinh viên');
 
 		let result;
+
 		if (action === 0) {
-			result = await handleDenied(id, type, student); // denied
+			result = await handleDenied(type, student); // denied
 		} else if (action === 1) {
-			result = await handleApproved(id, type, student); // approved
+			result = await handleApproved(type, student); // approved
 		} else if (action === 2) {
-			result = await handleReset(id, type, student); // hard reset
+			result = await handleReset(type, student); // hard reset
 		} else throw createHttpError(400, 'action không hợp lệ');
 
-		// Delete request after action executed
-		await deleteRequest(id);
+		//* Update request status. 0 = rejected, 1 = approved, 2 = pending
+		// For handleReset, handleApproved -> status = 1
+		// For handleDenied -> status = 0
+		studentRequest.status = action % 2;
+		await studentRequest.save();
 
 		return result;
 	} catch (error) {
@@ -114,9 +102,10 @@ const handleAction = async (action, id, type) => {
 };
 
 // Handle rejected student request
-const handleDenied = async (id, type, student) => {
+const handleDenied = async (type, student) => {
 	try {
 		await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.DENIED_REQUEST, type) });
+
 		return { status: 200, data: 'Huỷ yêu cầu thành công' };
 	} catch (error) {
 		throw error;
@@ -124,7 +113,7 @@ const handleDenied = async (id, type, student) => {
 };
 
 // Handle approved student request
-const handleApproved = async (id, type, student) => {
+const handleApproved = async (type, student) => {
 	let fileID, studentStatus;
 
 	try {
@@ -162,12 +151,10 @@ const handleApproved = async (id, type, student) => {
 };
 
 // Reset student's information
-const handleReset = async (id, type, student) => {
+const handleReset = async (type, student) => {
 	let resetValue, fileID;
 
 	try {
-		if (!student) throw createHttpError(404, 'Không tìm thấy thông tin sinh viên');
-
 		switch (type) {
 			case StudentReviewTypeEnum.REVIEW_CV:
 				fileID = extractFileID(student.CV);
@@ -175,7 +162,7 @@ const handleReset = async (id, type, student) => {
 				break;
 			case StudentReviewTypeEnum.REVIEW_RECORD:
 				fileID = extractFileID(student.form);
-				resetValue = defaultValue.defaultForm;
+				resetValue = { ...defaultValue.defaultCvStudent, ...defaultValue.defaultForm };
 				break;
 			case StudentReviewTypeEnum.REVIEW_REPORT:
 				throw createHttpError(400, 'Báo cáo không được reset');
