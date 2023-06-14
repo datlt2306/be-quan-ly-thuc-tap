@@ -13,6 +13,13 @@ module.exports = {
 	plugins: ['prettier'],
 	rules: {
 		'no-useless-catch': 'warn',
+		camelcase: [
+			2,
+			{
+				properties: 'always'
+			}
+		],
+		eqeqeq: [2, 'smart'],
 		'prettier/prettier': [
 			'warn',
 			{
