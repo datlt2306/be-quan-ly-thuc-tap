@@ -3,7 +3,7 @@ import time_window_check from './time_window_check';
 
 const jobs = [time_window_check];
 
-//Cron jobs handler
+// Cron jobs handler
 class Scheduler {
 	constructor(unprocessedJobs) {
 		this.unprocessedJobs = unprocessedJobs;
@@ -14,7 +14,7 @@ class Scheduler {
 		const job = cron.schedule(schedule, task, {
 			scheduled: true,
 			timezone: 'Asia/Ho_Chi_Minh',
-			...config,
+			...config
 		});
 		this.cronJobs.push(job);
 		return job;
@@ -26,6 +26,7 @@ class Scheduler {
 			console.log(`${index + 1} out of ${this.cronJobs.length} Cron jobs started`);
 		});
 	}
+
 	stop() {
 		this.cronJobs.forEach((job) => {
 			job.stop();
@@ -33,7 +34,7 @@ class Scheduler {
 		});
 	}
 
-	//Khởi tạo và chạy cronjobs
+	// Khởi tạo và chạy cronjobs
 	init() {
 		this.unprocessedJobs.forEach((job) => {
 			const { schedule, task, config } = job;

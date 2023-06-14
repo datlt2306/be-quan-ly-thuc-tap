@@ -7,7 +7,7 @@ import { validateDataArrayMajor, validateDataMajor, validateDataUpdateMajor } fr
 export const getAllMajors = async (campus) => {
 	try {
 		const majors = await MajorModel.find({
-			campus: campus
+			campus
 		});
 
 		return majors;
@@ -23,7 +23,7 @@ export const getOneMajor = async (id, campus) => {
 			throw createHttpError(400, 'Id phải là type objectId');
 		}
 		const major = await MajorModel.findOne({
-			campus: campus,
+			campus,
 			_id: id
 		}).populate('campus');
 
@@ -111,7 +111,7 @@ export const createMajorList = async (data, campus) => {
 		const codeMajorList = data.map((item) => item.majorCode);
 		const majorExist = await MajorModel.find({
 			majorCode: { $in: codeMajorList },
-			campus: campus
+			campus
 		}).lean();
 
 		if (majorExist.length > 0) {
@@ -120,7 +120,7 @@ export const createMajorList = async (data, campus) => {
 			});
 		}
 
-		data = data.map((item) => ({ ...item, campus: campus }));
+		data = data.map((item) => ({ ...item, campus }));
 
 		// thêm
 		const result = await MajorModel.insertMany(data);
@@ -147,7 +147,7 @@ export const createOneMajor = async (data, campus) => {
 		// check tồn tại
 		const major = await MajorModel.findOne({
 			majorCode: data.majorCode,
-			campus: campus
+			campus
 		});
 
 		if (major) {
@@ -157,7 +157,7 @@ export const createOneMajor = async (data, campus) => {
 		// create
 		return await new MajorModel({
 			...data,
-			campus: campus
+			campus
 		}).save();
 	} catch (error) {
 		throw error;

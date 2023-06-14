@@ -1,15 +1,12 @@
 import createHttpError from 'http-errors';
-import StatusStudentModel from '../models/statusStudent.model'
-import {
-	statusStudentValidate,
-	statusUpdateValidate,
-} from '../validation/statusStudent.validation';
+import StatusStudentModel from '../models/statusStudent.model';
+import { statusStudentValidate, statusUpdateValidate } from '../validation/statusStudent.validation';
 
 // lấy ra danh sách status
 export const selectStatusAll = async (campus) => {
 	try {
 		const statusList = await StatusStudentModel.find({
-			campus: campus,
+			campus
 		}).select('-contentMail -titleMail');
 
 		return statusList;
@@ -22,8 +19,8 @@ export const selectStatusAll = async (campus) => {
 export const selectOneStatus = async (value, campus) => {
 	try {
 		const status = await StatusStudentModel.findOne({
-			value: value,
-			campus: campus,
+			value,
+			campus
 		});
 
 		return status;
@@ -54,7 +51,7 @@ export const createStatus = async (campus, data) => {
 
 		const statusResult = await new StatusStudentModel({
 			...data,
-			campus: campus,
+			campus
 		}).save();
 
 		return statusResult;
@@ -79,7 +76,7 @@ export const updateStatus = async (id, data, campus) => {
 		// check xem có tồn tại không
 		const status = await StatusStudentModel.findOne({
 			_id: id,
-			campus: campus,
+			campus
 		});
 
 		if (!status) {
@@ -89,7 +86,7 @@ export const updateStatus = async (id, data, campus) => {
 		const result = await StatusStudentModel.findOneAndUpdate(
 			{
 				_id: id,
-				campus: campus,
+				campus
 			},
 			data,
 			{ new: true }
@@ -107,7 +104,7 @@ export const deleteStatus = async (id, campus) => {
 		// check xem có tồn tại không
 		const status = await StatusStudentModel.findOne({
 			_id: id,
-			campus: campus,
+			campus
 		});
 
 		if (!status) {
@@ -116,7 +113,7 @@ export const deleteStatus = async (id, campus) => {
 
 		const result = await StatusStudentModel.findOneAndDelete({
 			_id: id,
-			campus: campus,
+			campus
 		});
 
 		return result;

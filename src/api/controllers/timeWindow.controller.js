@@ -53,7 +53,7 @@ export const getListTypeSetTime = async (req, res) => {
 		});
 		return res.status(200).json({
 			message: 'time success',
-			time: time
+			time
 		});
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({

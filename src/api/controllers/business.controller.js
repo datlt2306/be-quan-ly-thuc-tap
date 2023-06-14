@@ -57,7 +57,7 @@ export const insertBusiness = async (req, res) => {
 		}).select('name business_code');
 
 		businessExistDb.forEach((item) => {
-			let check = businessCodeList.includes(item.business_code);
+			const check = businessCodeList.includes(item.business_code);
 			if (!check) return;
 			businessExists.push({ name: item.name, business_code: item.business_code });
 		});
@@ -141,7 +141,7 @@ export const createbusiness = async (req, res) => {
 		const { error } = businessValidation(data);
 		// check xem đã tồn tại chưa
 		const business = await BusinessModel.findOne({
-			business_code: business_code,
+			business_code,
 			campus_id: campus
 		});
 

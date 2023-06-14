@@ -7,13 +7,6 @@ import multer from 'multer';
 const router = express.Router();
 const upload = multer();
 
-router.patch(
-	'/intern/support',
-	isAuthenticateUser,
-	upload.any(),
-	checkRequestTime,
-	signUpCVForSupport
-);
+router.patch('/intern/support', isAuthenticateUser, upload.any(), checkRequestTime, signUpCVForSupport);
 
 export default router;
-

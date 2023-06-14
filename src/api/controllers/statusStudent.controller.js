@@ -10,7 +10,7 @@ export const getStatusStudent = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -26,7 +26,7 @@ export const createStatusStudent = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -43,7 +43,7 @@ export const updateStatusStudent = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -59,7 +59,7 @@ export const deleteStatusStudent = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };

@@ -1,8 +1,9 @@
-const { getSemester, insertSemester, updateSemester, defaultSemester } = require('../controllers/semester.controller');
-const { isAuthenticateUser, authorizeRoles } = require('../middlewares/CheckAuth');
-const { role } = require('../../utils/role');
+import { role } from '../../utils/role';
+import express from 'express';
+import { getSemester, insertSemester, updateSemester, defaultSemester } from '../controllers/semester.controller';
+import { isAuthenticateUser, authorizeRoles } from '../middlewares/CheckAuth';
 
-const router = require('express').Router();
+const router = express.Router();
 
 router.get('/semester', getSemester);
 router.get('/semester/default', defaultSemester);

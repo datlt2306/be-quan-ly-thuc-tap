@@ -14,5 +14,5 @@ export const StudentStatusEnum = {
 	9: 'Hoàn thành',
 	10: 'Chưa đăng ký',
 	11: 'Đã đăng ký',
-	12: 'Không đạt',
+	12: 'Không đạt'
 };

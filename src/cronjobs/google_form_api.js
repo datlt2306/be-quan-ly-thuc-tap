@@ -12,12 +12,9 @@ mongoose
 	.then(() => console.log('DB Connected'))
 	.catch((error) => console.log('DB not connected ', error));
 // // Configure auth client
-const authClient = new google.auth.JWT(
-	credentials.client_email,
-	null,
-	credentials.private_key.replace(/\\n/g, '\n'),
-	['https://www.googleapis.com/auth/spreadsheets']
-);
+const authClient = new google.auth.JWT(credentials.client_email, null, credentials.private_key.replace(/\\n/g, '\n'), [
+	'https://www.googleapis.com/auth/spreadsheets'
+]);
 
 const semester = require('../api/models/semester');
 const business = require('../api/models/business');
@@ -37,7 +34,7 @@ const task = cron.schedule(
 			const res = await service.spreadsheets.values.get({
 				auth: authClient,
 				spreadsheetId: '1Zgipf32ZOjbWAlvjNbQ81mYlAyIZiRB5acsUBRQANEk',
-				range: 'A2:M',
+				range: 'A2:M'
 			});
 
 			const lastSemester = await semester.find({}).sort({ _id: -1 }).limit(1);
@@ -46,7 +43,7 @@ const task = cron.schedule(
 			const cp = await campus.find();
 			const data2 = bs.map((item) => ({
 				...item,
-				code_request: item.code_request.toUpperCase(),
+				code_request: item.code_request.toUpperCase()
 			}));
 
 			// All of the data1
@@ -60,7 +57,7 @@ const task = cron.schedule(
 
 				// For each row
 				for (const row of rows) {
-					if (row[11] !== 'FALSE' && row[10] !== 'FALSE')
+					if (row[11] !== 'FALSE' && row[10] !== 'FALSE') {
 						data1.push({
 							name: row[1],
 							internshipPosition: row[3],
@@ -72,8 +69,9 @@ const task = cron.schedule(
 							majors: row[0],
 							campus_id: row[7],
 							smester_id: lastSemester[0]._id,
-							status: 0,
+							status: 0
 						});
+					}
 				}
 				const getSecondPart = (str) => {
 					return str.split('- ')[1];
@@ -123,7 +121,7 @@ const task = cron.schedule(
 		}
 	},
 	{
-		scheduled: false,
+		scheduled: false
 	}
 );
 

@@ -1,13 +1,9 @@
-const {
-	getNarrow,
-	insertNarrow,
-	updateNarrow,
-	deleteNarrow
-} = require('../controllers/narrowSpecialization.controller');
-const { isAuthenticateUser, authorizeRoles } = require('../middlewares/CheckAuth');
-const { role } = require('../../utils/role');
+import { isAuthenticateUser, authorizeRoles } from '../middlewares/CheckAuth';
+import { role } from '../../utils/role';
+import { getNarrow, insertNarrow, updateNarrow, deleteNarrow } from '../controllers/narrowSpecialization.controller';
+import express from 'express';
 
-const router = require('express').Router();
+const router = express.Router();
 
 router.get('/narrows', isAuthenticateUser, getNarrow);
 router.post('/narrow', isAuthenticateUser, authorizeRoles([role.manager]), insertNarrow);

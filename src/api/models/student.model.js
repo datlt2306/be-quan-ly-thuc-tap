@@ -108,7 +108,7 @@ const studentSchema = new mongoose.Schema(
 			type: Number,
 			default: 0
 		},
-		//cong ty
+		// cong ty
 		nameCompany: {
 			type: String,
 			default: null

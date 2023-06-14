@@ -1,12 +1,13 @@
-const {
+import {
 	getListToken,
 	getTokenByStudentId,
 	updateTokenDevice,
 	createToken,
-	removeTokenDevice,
-} = require('../controllers/tokenDevice.controller');
+	removeTokenDevice
+} from '../controllers/tokenDevice.controller';
+import express from 'express';
 
-const router = require('express').Router();
+const router = express.Router();
 
 router.get('/tokens', getListToken);
 router.get('/tokens/:student_id', getTokenByStudentId);
@@ -15,4 +16,3 @@ router.put('/tokens/:id', updateTokenDevice);
 router.delete('/token', removeTokenDevice);
 
 export default router;
-

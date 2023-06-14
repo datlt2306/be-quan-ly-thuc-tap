@@ -82,6 +82,6 @@ export const uploadFile = async (file) => {
 // get google drive file id from URL link
 export const extractFileID = (link) => {
 	if (!link) return null;
-	let match = link.match(/\/d\/([a-zA-Z0-9-_]+)/);
+	const match = link.match(/\/d\/([a-zA-Z0-9-_]+)/);
 	return match ? match[1] : null;
 };
