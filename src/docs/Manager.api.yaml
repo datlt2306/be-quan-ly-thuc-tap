@@ -1,223 +1,218 @@
 paths:
-    /manager:
-        post:
-            tags:
-                - Managers
-            description: Api thêm mới 1 manager
-            summary: Đăng nhập với vai trò quản lý (role = 2)
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                name:
-                                    type: string
-                                    required: true
-                                email:
-                                    type: string
-                                    required: true
-                                role:
-                                    type: number
-                                    required: true
-                        example:
-                            { 'name': 'Lê Ngọc Đức', 'email': 'duclnph24870@fpt.edu.vn', 'role': 2 }
-            responses:
-                201:
-                    description: Tạo mới thành công
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Manager'
-                            example:
-                                {
-                                    'name': 'Lê Ngọc Đức',
-                                    'email': 'duclnph2487001@fpt.edu.vn',
-                                    'role': 2,
-                                    '_id': '6432cd983564bb1430c045cb',
-                                    'createdAt': '2023-04-09T14:37:12.030Z',
-                                }
+   /manager:
+      post:
+         tags:
+            - Managers
+         description: Api thêm mới 1 manager
+         summary: Đăng nhập với vai trò quản lý (role = 2)
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        name:
+                           type: string
+                           required: true
+                        email:
+                           type: string
+                           required: true
+                        role:
+                           type: number
+                           required: true
+                  example: { 'name': 'Lê Ngọc Đức', 'email': 'duclnph24870@fpt.edu.vn', 'role': 2 }
+         responses:
+            201:
+               description: Tạo mới thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Manager'
+                     example:
+                        {
+                           'name': 'Lê Ngọc Đức',
+                           'email': 'duclnph2487001@fpt.edu.vn',
+                           'role': 2,
+                           '_id': '6432cd983564bb1430c045cb',
+                           'createdAt': '2023-04-09T14:37:12.030Z'
+                        }
 
-                204:
-                    description: Data gửi lên rỗng
-                400:
-                    description: Không thỏa mãn validate
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
+            204:
+               description: Data gửi lên rỗng
+            400:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
 
-                            example: { 'statusCode': 400, 'message': '"role" must be a number' }
+                     example: { 'statusCode': 400, 'message': '"role" must be a number' }
 
-                409:
-                    description: Không thỏa mãn validate
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
+            409:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
 
-                            example:
-                                {
-                                    'statusCode': 409,
-                                    'message': 'Manager đã tồn tại vui lòng kiểm tra lại',
-                                }
+                     example: { 'statusCode': 409, 'message': 'Manager đã tồn tại vui lòng kiểm tra lại' }
 
-        get:
-            tags:
-                - Managers
-            description: Api lấy ra tất cả manager
-            summary: Đăng nhập với vai trò quản lý || nhân viên (role = 2 || 1)
-            responses:
-                200:
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    $ref: '#/components/schemas/Manager'
-                            example:
-                                [
-                                    {
-                                        'name': 'Lê Ngọc Đức',
-                                        'email': 'duclnph2487001@fpt.edu.vn',
-                                        'role': 2,
-                                        '_id': '6432cd983564bb1430c045cb',
-                                        'createdAt': '2023-04-09T14:37:12.030Z',
-                                    },
-                                ]
+      get:
+         tags:
+            - Managers
+         description: Api lấy ra tất cả manager
+         summary: Đăng nhập với vai trò quản lý || nhân viên (role = 2 || 1)
+         responses:
+            200:
+               description: OK
+               content:
+                  application/json:
+                     schema:
+                        type: array
+                        items:
+                           $ref: '#/components/schemas/Manager'
+                     example:
+                        [
+                           {
+                              'name': 'Lê Ngọc Đức',
+                              'email': 'duclnph2487001@fpt.edu.vn',
+                              'role': 2,
+                              '_id': '6432cd983564bb1430c045cb',
+                              'createdAt': '2023-04-09T14:37:12.030Z'
+                           }
+                        ]
 
-    /manager/:id:
-        patch:
-            tags:
-                - Managers
-            description: Api chỉnh sửa 1 manager
-            summary: Đăng nhập với vai trò quản lý (role = 2)
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                name:
-                                    type: string
-                                email:
-                                    type: string
-                                role:
-                                    type: number
-                        example: { 'role': 2 }
-            responses:
-                201:
-                    description: Chỉnh sửa thành công
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Manager'
-                            example:
-                                {
-                                    'name': 'Lê Ngọc Đức',
-                                    'email': 'duclnph2487001@fpt.edu.vn',
-                                    'role': 2,
-                                    '_id': '6432cd983564bb1430c045cb',
-                                    'createdAt': '2023-04-09T14:37:12.030Z',
-                                }
+   /manager/:id:
+      patch:
+         tags:
+            - Managers
+         description: Api chỉnh sửa 1 manager
+         summary: Đăng nhập với vai trò quản lý (role = 2)
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        name:
+                           type: string
+                        email:
+                           type: string
+                        role:
+                           type: number
+                  example: { 'role': 2 }
+         responses:
+            201:
+               description: Chỉnh sửa thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Manager'
+                     example:
+                        {
+                           'name': 'Lê Ngọc Đức',
+                           'email': 'duclnph2487001@fpt.edu.vn',
+                           'role': 2,
+                           '_id': '6432cd983564bb1430c045cb',
+                           'createdAt': '2023-04-09T14:37:12.030Z'
+                        }
 
-                304:
-                    description: Data gửi lên rỗng
-                400:
-                    description: Không thỏa mãn validate
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
+            304:
+               description: Data gửi lên rỗng
+            400:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
 
-                            example: { 'statusCode': 400, 'message': '"role" must be a number' }
+                     example: { 'statusCode': 400, 'message': '"role" must be a number' }
 
-                404:
-                    description: Không thỏa mãn validate
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
+            404:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
 
-                            example: { 'statusCode': 404, 'message': 'Tài liệu không tồn tại' }
+                     example: { 'statusCode': 404, 'message': 'Tài liệu không tồn tại' }
 
-        delete:
-            tags:
-                - Managers
-            description: Api xóa vĩnh viễn 1 manager
-            summary: Đăng nhập với vai trò quản lý (role = 2)
+      delete:
+         tags:
+            - Managers
+         description: Api xóa vĩnh viễn 1 manager
+         summary: Đăng nhập với vai trò quản lý (role = 2)
 
-            responses:
-                200:
-                    description: Xóa thành công
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Manager'
-                            example:
-                                {
-                                    'name': 'Lê Ngọc Đức',
-                                    'email': 'duclnph2487001@fpt.edu.vn',
-                                    'role': 2,
-                                    '_id': '6432cd983564bb1430c045cb',
-                                    'createdAt': '2023-04-09T14:37:12.030Z',
-                                }
+         responses:
+            200:
+               description: Xóa thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Manager'
+                     example:
+                        {
+                           'name': 'Lê Ngọc Đức',
+                           'email': 'duclnph2487001@fpt.edu.vn',
+                           'role': 2,
+                           '_id': '6432cd983564bb1430c045cb',
+                           'createdAt': '2023-04-09T14:37:12.030Z'
+                        }
 
-                400:
-                    description: id không phải type objectId
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
+            400:
+               description: id không phải type objectId
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
 
-                            example: { 'statusCode': 400, 'message': 'Id không phải type objectId' }
+                     example: { 'statusCode': 400, 'message': 'Id không phải type objectId' }
 
-                404:
-                    description: Không thỏa mãn validate
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
+            404:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
 
-                            example: { 'statusCode': 404, 'message': 'Tài liệu không tồn tại' }
+                     example: { 'statusCode': 404, 'message': 'Tài liệu không tồn tại' }
 
-        get:
-            tags:
-                - Managers
-            description: Api lấy thông tin chi tiết 1 manager
-            summary: Đăng nhập với vai trò quản lý | nhân viên (role = 2 | 1)
+      get:
+         tags:
+            - Managers
+         description: Api lấy thông tin chi tiết 1 manager
+         summary: Đăng nhập với vai trò quản lý | nhân viên (role = 2 | 1)
 
-            responses:
-                200:
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Manager'
-                            example:
-                                {
-                                    'name': 'Lê Ngọc Đức',
-                                    'email': 'duclnph2487001@fpt.edu.vn',
-                                    'role': 2,
-                                    '_id': '6432cd983564bb1430c045cb',
-                                    'createdAt': '2023-04-09T14:37:12.030Z',
-                                }
+         responses:
+            200:
+               description: OK
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Manager'
+                     example:
+                        {
+                           'name': 'Lê Ngọc Đức',
+                           'email': 'duclnph2487001@fpt.edu.vn',
+                           'role': 2,
+                           '_id': '6432cd983564bb1430c045cb',
+                           'createdAt': '2023-04-09T14:37:12.030Z'
+                        }
 
-                400:
-                    description: id không phải type objectId
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
+            400:
+               description: id không phải type objectId
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
 
-                            example: { 'statusCode': 400, 'message': 'Id không phải type objectId' }
+                     example: { 'statusCode': 400, 'message': 'Id không phải type objectId' }
 
-                404:
-                    description: Không thỏa mãn validate
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
+            404:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
 
-                            example: { 'statusCode': 404, 'message': 'Tài liệu không tồn tại' }
+                     example: { 'statusCode': 404, 'message': 'Tài liệu không tồn tại' }

@@ -14,7 +14,7 @@ export const report = async (req, res) => {
 	const { attitudePoint, endInternShipTime, mssv, email, nameCompany, resultScore, _id, signTheContract } = req.body;
 
 	try {
-		const filter = { mssv: mssv, email: email, _id };
+		const filter = { mssv, email, _id };
 		const student = await studentModel.findOne(filter);
 
 		if (!student) throw createHttpError(404, 'Không tìm thấy thông tin sinh viên');
@@ -105,7 +105,7 @@ export const submitRecordForm = async (req, res) => {
 	try {
 		let data, result, uploadedFile, error;
 		const { nameCompany, internshipTime, mssv, email, _id } = req.body;
-		const filter = { mssv: mssv, email: email, _id };
+		const filter = { mssv, email, _id };
 		const [file] = req.files;
 		const student = await studentModel.findOne(filter);
 		if (!student) throw createHttpError(404, 'Đã xảy ra lỗi! Vui lòng đăng ký lại!');
@@ -165,8 +165,9 @@ export const submitRecordForm = async (req, res) => {
 				throw createHttpError(400, 'Bạn không đủ điều kiện nộp biên bản!');
 			// Đã đăng ký
 			case 11:
-				if (!student.support == 0)
+				if (!student.support == 0) {
 					throw createHttpError(400, 'Form tự tìm của bạn chưa được duyệt hoặc server bị lỗi!');
+				}
 				uploadedFile = await uploadFile(file);
 				data = {
 					nameCompany,

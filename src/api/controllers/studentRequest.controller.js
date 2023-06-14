@@ -53,7 +53,7 @@ export async function processStudentRequest(req, res) {
 // req.params.id = student ID
 export async function resetStudent(req, res) {
 	const { type, id } = req.body;
-	let emailType = MailTypes.ACCEPTED_REQUEST;
+	const emailType = MailTypes.ACCEPTED_REQUEST;
 	let valueReset = {};
 	if (type === process.env.cv) {
 		valueReset = defaultCvStudent;
@@ -87,7 +87,7 @@ export async function resetStudent(req, res) {
 //! DEPRECATED
 
 export async function cancelResetStudent(req, res) {
-	let emailType = MailTypes.DENIED_REQUEST;
+	const emailType = MailTypes.DENIED_REQUEST;
 	try {
 		const studentRequest = await StudentRequestModel.findByIdAndUpdate(req.params.id, {
 			status: 3

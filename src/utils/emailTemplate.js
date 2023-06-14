@@ -106,11 +106,11 @@ export const emailTemplates = {
 	},
 	CV_CHANGE_REQUEST: {
 		subject: 'Thông báo sửa CV thực tập doanh nghiệp',
-		content: (textNote, link) => /*html*/ `
+		content: (textNote, link) => /* html */ `
         <p>
           Phòng QHDN yêu cầu bạn sửa lại thông tin CV
           <br>
-          Lý do SV phải sửa CV: ${textNote || `Không có`}
+          Lý do SV phải sửa CV: ${textNote || 'Không có'}
           <br>
           Trạng thái hiện tại của dịch vụ là <b style="color:#fb923c">Sửa CV</b>
           <br>
@@ -121,7 +121,7 @@ export const emailTemplates = {
 	},
 	RECEIVED_CV: {
 		subject: 'Thông báo nhận CV sinh viên thành công',
-		content: (link) => /*html*/ `
+		content: (link) => /* html */ `
         <p>
             Xin chào sinh viên,
             <br>
@@ -136,14 +136,14 @@ export const emailTemplates = {
 	},
 	INTERN_FAILURE: {
 		subject: 'Thông báo sinh viên trượt thực tập doanh nghiệp',
-		content: (textNote) => /*html*/ `
+		content: (textNote) => /* html */ `
     
         <p>
             Xin chào Sinh viên,
             <br>
             Phòng QHDN thông báo: Bạn đã trượt thực tập.
             <br>
-            Lý do SV trượt: ${textNote || `Không có`} <br>
+            Lý do SV trượt: ${textNote || 'Không có'} <br>
             Trạng thái hiện tại của dịch vụ là <b style="color:#f43f5e">Trượt thực tập </b>
             <br>
             Sinh viên vui long đăng ký thực tập lại vào kỳ sau trên hệ thống <a href="https://ap.poly.edu.vn/">ap.poly.edu.vn</a>
@@ -153,13 +153,13 @@ export const emailTemplates = {
 	},
 	RECORD_CHANGE_REQUEST: {
 		subject: 'Thông báo sửa biên bản thực tập doanh nghiệp',
-		content: (textNote, link) => /*html*/ `
+		content: (textNote, link) => /* html */ `
         <p>
             Xin chào Sinh viên,
             <br>
             Phòng QHDN yêu cầu bạn sửa lại thông tin biên bản
             <br>
-            Lý do SV phải sửa báo cáo: ${textNote || `Không có`} 
+            Lý do SV phải sửa báo cáo: ${textNote || 'Không có'} 
             <br>
             Trạng thái hiện tại của dịch vụ là <b style="color:#fb923c">Sửa biên bản </b>
             <br>
@@ -168,7 +168,7 @@ export const emailTemplates = {
 	},
 	RECEIVED_RECORD: {
 		subject: 'Thông báo nhận biên bản sinh viên thành công',
-		content: (link) => /*html*/ `
+		content: (link) => /* html */ `
         <p>
             Xin chào Sinh viên,
             <br>
@@ -183,12 +183,12 @@ export const emailTemplates = {
 	},
 	REPORT_CHANGE_REQUEST: {
 		subject: 'Thông báo sinh viên sửa báo cáo thực tập doanh nghiệp',
-		content: (textNote, link) => /*html*/ `
+		content: (textNote, link) => /* html */ `
         <p>
             Xin chào Sinh viên,<br>
             Phòng QHDN yêu cầu bạn sửa lại thông tin báo cáo.
             <br>
-            Lý do SV phải sửa báo cáo: ${textNote || `Không có`} <br>
+            Lý do SV phải sửa báo cáo: ${textNote || 'Không có'} <br>
             Trạng thái hiện tại của dịch vụ là <b style="color:#fb923c">Sửa báo cáo</b>
             <br>
             Sinh viên vui lòng đăng nhập vào trang web trang web theo đường <a href="${link}">link</a> này để sửa báo cáo
@@ -212,7 +212,7 @@ export const emailTemplates = {
 	},
 	ACCEPTED_REQUEST: {
 		subject: 'Thông báo chấp nhận yêu cầu sinh viên',
-		content: (type, status, link) => /*html*/ `
+		content: (type, status, link) => /* html */ `
         <p>Xin chào Sinh viên,
         <br>
         Phòng QHDN đã chấp nhận yêu cầu sửa ${type}
@@ -224,7 +224,7 @@ export const emailTemplates = {
 	},
 	DENIED_REQUEST: {
 		subject: 'Thông báo từ chối yêu cầu sinh viên',
-		content: (type, reason = 'Thời gian đăng ký đã quá hạn') => /*html*/ `
+		content: (type, reason = 'Thời gian đăng ký đã quá hạn') => /* html */ `
             <p>Xin chào Sinh viên,
             <br>
             Phòng QHDN không thể chấp nhận yêu cầu sửa ${type} của bạn.

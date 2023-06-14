@@ -1,7 +1,7 @@
 import NarrowModel from '../models/narrow_specialization.model';
 import {
 	validateNarrowSpecializationReqBody,
-	validateNarrowSpecializationUpdate,
+	validateNarrowSpecializationUpdate
 } from '../validation/narrowSpecialization.validation';
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
@@ -12,7 +12,7 @@ export const getNarrow = async (req, res) => {
 		const campus = req.campusManager || req.campusStudent;
 		// lấy ra các ngành hẹp của 1 cơ sở cụ thể
 		const data = await NarrowModel.find({
-			campus: campus,
+			campus
 		})
 			.populate('id_majors')
 			.sort({ createAt: -1 });
@@ -20,7 +20,7 @@ export const getNarrow = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -44,27 +44,24 @@ export const insertNarrow = async (req, res) => {
 
 		const narrow = await NarrowModel.findOne({
 			name: payload.name,
-			campus: campusManager,
+			campus: campusManager
 		}).lean();
 
 		if (narrow) {
-			throw createHttpError.Conflict(
-				'Tên chuyên ngành hẹp đã tồn tại, vui lòng đặt tên khác!',
-				{ success: false }
-			);
+			throw createHttpError.Conflict('Tên chuyên ngành hẹp đã tồn tại, vui lòng đặt tên khác!', { success: false });
 		}
 
 		// create
 		const result = await new NarrowModel({
 			...payload,
-			campus: campusManager,
+			campus: campusManager
 		}).save();
 
 		return res.status(201).json(result);
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -87,7 +84,7 @@ export const updateNarrow = async (req, res) => {
 		// check tồn tại ở cơ sở không
 		const narrow = await NarrowModel.findOne({
 			_id: id,
-			campus: campusManager,
+			campus: campusManager
 		});
 
 		if (!narrow) {
@@ -97,11 +94,11 @@ export const updateNarrow = async (req, res) => {
 		// update
 		const newNarrow = await NarrowModel.findOneAndUpdate(
 			{
-				_id: id,
+				_id: id
 			},
 			dataUpdate,
 			{
-				new: true,
+				new: true
 			}
 		).populate('id_majors');
 
@@ -109,7 +106,7 @@ export const updateNarrow = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -127,7 +124,7 @@ export const deleteNarrow = async (req, res) => {
 		// check tồn tại ở cơ sở không
 		const narrow = await NarrowModel.findOne({
 			_id: id,
-			campus: campusManager,
+			campus: campusManager
 		});
 
 		if (!narrow) {
@@ -136,14 +133,14 @@ export const deleteNarrow = async (req, res) => {
 
 		// delete
 		await NarrowModel.deleteOne({
-			_id: id,
+			_id: id
 		});
 
 		return res.status(200).json({ message: ' Xóa ngành hẹp thành công' });
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };

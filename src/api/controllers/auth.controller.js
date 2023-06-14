@@ -7,7 +7,7 @@ import Student from '../models/student.model';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-//login
+// login
 export const loginGoogle = async (req, res) => {
 	try {
 		const { token, campus_id, smester_id } = req.body;
@@ -22,13 +22,13 @@ export const loginGoogle = async (req, res) => {
 		const { email, name, picture } = ticket.getPayload();
 
 		const manager = await Manager.findOne({
-			email: email,
-			campus_id: campus_id
+			email,
+			campus_id
 		});
 		const student = await Student.findOne({
-			email: email,
-			campus_id: campus_id,
-			smester_id: smester_id
+			email,
+			campus_id,
+			smester_id
 		});
 
 		if (manager) {
@@ -40,7 +40,7 @@ export const loginGoogle = async (req, res) => {
 				picture,
 				isAdmin: true,
 				message: 'Đăng nhập thành công',
-				accessToken: accessToken,
+				accessToken,
 				success: true
 			});
 		} else if (student) {
@@ -52,7 +52,7 @@ export const loginGoogle = async (req, res) => {
 				picture,
 				isAdmin: false,
 				message: 'Đăng nhập thành công',
-				accessToken: accessToken,
+				accessToken,
 				success: true
 			});
 		} else {
@@ -92,7 +92,7 @@ export const loginAdmin = async (req, res) => {
 			picture,
 			isAdmin: true,
 			message: 'Đăng nhập thành công',
-			accessToken: accessToken,
+			accessToken,
 			success: true
 		};
 
@@ -115,7 +115,7 @@ export const logout = async (req, res) => {
 	}
 };
 
-//getAll
+// getAll
 export const getManagers = async (req, res) => {
 	const managers = await Manager.find();
 	try {

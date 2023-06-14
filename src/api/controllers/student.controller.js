@@ -118,7 +118,7 @@ export const updateReviewerStudent = async (req, res) => {
 		});
 		if (checkStudentListExist.length < listIdStudent.length) {
 			listIdStudent.forEach((idStudent) => {
-				let check = checkStudentListExist.find((student) => student._id.toString() === idStudent.toString());
+				const check = checkStudentListExist.find((student) => student._id.toString() === idStudent.toString());
 				if (!check) {
 					studentNotExist.push(idStudent);
 				}
@@ -164,7 +164,7 @@ export const updateBusinessStudent = async (req, res) => {
 			{ _id: { $in: listIdStudent }, campus_id: campus, smester_id: semester._id },
 			{
 				$set: {
-					business: business
+					business
 				}
 			},
 			{ multi: true }

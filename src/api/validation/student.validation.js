@@ -15,7 +15,7 @@ export const validateDataCreateStudentList = (data) => {
 				email: Joi.string()
 					.email()
 					.pattern(/^[\w-\.]+@fpt\.edu\.vn$/)
-					.required(),
+					.required()
 			})
 		);
 
@@ -31,7 +31,7 @@ export const validateUpdateStatus = (data) => {
 		const schema = Joi.object({
 			listIdStudent: Joi.array().items(Joi.string()).required(),
 			status: Joi.number().required(),
-			textNote: Joi.string().optional(),
+			textNote: Joi.string().optional()
 		});
 
 		return schema.validate(data);

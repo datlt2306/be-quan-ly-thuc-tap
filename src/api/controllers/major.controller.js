@@ -11,7 +11,7 @@ export const getListMajor = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -28,7 +28,7 @@ export const getMajor = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -52,7 +52,7 @@ export const createMajor = async (req, res) => {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
 			message: error.message || 'Internal Server Error',
-			error: error.error,
+			error: error.error
 		});
 	}
 };
@@ -70,7 +70,7 @@ export const updateMajor = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };
@@ -87,7 +87,7 @@ export const removeMajor = async (req, res) => {
 	} catch (error) {
 		return res.status(error.statusCode || 500).json({
 			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error',
+			message: error.message || 'Internal Server Error'
 		});
 	}
 };

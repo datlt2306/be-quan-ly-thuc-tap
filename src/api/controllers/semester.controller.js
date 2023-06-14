@@ -3,8 +3,7 @@ import { HttpException } from '../../utils/httpException';
 import createHttpError from 'http-errors';
 import { semesterValidation } from '../validation/semester.validation';
 import { isValidObjectId } from 'mongoose';
-import { checkValidSemesterTime } from '../services/semester.service';
-import { getDefaultSemester } from '../services/semester.service';
+import { checkValidSemesterTime, getDefaultSemester } from '../services/semester.service';
 
 export const getSemester = async (req, res) => {
 	const campus_id = req?.query?.campus_id;

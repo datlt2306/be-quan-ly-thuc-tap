@@ -4,34 +4,33 @@ const configTimeSchema = mongoose.Schema(
 	{
 		typeNumber: {
 			type: Number,
-			required: true,
+			required: true
 		},
 		typeName: {
 			type: String,
-			required: true,
+			required: true
 		},
 		startTime: {
 			type: Number,
-			required: true,
+			required: true
 		},
 		endTime: {
 			type: Number,
-			required: true,
+			required: true
 		},
 		semester_id: {
 			type: ObjectId,
-			ref: 'Semester',
+			ref: 'Semester'
 		},
 		campus_id: {
 			type: ObjectId,
-			ref: 'Campus',
-		},
+			ref: 'Campus'
+		}
 	},
 	{
-		timestamps: true,
+		timestamps: true
 	}
 );
-
 
 configTimeSchema.index({ semester_id: 1, typeNumber: 1 }, { unique: true });
 

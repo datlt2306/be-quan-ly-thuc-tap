@@ -11,8 +11,8 @@ const swaggerOptions = swaggerJSDoc({
 		servers: [
 			{
 				url: `http://localhost:${process.env.PORT || 8000}/api`,
-				description: 'Development API',
-			},
+				description: 'Development API'
+			}
 		],
 		info: {
 			title: 'Swagger Quản lý thông tin thực tập sinh viên Fpoly',
@@ -20,11 +20,11 @@ const swaggerOptions = swaggerJSDoc({
 			description:
 				'Đầy là tài liệu mô tả api hệ thống CMS Quản lý thông tin đăng ký thực tập của Phòng quan hệ doanh nghiệp Fpoly.',
 			contact: {
-				email: 'example@gmail.com',
-			},
-		},
+				email: 'example@gmail.com'
+			}
+		}
 	},
-	apis: ['src/docs/**/*.yaml'],
+	apis: ['src/docs/**/*.yaml']
 });
 
 export default swaggerOptions;

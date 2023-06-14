@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import createHttpError from 'http-errors';
 import ManagerModel from '../models/manager.model';
 import { validateManagerDataCreate, validateManagerDataUpdate } from '../validation/manager.validation';
@@ -31,8 +32,8 @@ export const getListManager = async (limit, page, filter) => {
 // get one
 export const getOneManager = async (id, ...query) => {
 	try {
-		let filter = Object.assign({ _id: id }, ...query);
-		let result = await ManagerModel.findOne(filter).populate('campus_id').exec();
+		const filter = Object.assign({ _id: id }, ...query);
+		const result = await ManagerModel.findOne(filter).populate('campus_id').exec();
 
 		if (!result) throw createHttpError(404, 'Không tìm thấy cơ sở của tài khoản');
 		return result;

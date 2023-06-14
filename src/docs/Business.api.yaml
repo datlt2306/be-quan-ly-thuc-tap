@@ -1,473 +1,461 @@
 paths:
-    /business:
-        get:
-            tags:
-                - Business
-            description: Api lấy ra tất cả các doanh nghiệp của cơ sở trong kỳ hiện tại
-            summary: 'đăng nhập với vai trò manager (role = 1)'
-            parameters:
-                - in: query
-                  name: page
-                  default: 1
+   /business:
+      get:
+         tags:
+            - Business
+         description: Api lấy ra tất cả các doanh nghiệp của cơ sở trong kỳ hiện tại
+         summary: 'đăng nhập với vai trò manager (role = 1)'
+         parameters:
+            - in: query
+              name: page
+              default: 1
+              schema:
+                 type: number
+            - in: query
+              name: limit
+              default: 10
+              schema:
+                 type: number
+
+         responses:
+            200:
+               description: OK
+               content:
+                  application/json:
+                     schema:
+                        type: object
+                        properties:
+                           list:
+                              type: array
+                              items:
+                                 $ref: '#/components/schemas/Business'
+                           total:
+                              type: number
+                           limit:
+                              type: number
+                           totalPages:
+                              type: number
+                           page:
+                              type: number
+
+                     example:
+                        {
+                           'list':
+                              [
+                                 {
+                                    '_id': '640abf214ed73d86530a6018',
+                                    'name': 'fgdfgf',
+                                    'internshipPosition': 'dfgdfg',
+                                    'major':
+                                       {
+                                          '_id': '640abe8d4ed73d86530a5ee7',
+                                          'name': 'asdsa',
+                                          'majorCode': 'asdd',
+                                          'createdAt': '2023-03-10T05:22:21.938Z',
+                                          '__v': 0
+                                       },
+                                    'amount': 13,
+                                    'address': 'gdgdfg',
+                                    'smester_id': '640abe7e4ed73d86530a5ed3',
+                                    'campus_id':
+                                       {
+                                          '_id': '63eef716c9ef6d077f1f1deb',
+                                          'name': 'Cơ sở Hà Nội',
+                                          'createdAt': '2023-02-17T03:40:06.247Z',
+                                          '__v': 0
+                                       },
+                                    'business_code': 'dgsgfd12',
+                                    'requirement': 'dfgdfg',
+                                    'description': 'dfgfd',
+                                    'status': 1,
+                                    'createAt': '2023-03-10T05:24:49.081Z',
+                                    '__v': 0
+                                 }
+                              ],
+                           'total': 2,
+                           'limit': 10,
+                           'totalPages': 1,
+                           'page': 1,
+                           'pagingCounter': 1,
+                           'hasPrevPage': false,
+                           'hasNextPage': false,
+                           'prevPage': null,
+                           'nextPage': null
+                        }
+
+      post:
+         tags:
+            - Business
+         description: Api thêm nhiều doanh nghiệp cùng 1 lúc
+         summary: 'Đăng nhập với vai trò manager ( role 1 )'
+         requestBody:
+            content:
+               application/json:
                   schema:
-                      type: number
-                - in: query
-                  name: limit
-                  default: 10
+                     type: object
+                     properties:
+                        name:
+                           type: string
+                           required: true
+                           description: 'Tên công ty'
+                        internshipPosition:
+                           type: string
+                           required: true
+                           description: 'Vị trí cần tuyển'
+                        major:
+                           type: ObjectId
+                           required: true
+                           description: 'Chuyên ngành cần tuyển'
+                        amount:
+                           type: number
+                           default: 0
+                           description: 'Số lượng muôn tuyển'
+                        address:
+                           type: string
+                           description: 'Địa chỉ công ty'
+                        business_code:
+                           type: string
+                           unique: true
+                           required: true
+                           description: 'Mã doanh nghiệp'
+                        requirement:
+                           type: string
+                           description: 'Yêu cầu vị trí của doanh nghiệp'
+                        description:
+                           type: string
+                           description: 'Mô tả công việc'
+                        benefit:
+                           type: string
+                           description: 'Quyền lợi khi làm tại doanh nghiệp'
+
+                  example:
+                     {
+                        address: 'aaaaaaaaaaaaaaaa',
+                        amount: 10,
+                        campus_id: '63eef716c9ef6d077f1f1deb',
+                        business_code: '12334',
+                        description: '1111111111111',
+                        internshipPosition: 'Front end',
+                        major: '640abe8d4ed73d86530a5ee7',
+                        name: 'test tên doanh nghiệp',
+                        requirement: '1111111111',
+                        benefit: '111111111'
+                     }
+
+         responses:
+            201:
+               description: Thêm thành công
+               content:
+                  application/json:
+                     schema:
+                        type: array
+                        items:
+                           $ref: '#/components/schemas/Business'
+                     example:
+                        [
+                           {
+                              '_id': '640abf214ed73d86530a6018',
+                              'name': 'fgdfgf',
+                              'internshipPosition': 'dfgdfg',
+                              'major': '640abe8d4ed73d86530a5ee7',
+                              'amount': 13,
+                              'address': 'gdgdfg',
+                              'smester_id': '640abe7e4ed73d86530a5ed3',
+                              'campus_id': '63eef716c9ef6d077f1f1deb',
+                              'business_code': 'dgsgfd',
+                              'requirement': 'dfgdfg',
+                              'description': 'dfgfd',
+                              'status': 1,
+                              'createAt': '2023-03-10T05:24:49.081Z',
+                              '__v': 0
+                           }
+                        ]
+
+            204:
+               description: Data gửi lên rỗng
+            400:
+               description: data gửi lên không phải array
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 400, message: 'Body data type không phải là array' }
+
+            409:
+               description: trong data gửi lên có các doanh nghiệp đã tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example:
+                        {
+                           statusCode: 409,
+                           message: 'Doanh nghiệp đã tồn tại (có thể ở kỳ trước)',
+                           error: [{ name: 'Doanh nghiệp A', business_code: '12345' }]
+                        }
+
+      patch:
+         tags:
+            - Business
+         description: 'Tái sử dụng thông tin các doanh nghiệp ở kỳ trước để sử dụng sang kỳ hiện tại'
+         summary: Đăng nhập với vai trò manager (role = 1)
+         requestBody:
+            content:
+               application/json:
                   schema:
-                      type: number
+                     type: array
+                     items:
+                        type: objectId
+                        description: id các doanh nghiệp muốn sử dụng lại
+                  example: ['640abf214ed73d86530a6018', '640abf214ed73d86530a6018']
 
-            responses:
-                200:
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    list:
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/Business'
-                                    total:
-                                        type: number
-                                    limit:
-                                        type: number
-                                    totalPages:
-                                        type: number
-                                    page:
-                                        type: number
+         responses:
+            201:
+               description: OK
+               content:
+                  application/json:
+                     schema:
+                        type: object
+                        properties:
+                           message:
+                              type: string
+                     example: { message: 'Đã chuyển doanh nghiệp sang kỳ học FALL2023' }
 
-                            example:
-                                {
-                                    'list':
-                                        [
-                                            {
-                                                '_id': '640abf214ed73d86530a6018',
-                                                'name': 'fgdfgf',
-                                                'internshipPosition': 'dfgdfg',
-                                                'major':
-                                                    {
-                                                        '_id': '640abe8d4ed73d86530a5ee7',
-                                                        'name': 'asdsa',
-                                                        'majorCode': 'asdd',
-                                                        'createdAt': '2023-03-10T05:22:21.938Z',
-                                                        '__v': 0,
-                                                    },
-                                                'amount': 13,
-                                                'address': 'gdgdfg',
-                                                'smester_id': '640abe7e4ed73d86530a5ed3',
-                                                'campus_id':
-                                                    {
-                                                        '_id': '63eef716c9ef6d077f1f1deb',
-                                                        'name': 'Cơ sở Hà Nội',
-                                                        'createdAt': '2023-02-17T03:40:06.247Z',
-                                                        '__v': 0,
-                                                    },
-                                                'business_code': 'dgsgfd12',
-                                                'requirement': 'dfgdfg',
-                                                'description': 'dfgfd',
-                                                'status': 1,
-                                                'createAt': '2023-03-10T05:24:49.081Z',
-                                                '__v': 0,
-                                            },
-                                        ],
-                                    'total': 2,
-                                    'limit': 10,
-                                    'totalPages': 1,
-                                    'page': 1,
-                                    'pagingCounter': 1,
-                                    'hasPrevPage': false,
-                                    'hasNextPage': false,
-                                    'prevPage': null,
-                                    'nextPage': null,
-                                }
+            204:
+               description: Data gửi lên rỗng
 
-        post:
-            tags:
-                - Business
-            description: Api thêm nhiều doanh nghiệp cùng 1 lúc
-            summary: 'Đăng nhập với vai trò manager ( role 1 )'
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                name:
-                                    type: string
-                                    required: true
-                                    description: 'Tên công ty'
-                                internshipPosition:
-                                    type: string
-                                    required: true
-                                    description: 'Vị trí cần tuyển'
-                                major:
-                                    type: ObjectId
-                                    required: true
-                                    description: 'Chuyên ngành cần tuyển'
-                                amount:
-                                    type: number
-                                    default: 0
-                                    description: 'Số lượng muôn tuyển'
-                                address:
-                                    type: string
-                                    description: 'Địa chỉ công ty'
-                                business_code:
-                                    type: string
-                                    unique: true
-                                    required: true
-                                    description: 'Mã doanh nghiệp'
-                                requirement:
-                                    type: string
-                                    description: 'Yêu cầu vị trí của doanh nghiệp'
-                                description:
-                                    type: string
-                                    description: 'Mô tả công việc'
-                                benefit:
-                                    type: string
-                                    description: 'Quyền lợi khi làm tại doanh nghiệp'
+            400:
+               description: data gửi lên không phải array
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 400, message: 'Data body gửi lên không phải type array' }
 
-                        example:
-                            {
-                                address: 'aaaaaaaaaaaaaaaa',
-                                amount: 10,
-                                campus_id: '63eef716c9ef6d077f1f1deb',
-                                business_code: '12334',
-                                description: '1111111111111',
-                                internshipPosition: 'Front end',
-                                major: '640abe8d4ed73d86530a5ee7',
-                                name: 'test tên doanh nghiệp',
-                                requirement: '1111111111',
-                                benefit: '111111111',
-                            }
+   /business/:id:
+      get:
+         tags:
+            - Business
+         description: Lấy thông tin chi tiết 1 doanh nghiệp
+         summary: Đăng nhập với vai trò manager (role = 1)
 
-            responses:
-                201:
-                    description: Thêm thành công
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    $ref: '#/components/schemas/Business'
-                            example:
-                                [
-                                    {
-                                        '_id': '640abf214ed73d86530a6018',
-                                        'name': 'fgdfgf',
-                                        'internshipPosition': 'dfgdfg',
-                                        'major': '640abe8d4ed73d86530a5ee7',
-                                        'amount': 13,
-                                        'address': 'gdgdfg',
-                                        'smester_id': '640abe7e4ed73d86530a5ed3',
-                                        'campus_id': '63eef716c9ef6d077f1f1deb',
-                                        'business_code': 'dgsgfd',
-                                        'requirement': 'dfgdfg',
-                                        'description': 'dfgfd',
-                                        'status': 1,
-                                        'createAt': '2023-03-10T05:24:49.081Z',
-                                        '__v': 0,
-                                    },
-                                ]
+         responses:
+            200:
+               description: ok
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Business'
 
-                204:
-                    description: Data gửi lên rỗng
-                400:
-                    description: data gửi lên không phải array
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
-                            example:
-                                { statusCode: 400, message: 'Body data type không phải là array' }
+                     example:
+                        {
+                           '_id': '640abf214ed73d86530a6018',
+                           'name': 'fgdfgf',
+                           'internshipPosition': 'dfgdfg',
+                           'major': '640abe8d4ed73d86530a5ee7',
+                           'amount': 13,
+                           'address': 'gdgdfg',
+                           'smester_id': '640abe7e4ed73d86530a5ed3',
+                           'campus_id': '63eef716c9ef6d077f1f1deb',
+                           'business_code': 'dgsgfd12',
+                           'requirement': 'dfgdfg',
+                           'description': 'dfgfd',
+                           'status': 1,
+                           'createAt': '2023-03-10T05:24:49.081Z'
+                        }
 
-                409:
-                    description: trong data gửi lên có các doanh nghiệp đã tồn tại
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
-                            example:
-                                {
-                                    statusCode: 409,
-                                    message: 'Doanh nghiệp đã tồn tại (có thể ở kỳ trước)',
-                                    error: [{ name: 'Doanh nghiệp A', business_code: '12345' }],
-                                }
+            404:
+               description: Công ty không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 404, message: 'Doanh nghiệp cần tìm không tồn tại' }
 
-        patch:
-            tags:
-                - Business
-            description: 'Tái sử dụng thông tin các doanh nghiệp ở kỳ trước để sử dụng sang kỳ hiện tại'
-            summary: Đăng nhập với vai trò manager (role = 1)
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: array
-                            items:
-                                type: objectId
-                                description: id các doanh nghiệp muốn sử dụng lại
-                        example: ['640abf214ed73d86530a6018', '640abf214ed73d86530a6018']
+      delete:
+         tags:
+            - Business
+         description: Xóa doanh nghiệp
+         summary: Đăng nhập với vai trò manager (role = 1)
 
-            responses:
-                201:
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    message:
-                                        type: string
-                            example: { message: 'Đã chuyển doanh nghiệp sang kỳ học FALL2023' }
+         responses:
+            200:
+               description: Xóa thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Business'
+                     example:
+                        {
+                           '_id': '640abf214ed73d86530a6018',
+                           'name': 'fgdfgf',
+                           'internshipPosition': 'dfgdfg',
+                           'major': '640abe8d4ed73d86530a5ee7',
+                           'amount': 13,
+                           'address': 'gdgdfg',
+                           'smester_id': '640abe7e4ed73d86530a5ed3',
+                           'campus_id': '63eef716c9ef6d077f1f1deb',
+                           'business_code': 'dgsgfd12',
+                           'requirement': 'dfgdfg',
+                           'description': 'dfgfd',
+                           'status': 1,
+                           'createAt': '2023-03-10T05:24:49.081Z'
+                        }
 
-                204:
-                    description: Data gửi lên rỗng
+            403:
+               description: Có học sinh đang đăng ký công ty không được phép xóa
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 403, message: 'Doanh nghiệp đang được sinh viên đăng ký không thể xóa' }
 
-                400:
-                    description: data gửi lên không phải array
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
-                            example:
-                                {
-                                    statusCode: 400,
-                                    message: 'Data body gửi lên không phải type array',
-                                }
+            404:
+               description: Công ty không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 404, message: 'Doanh nghiệp cần tìm không tồn tại' }
 
-    /business/:id:
-        get:
-            tags:
-                - Business
-            description: Lấy thông tin chi tiết 1 doanh nghiệp
-            summary: Đăng nhập với vai trò manager (role = 1)
+      patch:
+         tags:
+            - Business
+         description: Sửa thông tin 1 doanh nghiệp
+         summary: Đăng nhập với vai trò manager (role = 1)
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        name:
+                           type: string
+                           description: 'Tên công ty'
+                        internshipPosition:
+                           type: string
+                           description: 'Vị trí cần tuyển'
+                        major:
+                           type: ObjectId
+                           description: 'Chuyên ngành cần tuyển'
+                        amount:
+                           type: number
+                           description: 'Số lượng muôn tuyển'
+                        address:
+                           type: string
+                           description: 'Địa chỉ công ty'
+                        business_code:
+                           type: string
+                           description: 'Mã doanh nghiệp'
+                        requirement:
+                           type: string
+                           description: 'Yêu cầu vị trí của doanh nghiệp'
+                        description:
+                           type: string
+                           description: 'Mô tả công việc'
+                        benefit:
+                           type: string
+                           description: 'Quyền lợi khi làm tại doanh nghiệp'
+                  example: { name: 'Sửa lại name' }
 
-            responses:
-                200:
-                    description: ok
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Business'
+         responses:
+            404:
+               description: Công ty không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 404, message: 'Doanh nghiệp cần tìm không tồn tại' }
+            409:
+               description: Công ty không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 409, message: 'Mã doanh nghiệp đã tồn tại' }
 
-                            example:
-                                {
-                                    '_id': '640abf214ed73d86530a6018',
-                                    'name': 'fgdfgf',
-                                    'internshipPosition': 'dfgdfg',
-                                    'major': '640abe8d4ed73d86530a5ee7',
-                                    'amount': 13,
-                                    'address': 'gdgdfg',
-                                    'smester_id': '640abe7e4ed73d86530a5ed3',
-                                    'campus_id': '63eef716c9ef6d077f1f1deb',
-                                    'business_code': 'dgsgfd12',
-                                    'requirement': 'dfgdfg',
-                                    'description': 'dfgfd',
-                                    'status': 1,
-                                    'createAt': '2023-03-10T05:24:49.081Z',
-                                }
+   /business/new:
+      post:
+         tags:
+            - Business
+         description: Thêm thủ công 1 doanh nghiệp
+         summary: Đăng nhập với vai trò manager (role = 1)
 
-                404:
-                    description: Công ty không tồn tại
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
-                            example:
-                                { statusCode: 404, message: 'Doanh nghiệp cần tìm không tồn tại' }
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        name:
+                           type: string
+                           description: 'Tên công ty'
+                        internshipPosition:
+                           type: string
+                           description: 'Vị trí cần tuyển'
+                        major:
+                           type: ObjectId
+                           description: 'Chuyên ngành cần tuyển'
+                        amount:
+                           type: number
+                           description: 'Số lượng muôn tuyển'
+                        address:
+                           type: string
+                           description: 'Địa chỉ công ty'
+                        business_code:
+                           type: string
+                           description: 'Mã doanh nghiệp'
+                        requirement:
+                           type: string
+                           description: 'Yêu cầu vị trí của doanh nghiệp'
+                        description:
+                           type: string
+                           description: 'Mô tả công việc'
+                        benefit:
+                           type: string
+                           description: 'Quyền lợi khi làm tại doanh nghiệp'
+                  example:
+                     {
+                        address: 'aaaaaaaaaaaaaaaa',
+                        amount: 10,
+                        campus_id: '63eef716c9ef6d077f1f1deb',
+                        business_code: '12334',
+                        description: '1111111111111',
+                        internshipPosition: 'Front end',
+                        major: '640abe8d4ed73d86530a5ee7',
+                        name: 'test tên doanh nghiệp',
+                        requirement: '1111111111',
+                        benefit: '111111111'
+                     }
 
-        delete:
-            tags:
-                - Business
-            description: Xóa doanh nghiệp
-            summary: Đăng nhập với vai trò manager (role = 1)
+         responses:
+            201:
+               description: OK
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Business'
+                     example:
+                        {
+                           '_id': '640abf214ed73d86530a6018',
+                           'name': 'fgdfgf',
+                           'internshipPosition': 'dfgdfg',
+                           'major': '640abe8d4ed73d86530a5ee7',
+                           'amount': 13,
+                           'address': 'gdgdfg',
+                           'smester_id': '640abe7e4ed73d86530a5ed3',
+                           'campus_id': '63eef716c9ef6d077f1f1deb',
+                           'business_code': 'dgsgfd12',
+                           'requirement': 'dfgdfg',
+                           'description': 'dfgfd',
+                           'status': 1,
+                           'createAt': '2023-03-10T05:24:49.081Z'
+                        }
 
-            responses:
-                200:
-                    description: Xóa thành công
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Business'
-                            example:
-                                {
-                                    '_id': '640abf214ed73d86530a6018',
-                                    'name': 'fgdfgf',
-                                    'internshipPosition': 'dfgdfg',
-                                    'major': '640abe8d4ed73d86530a5ee7',
-                                    'amount': 13,
-                                    'address': 'gdgdfg',
-                                    'smester_id': '640abe7e4ed73d86530a5ed3',
-                                    'campus_id': '63eef716c9ef6d077f1f1deb',
-                                    'business_code': 'dgsgfd12',
-                                    'requirement': 'dfgdfg',
-                                    'description': 'dfgfd',
-                                    'status': 1,
-                                    'createAt': '2023-03-10T05:24:49.081Z',
-                                }
-
-                403:
-                    description: Có học sinh đang đăng ký công ty không được phép xóa
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
-                            example:
-                                {
-                                    statusCode: 403,
-                                    message: 'Doanh nghiệp đang được sinh viên đăng ký không thể xóa',
-                                }
-
-                404:
-                    description: Công ty không tồn tại
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
-                            example:
-                                { statusCode: 404, message: 'Doanh nghiệp cần tìm không tồn tại' }
-
-        patch:
-            tags:
-                - Business
-            description: Sửa thông tin 1 doanh nghiệp
-            summary: Đăng nhập với vai trò manager (role = 1)
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                name:
-                                    type: string
-                                    description: 'Tên công ty'
-                                internshipPosition:
-                                    type: string
-                                    description: 'Vị trí cần tuyển'
-                                major:
-                                    type: ObjectId
-                                    description: 'Chuyên ngành cần tuyển'
-                                amount:
-                                    type: number
-                                    description: 'Số lượng muôn tuyển'
-                                address:
-                                    type: string
-                                    description: 'Địa chỉ công ty'
-                                business_code:
-                                    type: string
-                                    description: 'Mã doanh nghiệp'
-                                requirement:
-                                    type: string
-                                    description: 'Yêu cầu vị trí của doanh nghiệp'
-                                description:
-                                    type: string
-                                    description: 'Mô tả công việc'
-                                benefit:
-                                    type: string
-                                    description: 'Quyền lợi khi làm tại doanh nghiệp'
-                        example: { name: 'Sửa lại name' }
-
-            responses:
-                404:
-                    description: Công ty không tồn tại
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
-                            example:
-                                { statusCode: 404, message: 'Doanh nghiệp cần tìm không tồn tại' }
-                409:
-                    description: Công ty không tồn tại
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
-                            example: { statusCode: 409, message: 'Mã doanh nghiệp đã tồn tại' }
-
-    /business/new:
-        post:
-            tags:
-                - Business
-            description: Thêm thủ công 1 doanh nghiệp
-            summary: Đăng nhập với vai trò manager (role = 1)
-
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                name:
-                                    type: string
-                                    description: 'Tên công ty'
-                                internshipPosition:
-                                    type: string
-                                    description: 'Vị trí cần tuyển'
-                                major:
-                                    type: ObjectId
-                                    description: 'Chuyên ngành cần tuyển'
-                                amount:
-                                    type: number
-                                    description: 'Số lượng muôn tuyển'
-                                address:
-                                    type: string
-                                    description: 'Địa chỉ công ty'
-                                business_code:
-                                    type: string
-                                    description: 'Mã doanh nghiệp'
-                                requirement:
-                                    type: string
-                                    description: 'Yêu cầu vị trí của doanh nghiệp'
-                                description:
-                                    type: string
-                                    description: 'Mô tả công việc'
-                                benefit:
-                                    type: string
-                                    description: 'Quyền lợi khi làm tại doanh nghiệp'
-                        example:
-                            {
-                                address: 'aaaaaaaaaaaaaaaa',
-                                amount: 10,
-                                campus_id: '63eef716c9ef6d077f1f1deb',
-                                business_code: '12334',
-                                description: '1111111111111',
-                                internshipPosition: 'Front end',
-                                major: '640abe8d4ed73d86530a5ee7',
-                                name: 'test tên doanh nghiệp',
-                                requirement: '1111111111',
-                                benefit: '111111111',
-                            }
-
-            responses:
-                201:
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Business'
-                            example:
-                                {
-                                    '_id': '640abf214ed73d86530a6018',
-                                    'name': 'fgdfgf',
-                                    'internshipPosition': 'dfgdfg',
-                                    'major': '640abe8d4ed73d86530a5ee7',
-                                    'amount': 13,
-                                    'address': 'gdgdfg',
-                                    'smester_id': '640abe7e4ed73d86530a5ed3',
-                                    'campus_id': '63eef716c9ef6d077f1f1deb',
-                                    'business_code': 'dgsgfd12',
-                                    'requirement': 'dfgdfg',
-                                    'description': 'dfgfd',
-                                    'status': 1,
-                                    'createAt': '2023-03-10T05:24:49.081Z',
-                                }
-
-                409:
-                    description: Công ty không tồn tại trong kỳ này hoặc các kỳ trước
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HttpError'
-                            example: { statusCode: 409, message: 'Doanh nghiệp đã tồn tại' }
+            409:
+               description: Công ty không tồn tại trong kỳ này hoặc các kỳ trước
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 409, message: 'Doanh nghiệp đã tồn tại' }

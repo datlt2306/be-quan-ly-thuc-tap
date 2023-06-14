@@ -8,7 +8,6 @@ import rootRouter from './api/routes';
 import swaggerOptions from './config/swagger.config';
 import connectMongo from './database/mongo.db';
 const app = express();
-
 // Route
 
 // middleware
