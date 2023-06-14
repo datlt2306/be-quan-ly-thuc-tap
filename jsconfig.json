@@ -4,10 +4,6 @@
 		"module": "CommonJS",
 		"target": "ES6"
 	},
-	"node": {
-		"swc": true,
-		"transpileOnly": true
-	},
 	"include": ["src"],
 	"exclude": ["node_modules", "dist", "build"]
 }
