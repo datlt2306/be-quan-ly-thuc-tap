@@ -1,0 +1,27 @@
+/* eslint-disabled */
+module.exports = {
+	env: {
+		browser: false,
+		es2021: true
+	},
+	extends: ['standard', 'eslint:recommended', 'prettier'],
+	overrides: [],
+	parserOptions: {
+		ecmaVersion: 'latest',
+		sourceType: 'module'
+	},
+	plugins: ['prettier'],
+	rules: {
+		'no-useless-catch': 'warn',
+		'prettier/prettier': [
+			'warn',
+			{
+				printWidth: 120,
+				useTabs: true,
+				singleQuote: true,
+				tabWidth: 3,
+				trailingComma: 'none'
+			}
+		]
+	}
+};
