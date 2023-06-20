@@ -130,6 +130,8 @@ export const submitRecordForm = async (req, res) => {
 				result = await studentModel.findOneAndUpdate(filter, data, {
 					new: true
 				});
+				
+				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.RECORD_REGISTRATION) });
 
 				return res.status(200).json({ message: 'Nộp biên bản thành công', result });
 			// Không đủ điều kiện
@@ -157,7 +159,7 @@ export const submitRecordForm = async (req, res) => {
 						new: true
 					}
 				);
-				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.RECORD_REGISTRATION) });
+				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.UPDATED_RECORD) });
 
 				return res.status(200).json({ message: 'Sửa biên bản thành công', result });
 
