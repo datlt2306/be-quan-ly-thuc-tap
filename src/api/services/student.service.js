@@ -27,11 +27,6 @@ export const checkStudentExist = async (id, campus) => {
 // thêm sinh viên thực tập thực tập
 export const createListStudent = async ({ semesterId, campusId, data }) => {
 	try {
-		data = data.map((student) => ({
-			...student,
-			email: student.email.toLowerCase(),
-			mssv: student.mssv.toUpperCase()
-		}));
 		/**
 		 * * Lấy ra các list sinh viên bao gồm:
 		 * 	-> List sinh viên kỳ hiện tại
@@ -74,49 +69,55 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 
 			return await Promise.all([
 				addOrUpdateStudents(data),
-				StudentModel.bulkWrite([
-					{
-						updateMany: {
-							filter: { _id: { $in: excludeStudents } },
-							update: { $set: { statusCheck: 3 } }
+				StudentModel.bulkWrite(
+					[
+						{
+							updateMany: {
+								filter: { _id: { $in: excludeStudents } },
+								update: { $set: { statusCheck: 3 } }
+							}
+						},
+						{
+							updateMany: {
+								filter: { _id: { $in: qualifiedStudents } },
+								update: { $set: { smester_id: semesterId, statusCheck: 10 } }
+							}
+						},
+						{
+							updateMany: {
+								filter: {
+									smester_id: semesterId,
+									campus_id: campusId
+								},
+								update: { $set: { updatedInStage: 2 } }
+							}
 						}
-					},
-					{
-						updateMany: {
-							filter: { _id: { $in: qualifiedStudents } },
-							update: { $set: { smester_id: semesterId, statusCheck: 10 } }
-						}
-					},
-					{
-						updateMany: {
-							filter: {
-								smester_id: semesterId,
-								campus_id: campusId
-							},
-							update: { $set: { updatedInStage: 2 } }
-						}
-					}
-				])
+					],
+					{ ordered: false }
+				)
 			]);
 		}
 
 		/* CASE ADDITIONAL STAGE  */
 		return await Promise.all([
 			addOrUpdateStudents(data),
-			StudentModel.bulkWrite([
-				{
-					updateMany: {
-						filter: { _id: { $in: qualifiedStudents } },
-						update: { $set: { semester_id: semesterId, statusCheck: 10 } }
+			StudentModel.bulkWrite(
+				[
+					{
+						updateMany: {
+							filter: { _id: { $in: qualifiedStudents } },
+							update: { $set: { semester_id: semesterId, statusCheck: 10 } }
+						}
+					},
+					{
+						updateMany: {
+							filter: { semester_id: semesterId, campus_id: campusId },
+							update: { $set: { updatedInStage: 3 } }
+						}
 					}
-				},
-				{
-					updateMany: {
-						filter: { semester_id: semesterId, campus_id: campusId },
-						update: { $set: { updatedInStage: 3 } }
-					}
-				}
-			])
+				],
+				{ ordered: false }
+			)
 		]);
 	} catch (error) {
 		throw error;
@@ -134,7 +135,7 @@ const addOrUpdateStudents = async (students) => {
 			}
 		}));
 
-		return await StudentModel.bulkWrite(bulkOperations);
+		return await StudentModel.bulkWrite(bulkOperations, { ordered: false });
 	} catch (error) {
 		throw error;
 	}

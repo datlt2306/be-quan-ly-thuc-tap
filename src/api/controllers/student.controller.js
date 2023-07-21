@@ -9,11 +9,15 @@ import StudentModel from '../models/student.model';
 import { sendMail } from '../services/mail.service';
 import * as StudentService from '../services/student.service';
 import { checkStudentExist } from '../services/student.service';
-import { validateDataCreateStudentList } from '../validation/student.validation';
 import { getCurrentSemester } from '../services/semester.service';
 import 'dotenv/config';
 import MailTypes from '../constants/mailTypes';
+import fs from 'fs';
+import XlsxStreamReader from 'xlsx-stream-reader';
+import { StudentColumnAccessors } from '../constants/studentStatus';
+import _ from 'lodash';
 // [GET] /api/student?limit=20&page=1
+
 export const listStudent = async (req, res) => {
 	const semester = req.query.semester;
 	// campusManager được thêm từ middleware
@@ -297,17 +301,78 @@ export const listStudentReviewCV = async (req, res) => {
 
 export const importStudents = async (req, res) => {
 	try {
-		const { data, smester_id, campus_id } = req.body;
-		const { error, value: validatedStudentsList } = validateDataCreateStudentList(data);
-		if (error) {
-			throw createHttpError.BadRequest(error.message);
-		}
-		const importResult = await StudentService.createListStudent({
-			semesterId: smester_id,
-			campusId: campus_id,
-			data: validatedStudentsList
+		const importedData = [];
+		const filePath = req.file.path;
+		const { smester_id, campus_id } = req.body;
+		const workBookReader = new XlsxStreamReader();
+		workBookReader.on('error', function (error) {
+			throw error;
 		});
-		return res.status(201).json(importResult);
+		workBookReader.on('worksheet', function (workSheetReader) {
+			if (workSheetReader.id > 1) {
+				// Chỉ muốn lấy sheet đầu tiên
+				console.log('Skip Worksheet:', workSheetReader.id);
+				workSheetReader.skip();
+				return;
+			}
+
+			workSheetReader.on('row', function (row) {
+				const rowValues = row.values.slice(1);
+				importedData.push(rowValues);
+			});
+			workSheetReader.on('end', async function () {
+				const newStudentList = [];
+				const batchPromises = [];
+				const keys = importedData[0];
+				const dataLength = importedData.length;
+				const batchSize = 1200;
+
+				for (let i = 1; i < dataLength; i++) {
+					const array = importedData[i];
+					const obj = _.zipObject(keys, array);
+					const student = {
+						name: obj[StudentColumnAccessors.name],
+						mssv: obj[StudentColumnAccessors.mssv],
+						course: obj[StudentColumnAccessors.course],
+						email: obj[StudentColumnAccessors.email],
+						phoneNumber: obj[StudentColumnAccessors.phoneNumber],
+						majorCode: obj[StudentColumnAccessors.majorCode],
+						statusStudent: obj[StudentColumnAccessors.statusStudent],
+						smester_id,
+						campus_id
+					};
+
+					if (Object.keys(student).length === 9) {
+						newStudentList.push(student);
+					}
+				}
+
+				for (let i = 0; i < dataLength; i += batchSize) {
+					const endIndex = Math.min(i + batchSize, dataLength);
+					const requests = newStudentList.slice(i, endIndex);
+					const batchPromise = StudentService.createListStudent({
+						semesterId: smester_id,
+						campusId: campus_id,
+						data: requests
+					}).catch((error) => {
+						throw error;
+					});
+					batchPromises.push(batchPromise);
+				}
+
+				const importResult = await Promise.all(batchPromises);
+				return res.status(201).json(importResult);
+			});
+
+			// Gọi process sau khi đăng ký các handler
+			workSheetReader.process();
+		});
+
+		workBookReader.on('end', function () {
+			fs.unlink(filePath);
+		});
+
+		fs.createReadStream(filePath).pipe(workBookReader);
 	} catch (error) {
 		const httpException = new HttpException(error);
 		return res.status(httpException.statusCode).json(httpException);
