@@ -38,6 +38,7 @@
 		"nodemon": "^2.0.15",
 		"swagger-jsdoc": "^6.2.8",
 		"swagger-ui-express": "^4.5.0",
+		"xlsx-stream-reader": "^1.1.1",
 		"yamljs": "^0.3.0",
 		"yarn": "^1.22.18"
 	},
