@@ -369,7 +369,9 @@ export const importStudents = async (req, res) => {
 		});
 
 		workBookReader.on('end', function () {
-			fs.unlink(filePath);
+			fs.unlink(filePath, (error) => {
+				console.log(error);
+			});
 		});
 
 		fs.createReadStream(filePath).pipe(workBookReader);
