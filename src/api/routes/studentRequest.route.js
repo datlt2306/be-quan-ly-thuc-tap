@@ -4,7 +4,8 @@ import {
 	cancelResetStudent,
 	processStudentRequest,
 	resetStudent,
-	sendRequestToManager
+	sendRequestToManager,
+	getRequestOfStudent
 } from '../controllers/studentRequest.controller';
 import { authorizeRoles, isAuthenticateUser } from '../middlewares/CheckAuth';
 
@@ -12,6 +13,7 @@ const router = express.Router();
 //* New endpoint. To replace /request/reset/:id and /request/remove/:id
 router.patch('/request/:id', isAuthenticateUser, authorizeRoles([role.staff, role.manager]), processStudentRequest);
 router.post('/request', isAuthenticateUser, authorizeRoles([role.student]), sendRequestToManager);
+router.get('/request', isAuthenticateUser, authorizeRoles([role.staff]), getRequestOfStudent);
 
 //! DEPRECATED
 router.patch('/resetStudent/:id', isAuthenticateUser, authorizeRoles([role.staff]), resetStudent);
