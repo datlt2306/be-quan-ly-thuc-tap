@@ -41,3 +41,10 @@ export const StudentColumnAccessors = {
 	createdAt: 'Ngày bổ sung',
 	note: 'Ghi chú'
 };
+
+export const StudentSchoolingStatus = {
+	CHO: 'Chờ xếp lớp',
+	HDI: 'Học đi',
+	HL: 'Học lại',
+	TN: 'Tốt nghiệp'
+};
