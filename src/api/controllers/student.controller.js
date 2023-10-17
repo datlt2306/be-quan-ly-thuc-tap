@@ -15,7 +15,9 @@ import MailTypes from '../constants/mailTypes';
 import fs from 'fs';
 import XlsxStreamReader from 'xlsx-stream-reader';
 import { StudentColumnAccessors } from '../constants/studentStatus';
+import { validateDataImportStudent } from '../validation/student.validation';
 import _ from 'lodash';
+
 // [GET] /api/student?limit=20&page=1
 
 export const listStudent = async (req, res) => {
@@ -345,6 +347,12 @@ export const importStudents = async (req, res) => {
 					if (Object.keys(student).length === 9) {
 						newStudentList.push(student);
 					}
+				}
+
+				const { error } = validateDataImportStudent(newStudentList);
+				if (error) {
+					const httpException = new HttpException(error);
+					return res.status(httpException.statusCode).json(httpException);
 				}
 
 				for (let i = 0; i < dataLength; i += batchSize) {

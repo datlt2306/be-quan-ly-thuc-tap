@@ -120,7 +120,7 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 			)
 		]);
 	} catch (error) {
-		throw error;
+		throw new Error(error);
 	}
 };
 
