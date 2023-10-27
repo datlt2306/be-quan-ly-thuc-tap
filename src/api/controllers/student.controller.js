@@ -1,30 +1,31 @@
+import 'dotenv/config';
+import fs from 'fs';
 import createHttpError from 'http-errors';
+import _ from 'lodash';
+import XlsxStreamReader from 'xlsx-stream-reader';
 import { getMailTemplate } from '../../utils/emailTemplate';
 import { HttpException } from '../../utils/httpException';
 import HttpStatusCode from '../constants/httpStatusCode';
+import MailTypes from '../constants/mailTypes';
 import { StudentReviewTypeEnum } from '../constants/reviewTypeEnum';
+import { StudentColumnAccessors, StudentStatusCodeEnum } from '../constants/studentStatus';
 import BusinessModel from '../models/business.model';
 import SemesterModel from '../models/semester.model';
 import StudentModel from '../models/student.model';
 import { sendMail } from '../services/mail.service';
+import { getCurrentSemester } from '../services/semester.service';
 import * as StudentService from '../services/student.service';
 import { checkStudentExist } from '../services/student.service';
-import { getCurrentSemester } from '../services/semester.service';
-import 'dotenv/config';
-import MailTypes from '../constants/mailTypes';
-import fs from 'fs';
-import XlsxStreamReader from 'xlsx-stream-reader';
-import { StudentColumnAccessors } from '../constants/studentStatus';
 import { validateDataImportStudent } from '../validation/student.validation';
-import _ from 'lodash';
 
 // [GET] /api/student?limit=20&page=1
 
 export const listStudent = async (req, res) => {
-	const semester = req.query.semester;
-	// campusManager được thêm từ middleware
-	const campusManager = req.campusManager;
 	try {
+		const semester = req.query.semester;
+		// campusManager được thêm từ middleware
+		const campusManager = req.campusManager;
+
 		// xác định học kỳ hiện tại
 		const dataDefault = await SemesterModel.findOne({
 			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
@@ -40,10 +41,8 @@ export const listStudent = async (req, res) => {
 			.populate({ path: 'majorCode', match: { majorCode: { $exists: true } } });
 		return res.status(200).json(students);
 	} catch (error) {
-		return res.status(error.statusCode || 500).json({
-			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error'
-		});
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 
@@ -61,10 +60,8 @@ export const updateStudent = async (req, res) => {
 		});
 		return res.status(201).json(result);
 	} catch (error) {
-		return res.status(error.statusCode || 500).json({
-			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error'
-		});
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 
@@ -79,10 +76,8 @@ export const removeStudent = async (req, res) => {
 		const result = await StudentModel.findOneAndDelete({ _id: id });
 		return res.status(200).json(result);
 	} catch (error) {
-		return res.status(error.statusCode || 500).json({
-			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error'
-		});
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 
@@ -104,10 +99,8 @@ export const readOneStudent = async (req, res) => {
 
 		return res.status(200).json(student);
 	} catch (error) {
-		return res.status(error.statusCode || 500).json({
-			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error'
-		});
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 
@@ -177,10 +170,8 @@ export const updateBusinessStudent = async (req, res) => {
 		);
 		return res.status(201).json({ listIdStudent, business });
 	} catch (error) {
-		return res.status(error.statusCode || 500).json({
-			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error'
-		});
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 
@@ -283,7 +274,7 @@ export const listStudentReviewCV = async (req, res) => {
 			CV: { $ne: null },
 			form: null,
 			report: null,
-			statusCheck: { $in: [0, 1] },
+			statusCheck: { $in: [StudentStatusCodeEnum.WAITING_FOR_CV_CHECK, StudentStatusCodeEnum.REVISE_CV] },
 			campus_id: campus,
 			smester_id: semester._id
 		})
@@ -294,10 +285,8 @@ export const listStudentReviewCV = async (req, res) => {
 
 		return res.status(200).json(listStudentReviewCV);
 	} catch (error) {
-		return res.status(error.statusCode || 500).json({
-			statusCode: error.statusCode || 500,
-			message: error.message || 'Internal Server Error'
-		});
+		const httpException = new HttpException(error);
+		return res.status(httpException.statusCode).json(httpException);
 	}
 };
 
@@ -308,7 +297,8 @@ export const importStudents = async (req, res) => {
 		const { smester_id, campus_id } = req.body;
 		const workBookReader = new XlsxStreamReader();
 		workBookReader.on('error', function (error) {
-			throw error;
+			throw createHttpError.UnprocessableEntity(error.message);
+			// throw error;
 		});
 		workBookReader.on('worksheet', function (workSheetReader) {
 			if (workSheetReader.id > 1) {
@@ -335,7 +325,7 @@ export const importStudents = async (req, res) => {
 					const student = {
 						name: obj[StudentColumnAccessors.name],
 						mssv: obj[StudentColumnAccessors.mssv],
-						course: obj[StudentColumnAccessors.course],
+						course: obj[StudentColumnAccessors.course]?.toString(),
 						email: obj[StudentColumnAccessors.email],
 						phoneNumber: obj[StudentColumnAccessors.phoneNumber],
 						majorCode: obj[StudentColumnAccessors.majorCode],
@@ -351,13 +341,14 @@ export const importStudents = async (req, res) => {
 
 				const { error } = validateDataImportStudent(newStudentList);
 				if (error) {
-					const httpException = new HttpException(error);
-					return res.status(httpException.statusCode).json(httpException);
+					// throw createHttpError.BadRequest(error.message);
+					return res.status(HttpStatusCode.BAD_REQUEST).json({ message: error.message });
 				}
 
 				for (let i = 0; i < dataLength; i += batchSize) {
 					const endIndex = Math.min(i + batchSize, dataLength);
 					const requests = newStudentList.slice(i, endIndex);
+					console.log('Result :>>>> ', requests);
 					const batchPromise = StudentService.createListStudent({
 						semesterId: smester_id,
 						campusId: campus_id,
@@ -367,7 +358,6 @@ export const importStudents = async (req, res) => {
 					});
 					batchPromises.push(batchPromise);
 				}
-
 				const importResult = await Promise.all(batchPromises);
 				return res.status(201).json(importResult);
 			});

@@ -16,6 +16,24 @@ export const StudentStatusEnum = {
 	11: 'Đã đăng ký',
 	12: 'Không đạt'
 };
+
+/**@enum */
+export const StudentStatusCodeEnum = {
+	WAITING_FOR_CV_CHECK: 0,
+	REVISE_CV: 1,
+	RECEIVE_CV: 2,
+	NOT_QUALIFIED: 3,
+	SUBMITTED_REPORT: 4,
+	REVISE_REPORT: 5,
+	INTERNSHIP: 6,
+	SUBMITTED_REPORT: 7,
+	REVISE_REPORT: 8,
+	COMPLETED: 9,
+	NOT_REGISTERED: 10,
+	REGISTERED: 11,
+	NOT_PASS: 12
+};
+
 export const StudentColumnAccessors = {
 	index: 'STT',
 	name: 'Họ tên',

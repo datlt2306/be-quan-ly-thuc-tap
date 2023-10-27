@@ -2,6 +2,7 @@ import createHttpError from 'http-errors';
 import { StudentReviewTypeEnum } from '../constants/reviewTypeEnum';
 import StudentModel from '../models/student.model';
 import { getCurrentSemester } from './semester.service';
+import { StudentStatusCodeEnum } from '../constants/studentStatus';
 
 export const checkStudentExist = async (id, campus) => {
 	try {
@@ -30,7 +31,7 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 		/**
 		 * * Lấy ra các list sinh viên bao gồm:
 		 * 	-> List sinh viên kỳ hiện tại
-		 * 	-> List sinh viên không đủ điều kiện từ trước đến nay
+		 * 	-> List sinh viên không đủ điều kiện từ trước đến nay nhung co trong danh sach tai len
 		 */
 		const [instanceStudentsList, qualifiedStudents] = await Promise.all([
 			StudentModel.find({
@@ -39,80 +40,31 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 			}),
 			StudentModel.find({
 				campus_id: campusId,
-				statusCheck: { $in: [3, 12] },
+				statusCheck: { $in: [StudentStatusCodeEnum.NOT_QUALIFIED, StudentStatusCodeEnum.NOT_PASS] },
 				email: { $in: data.map((student) => student.email) }
 			})
 		]);
-		const isFirstStage = !instanceStudentsList.length;
-		const isSecondStage = instanceStudentsList.every((student) => student.updatedInStage === 1);
 
-		/* PROVISONAL STAGE */
-		if (isFirstStage) {
-			const newExpectedStudents = await Promise.all([
-				addOrUpdateStudents(data.map((std) => ({ ...std, updatedInStage: 1 }))),
-				StudentModel.updateMany(
-					{ _id: { $in: qualifiedStudents } },
-					{ $set: { smester_id: semesterId, updatedInStage: 1, statusCheck: 10 } },
-					{ new: true, multi: true }
-				)
-			]);
+		const excludeStudents = instanceStudentsList.filter(
+			(student) =>
+				!data.some((std) => std.email === student.email) &&
+				[StudentStatusCodeEnum.NOT_REGISTERED, StudentStatusCodeEnum.NOT_QUALIFIED].includes(+student.statusCheck)
+		);
 
-			return newExpectedStudents;
-		}
-
-		/* CASE STAGE 2 */
-		if (isSecondStage) {
-			// Danh sách sinh viên không đủ điều kiện trong đợt 2
-			const excludeStudents = instanceStudentsList.filter(
-				(student) => !data.some((std) => std.email === student.email)
-			);
-
-			return await Promise.all([
-				addOrUpdateStudents(data),
-				StudentModel.bulkWrite(
-					[
-						{
-							updateMany: {
-								filter: { _id: { $in: excludeStudents } },
-								update: { $set: { statusCheck: 3 } }
-							}
-						},
-						{
-							updateMany: {
-								filter: { _id: { $in: qualifiedStudents } },
-								update: { $set: { smester_id: semesterId, statusCheck: 10 } }
-							}
-						},
-						{
-							updateMany: {
-								filter: {
-									smester_id: semesterId,
-									campus_id: campusId
-								},
-								update: { $set: { updatedInStage: 2 } }
-							}
-						}
-					],
-					{ ordered: false }
-				)
-			]);
-		}
-
-		/* CASE ADDITIONAL STAGE  */
 		return await Promise.all([
-			addOrUpdateStudents(data),
+			upsertStudents(data),
 			StudentModel.bulkWrite(
 				[
 					{
 						updateMany: {
-							filter: { _id: { $in: qualifiedStudents } },
-							update: { $set: { semester_id: semesterId, statusCheck: 10 } }
+							filter: { _id: { $in: excludeStudents } },
+							update: { $set: { statusCheck: StudentStatusCodeEnum.NOT_QUALIFIED } }
 						}
 					},
 					{
 						updateMany: {
-							filter: { semester_id: semesterId, campus_id: campusId },
-							update: { $set: { updatedInStage: 3 } }
+							filter: { _id: { $in: qualifiedStudents } },
+							update: { $set: { smester_id: semesterId, statusCheck: StudentStatusCodeEnum.NOT_REGISTERED } }
 						}
 					}
 				],
@@ -120,25 +72,21 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 			)
 		]);
 	} catch (error) {
-		throw new Error(error);
+		throw createHttpError.InternalServerError(error.message);
 	}
 };
 
 // Add or create students
-const addOrUpdateStudents = async (students) => {
-	try {
-		const bulkOperations = students.map((student) => ({
-			updateOne: {
-				filter: { $or: [{ email: student.email }, { mssv: student.mssv }] },
-				update: student,
-				upsert: true
-			}
-		}));
+const upsertStudents = async (students) => {
+	const bulkOperations = students.map((student) => ({
+		updateOne: {
+			filter: { $or: [{ email: student.email }, { mssv: student.mssv }] },
+			update: student,
+			upsert: true
+		}
+	}));
 
-		return await StudentModel.bulkWrite(bulkOperations, { ordered: false });
-	} catch (error) {
-		throw error;
-	}
+	return await StudentModel.bulkWrite(bulkOperations, { ordered: false });
 };
 
 export const getStudentsToReview = async ({ reviewType, campus, semester }) => {
@@ -170,7 +118,6 @@ export const getStudentsToReview = async ({ reviewType, campus, semester }) => {
 				return [];
 		}
 	} catch (error) {
-		console.log('error :>> ', error);
 		throw error;
 	}
 };

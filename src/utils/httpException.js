@@ -1,5 +1,6 @@
 import { isHttpError } from 'http-errors';
 import HttpStatusCode from '../api/constants/httpStatusCode';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 export class HttpException {
 	message;
@@ -7,6 +8,10 @@ export class HttpException {
 
 	constructor(error) {
 		this.message = error.message;
-		this.statusCode = isHttpError(error) ? error.status : HttpStatusCode.INTERNAL_SERVER_ERROR;
+		this.statusCode = isHttpError(error)
+			? error.status
+			: error instanceof JsonWebTokenError
+			? HttpStatusCode.UNAUTHORIZED
+			: HttpStatusCode.INTERNAL_SERVER_ERROR;
 	}
 }

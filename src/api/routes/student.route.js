@@ -1,6 +1,6 @@
 import express from 'express';
 import { role } from '../../utils/role';
-import {
+import StudentController, {
 	getStudentsToReview,
 	importStudents,
 	listStudent,
@@ -25,7 +25,8 @@ router.patch('/student', isAuthenticateUser, authorizeRoles([role.staff]), updat
 router.patch('/student/business', isAuthenticateUser, authorizeRoles([role.staff]), updateBusinessStudent);
 router.patch('/student/status', isAuthenticateUser, authorizeRoles([role.staff]), updateStatusStudent);
 router.patch('/student/:id', isAuthenticateUser, authorizeRoles([role.staff]), updateStudent);
-router.delete('/student/:id', isAuthenticateUser, authorizeRoles([role.staff]), removeStudent);
+
+// router.delete('/student/:id', isAuthenticateUser, authorizeRoles([role.staff]), removeStudent);
 // router.get('/student/reviewcv', isAuthenticateUser, authorizeRoles([role.staff]), listStudentReviewCV);
 
 export default router;
