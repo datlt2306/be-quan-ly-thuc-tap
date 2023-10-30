@@ -341,7 +341,9 @@ export const importStudents = async (req, res) => {
 
 				const { error } = validateDataImportStudent(newStudentList);
 				if (error) {
-					throw createHttpError.BadRequest(error.message);
+					return res
+						.status(HttpStatusCode.BAD_REQUEST)
+						.json({ message: error.message, statusCode: HttpStatusCode.BAD_REQUEST });
 				}
 
 				for (let i = 0; i < dataLength; i += batchSize) {
