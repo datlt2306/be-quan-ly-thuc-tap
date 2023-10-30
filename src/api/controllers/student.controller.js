@@ -293,7 +293,7 @@ export const listStudentReviewCV = async (req, res) => {
 export const importStudents = async (req, res) => {
 	try {
 		const importedData = [];
-		const filePath = req.file.path;
+		const filePath = req.file?.path;
 		const { smester_id, campus_id } = req.body;
 		const workBookReader = new XlsxStreamReader();
 		workBookReader.on('error', function (error) {
@@ -341,14 +341,12 @@ export const importStudents = async (req, res) => {
 
 				const { error } = validateDataImportStudent(newStudentList);
 				if (error) {
-					// throw createHttpError.BadRequest(error.message);
-					return res.status(HttpStatusCode.BAD_REQUEST).json({ message: error.message });
+					throw createHttpError.BadRequest(error.message);
 				}
 
 				for (let i = 0; i < dataLength; i += batchSize) {
 					const endIndex = Math.min(i + batchSize, dataLength);
 					const requests = newStudentList.slice(i, endIndex);
-					console.log('Result :>>>> ', requests);
 					const batchPromise = StudentService.createListStudent({
 						semesterId: smester_id,
 						campusId: campus_id,
