@@ -329,13 +329,11 @@ export const importStudents = async (req, res) => {
 						email: obj[StudentColumnAccessors.email],
 						phoneNumber: obj[StudentColumnAccessors.phoneNumber],
 						majorCode: obj[StudentColumnAccessors.majorCode],
-						statusStudent: obj[StudentColumnAccessors.statusStudent],
-						smester_id,
-						campus_id
+						statusStudent: obj[StudentColumnAccessors.statusStudent]
 					};
 
-					if (Object.keys(student).length === 9) {
-						newStudentList.push(student);
+					if (Object.values(student).some((val) => val)) {
+						newStudentList.push({ ...student, smester_id, campus_id });
 					}
 				}
 
