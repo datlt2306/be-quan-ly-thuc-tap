@@ -13,14 +13,14 @@ import StudentController, {
 } from '../controllers/student.controller';
 import { authorizeRoles, isAuthenticateUser } from '../middlewares/CheckAuth';
 import multer from 'multer';
-const upload = multer({ dest: 'tmp/', limits: { fileSize: 8000000 } });
+const upload = multer({  limits: { fileSize: 8000000 } });
 
 const router = express.Router();
 
 router.get('/student/reviews', isAuthenticateUser, authorizeRoles([role.staff]), getStudentsToReview);
 router.get('/student', isAuthenticateUser, authorizeRoles([role.staff]), listStudent);
 router.get('/student/:id', isAuthenticateUser, readOneStudent);
-router.post('/student', isAuthenticateUser, upload.single('file'), authorizeRoles([role.staff]), importStudents);
+router.post('/student', isAuthenticateUser, upload.any(), authorizeRoles([role.staff]), importStudents);
 router.patch('/student', isAuthenticateUser, authorizeRoles([role.staff]), updateReviewerStudent);
 router.patch('/student/business', isAuthenticateUser, authorizeRoles([role.staff]), updateBusinessStudent);
 router.patch('/student/status', isAuthenticateUser, authorizeRoles([role.staff]), updateStatusStudent);
