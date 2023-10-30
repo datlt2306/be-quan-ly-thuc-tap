@@ -12,8 +12,19 @@ import {
 	updateStudent
 } from '../controllers/student.controller';
 import { authorizeRoles, isAuthenticateUser } from '../middlewares/CheckAuth';
+import os from 'os';
+import path from 'path';
 
-const upload = multer({ dest: 'tmp/', limits: { fileSize: 8000000 } });
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, os.tmpdir());
+	},
+	filename: function (req, file, cb) {
+		cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+	}
+});
+
+const upload = multer({ storage, limits: { fileSize: 8000000 } });
 
 const router = express.Router();
 
