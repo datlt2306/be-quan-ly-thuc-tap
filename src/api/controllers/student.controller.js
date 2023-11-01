@@ -327,7 +327,7 @@ export const importStudents = async (req, res) => {
 						mssv: obj[StudentColumnAccessors.mssv],
 						course: obj[StudentColumnAccessors.course]?.toString(),
 						email: obj[StudentColumnAccessors.email],
-						phoneNumber: obj[StudentColumnAccessors.phoneNumber],
+						phoneNumber: obj[StudentColumnAccessors.phoneNumber]?.toString(),
 						majorCode: obj[StudentColumnAccessors.majorCode],
 						statusStudent: obj[StudentColumnAccessors.statusStudent]
 					};
@@ -337,7 +337,7 @@ export const importStudents = async (req, res) => {
 					}
 				}
 
-				const { error } = validateDataImportStudent(newStudentList);
+				const { error, value } = validateDataImportStudent(newStudentList);
 				if (error) {
 					return res
 						.status(HttpStatusCode.BAD_REQUEST)
@@ -346,7 +346,7 @@ export const importStudents = async (req, res) => {
 
 				for (let i = 0; i < dataLength; i += batchSize) {
 					const endIndex = Math.min(i + batchSize, dataLength);
-					const requests = newStudentList.slice(i, endIndex);
+					const requests = value.slice(i, endIndex);
 					const batchPromise = StudentService.createListStudent({
 						semesterId: smester_id,
 						campusId: campus_id,
