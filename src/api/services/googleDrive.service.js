@@ -75,7 +75,7 @@ export const uploadFile = async (file) => {
 
 		return newFile;
 	} catch (error) {
-		throw error;
+		throw createHttpError.UnprocessableEntity(error.message);
 	}
 };
 

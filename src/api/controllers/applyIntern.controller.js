@@ -43,6 +43,7 @@ export const signUpCVForSupport = async (req, res) => {
 
 		switch (student.statusCheck) {
 			case 0: // Đang chờ kiểm tra CV hoặc đã đăng ký
+				break;
 			case 11:
 				throw createHttpError(409, 'Thông tin CV của bạn đã được đăng ký');
 			case 1: // Sửa lại CV

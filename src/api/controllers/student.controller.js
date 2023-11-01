@@ -329,14 +329,16 @@ export const importStudents = async (req, res) => {
 						email: obj[StudentColumnAccessors.email],
 						phoneNumber: obj[StudentColumnAccessors.phoneNumber]?.toString(),
 						majorCode: obj[StudentColumnAccessors.majorCode],
-						statusStudent: obj[StudentColumnAccessors.statusStudent]
+						statusStudent:
+							obj[StudentColumnAccessors.statusStudent] !== ''
+								? obj[StudentColumnAccessors.statusStudent]
+								: undefined
 					};
 
 					if (Object.values(student).some((val) => val)) {
 						newStudentList.push({ ...student, smester_id, campus_id });
 					}
 				}
-
 				const { error, value } = validateDataImportStudent(newStudentList);
 				if (error) {
 					return res

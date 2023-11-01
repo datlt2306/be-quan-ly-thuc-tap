@@ -42,12 +42,12 @@ export const validateDataImportStudent = (data) => {
 						}),
 					statusStudent: Joi.string()
 						.trim()
-						.valid(...Object.keys(StudentSchoolingStatus))
 						.required()
+						.valid(...Object.keys(StudentSchoolingStatus))
 						.messages({
-							'any.only': 'Trạng thái sinh viên không hợp lệ',
-							'string.required': 'Vui lòng nhập đầy đủ trạng thái sinh viên',
-							'string.empty': 'Vui lòng nhập đầy đủ trạng thái sinh viên'
+							'any.empty': 'Vui lòng nhập đầy đủ trạng thái sinh viên',
+							'any.required': 'Vui lòng nhập đầy đủ trạng thái sinh viên',
+							'any.only': 'Trạng thái sinh viên không hợp lệ'
 						}),
 					smester_id: Joi.string().required().messages({
 						'string.required': 'Vui lòng nhập đầy đủ kỳ học hiện tại của sinh viên',

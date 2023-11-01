@@ -130,7 +130,7 @@ export const submitRecordForm = async (req, res) => {
 				result = await studentModel.findOneAndUpdate(filter, data, {
 					new: true
 				});
-				
+
 				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.RECORD_REGISTRATION) });
 
 				return res.status(200).json({ message: 'Nộp biên bản thành công', result });
