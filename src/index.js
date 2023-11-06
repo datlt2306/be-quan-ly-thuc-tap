@@ -25,7 +25,7 @@ app.use('/api', rootRouter);
 // Run server
 const PORT = process.env.PORT || 9998;
 app.listen(PORT, () => {
-	console.log('[SUCCESS] Server is listening on port: ', PORT);
+	console.log('\x1b[1;42m Success \x1b[0m', 'Server is listening on port: ', PORT, '\n');
 });
 
 app.get('/', (req, res) =>

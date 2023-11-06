@@ -11,3 +11,12 @@ export const replaceContentMail = (content, data) => {
 	});
 	return newContent;
 };
+
+/**
+ * @param {File} file
+ */
+export default function getFileExtension(file) {
+	if (!file) return null;
+	const fileExtension = file.originalname.split('.').pop();
+	return fileExtension.trim().toLowerCase();
+}

@@ -7,6 +7,7 @@ import { formSchema, reportSchema } from '../validation/reportForm.validation';
 import MailTypes from '../constants/mailTypes';
 import { HttpException } from '../../utils/httpException';
 import { sendMail } from '../services/mail.service';
+import getFileExtension from '../../utils/toolkit';
 
 export const report = async (req, res) => {
 	let data, error, result, uploadedFile;
@@ -27,7 +28,9 @@ export const report = async (req, res) => {
 		const endTimeReport = moment(endInternShipTime).valueOf();
 		const checkTimeReport = endTimeReport > startTimeReport;
 		const [file] = req.files;
-
+		if (file.size > 1000000) throw createHttpError.PayloadTooLarge('Kích thước file quá lớn');
+		if (getFileExtension(file) !== 'pdf')
+			throw createHttpError.UnsupportedMediaType('File tải lên phải có định dạng PDF');
 		if (!checkTimeReport) throw createHttpError(400, 'Thời gian kết thúc thực tập phải lớn hơn thời gian bắt đầu!');
 
 		switch (student.statusCheck) {
@@ -107,7 +110,11 @@ export const submitRecordForm = async (req, res) => {
 		const { nameCompany, internshipTime, mssv, email, _id } = req.body;
 		const filter = { mssv, email, _id };
 		const [file] = req.files;
+		if (file.size > 1000000) throw createHttpError.PayloadTooLarge('Kích thước file quá lớn');
+		if (getFileExtension(file) !== 'pdf')
+			throw createHttpError.UnsupportedMediaType('File tải lên phải có định dạng PDF');
 		const student = await studentModel.findOne(filter);
+
 		if (!student) throw createHttpError(404, 'Đã xảy ra lỗi! Vui lòng đăng ký lại!');
 
 		switch (student.statusCheck) {

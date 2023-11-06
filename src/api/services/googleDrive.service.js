@@ -64,8 +64,8 @@ export const deleteFile = async (fileId) => {
 export const uploadFile = async (file) => {
 	try {
 		if (!file) throw new Error('File must be provided!');
-		if (!AllowedMimeType.includes(file.mimetype)) throw createHttpError(400, 'File type is not allowed to upload!');
-
+		if (!AllowedMimeType.includes(file.mimetype))
+			throw createHttpError.UnsupportedMediaType('File type is not allowed to upload!');
 		const uploadedFile = await processFile(file);
 		const newFile = {
 			url: process.env.DRIVE_URL + uploadedFile.data.id,
