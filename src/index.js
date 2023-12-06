@@ -24,8 +24,9 @@ app.use('/api', rootRouter);
 
 // Run server
 const PORT = process.env.PORT || 9998;
-app.listen(PORT, () => {
-	console.log('\x1b[1;42m Success \x1b[0m', 'Server is listening on port: ', PORT, '\n');
+app.listen(PORT, async () => {
+	console.log('\x1b[30;1;42m Info \x1b[0m', 'Local:', `\x1b[96m http://localhost:${PORT} \x1b[0m `);
+	await connectMongo();
 });
 
 app.get('/', (req, res) =>
@@ -34,8 +35,5 @@ app.get('/', (req, res) =>
 		status: 200
 	})
 );
-
-// Connect database
-connectMongo();
 
 export default app;

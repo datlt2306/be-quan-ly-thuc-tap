@@ -30,8 +30,8 @@ export const isAuthenticateUser = async (req, res, next) => {
 		} else if (manager) {
 			req.role = manager.role;
 			// xác nhận cơ sở của mannager
-
-			req.campusManager = manager.campus_id;
+			req.user = manager;
+			req.campusManager = manager.campus_id?._id;
 			next();
 		} else if (student) {
 			// xác nhận cơ sở của student

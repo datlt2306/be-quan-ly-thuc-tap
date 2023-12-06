@@ -70,7 +70,7 @@ export const deleteRequest = async (id) => {
  * @param {type} StudentReviewTypeEnum 'cv', 'report', or 'record'
  *
  */
-export const processRequest = async (body, params) => {
+export const processRequest = async (body, params, requestHandler) => {
 	try {
 		const { action, type } = body;
 		const { id } = params;
@@ -78,7 +78,7 @@ export const processRequest = async (body, params) => {
 		if (!isValidObjectId(id)) throw createHttpError(400, 'ID sai định dạng');
 		if (action === undefined || !type) throw createHttpError(400, 'Thông tin sai hoặc thiếu');
 
-		const result = await handleAction(action, id, type);
+		const result = await handleAction(action, id, type, requestHandler);
 
 		return result;
 	} catch (error) {
@@ -87,7 +87,7 @@ export const processRequest = async (body, params) => {
 };
 
 // Action Handler
-const handleAction = async (action, id, type) => {
+const handleAction = async (action, id, type, requestHandler) => {
 	try {
 		const studentRequest = await StudentRequestModel.findOne({ _id: id, type });
 		if (!studentRequest) throw createHttpError(404, 'Không tìm thấy yêu cầu sinh viên');
@@ -97,11 +97,11 @@ const handleAction = async (action, id, type) => {
 
 		let result;
 		if (action === 0) {
-			result = await handleDenied(id, type, student); // denied
+			result = await handleDenied(id, type, student, requestHandler); // denied
 		} else if (action === 1) {
-			result = await handleApproved(id, type, student); // approved
+			result = await handleApproved(id, type, student, requestHandler); // approved
 		} else if (action === 2) {
-			result = await handleReset(id, type, student); // hard reset
+			result = await handleReset(id, type, student, requestHandler); // hard reset
 		} else throw createHttpError(400, 'action không hợp lệ');
 
 		// Delete request after action executed
@@ -114,9 +114,9 @@ const handleAction = async (action, id, type) => {
 };
 
 // Handle rejected student request
-const handleDenied = async (id, type, student) => {
+const handleDenied = async (id, type, student, sender) => {
 	try {
-		await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.DENIED_REQUEST, type) });
+		await sendMail({ sender, recipients: student.email, ...getMailTemplate(MailTypes.DENIED_REQUEST, type) });
 		return { status: 200, data: 'Huỷ yêu cầu thành công' };
 	} catch (error) {
 		throw error;
@@ -124,7 +124,7 @@ const handleDenied = async (id, type, student) => {
 };
 
 // Handle approved student request
-const handleApproved = async (id, type, student) => {
+const handleApproved = async (id, type, student, sender) => {
 	let fileID, studentStatus;
 
 	try {
@@ -151,6 +151,7 @@ const handleApproved = async (id, type, student) => {
 
 		await StudentModel.findByIdAndUpdate(student._id, { statusCheck: studentStatus }, { new: true });
 		await sendMail({
+			sender,
 			recipients: student.email,
 			...getMailTemplate(MailTypes.ACCEPTED_REQUEST, type, StudentStatusEnum[student.statusCheck])
 		});
@@ -162,7 +163,7 @@ const handleApproved = async (id, type, student) => {
 };
 
 // Reset student's information
-const handleReset = async (id, type, student) => {
+const handleReset = async (id, type, student, sender) => {
 	let resetValue, fileID;
 
 	try {
@@ -187,6 +188,7 @@ const handleReset = async (id, type, student) => {
 
 		await studentModel.findByIdAndUpdate(student._id, resetValue, { new: true });
 		await sendMail({
+			sender,
 			recipients: student.email,
 			...getMailTemplate(MailTypes.ACCEPTED_REQUEST, type, StudentStatusEnum[student.statusCheck])
 		});

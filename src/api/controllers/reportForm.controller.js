@@ -58,7 +58,11 @@ export const report = async (req, res) => {
 					new: true
 				});
 
-				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.REPORT_REGISTRATION) });
+				await sendMail({
+					recipients: student.email,
+					campusId: student.campus_id,
+					...getMailTemplate(MailTypes.REPORT_REGISTRATION)
+				});
 				return res.status(200).json({ message: 'Nộp báo cáo thành công', result });
 
 			// Đã nộp báo cáo
@@ -93,7 +97,11 @@ export const report = async (req, res) => {
 						new: true
 					}
 				);
-				await sendMail({ recipients: email, ...getMailTemplate(MailTypes.UPDATED_REPORT) });
+				await sendMail({
+					recipients: email,
+					campusId: student.campus_id,
+					...getMailTemplate(MailTypes.UPDATED_REPORT)
+				});
 				return res.status(200).json({ message: 'Sửa báo cáo thành công', result });
 			default:
 				throw createHttpError(400, 'Bạn không đủ điều kiện nộp báo cáo');
@@ -138,7 +146,11 @@ export const submitRecordForm = async (req, res) => {
 					new: true
 				});
 
-				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.RECORD_REGISTRATION) });
+				await sendMail({
+					recipients: student.email,
+					campusId: student.campus_id,
+					...getMailTemplate(MailTypes.RECORD_REGISTRATION)
+				});
 
 				return res.status(200).json({ message: 'Nộp biên bản thành công', result });
 			// Không đủ điều kiện
@@ -149,7 +161,7 @@ export const submitRecordForm = async (req, res) => {
 				throw createHttpError(400, 'Bạn đã nộp biên bản!');
 			// Sửa biên bản
 			case 5:
-				if (student.numberOfTime > 3) throw createHttpError(400, 'Tài khoạn của bạn đã vượt quá số lần đăng ký');
+				if (student.numberOfTime > 3) throw createHttpError(400, 'Tài khoản của bạn đã vượt quá số lần đăng ký');
 				uploadedFile = await uploadFile(file);
 				data = {
 					nameCompany,
@@ -166,7 +178,11 @@ export const submitRecordForm = async (req, res) => {
 						new: true
 					}
 				);
-				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.UPDATED_RECORD) });
+				await sendMail({
+					recipients: student.email,
+					campusId: student.campus_id,
+					...getMailTemplate(MailTypes.UPDATED_RECORD)
+				});
 
 				return res.status(200).json({ message: 'Sửa biên bản thành công', result });
 
@@ -192,7 +208,11 @@ export const submitRecordForm = async (req, res) => {
 					new: true
 				});
 
-				await sendMail({ recipients: student.email, ...getMailTemplate(MailTypes.RECORD_REGISTRATION) });
+				await sendMail({
+					recipients: student.email,
+					campusId: student.campus_id,
+					...getMailTemplate(MailTypes.RECORD_REGISTRATION)
+				});
 				return res.status(200).json({ message: 'Nộp biên bản thành công', result });
 
 			default:

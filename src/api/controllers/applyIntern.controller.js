@@ -117,7 +117,7 @@ export const signUpCVForSupport = async (req, res) => {
 		}
 
 		// Send email
-		await sendMail({ recipients: student.email, ...getMailTemplate(emailType) });
+		await sendMail({ recipients: student.email, campusId: student.campus_id, ...getMailTemplate(emailType) });
 
 		return res.status(200).send({ message, support: update.support });
 	} catch (error) {

@@ -214,42 +214,49 @@ export const updateStatusStudent = async (req, res) => {
 		switch (+status) {
 			case 1: // Yêu cầu sửa CV
 				await sendMail({
+					sender: req.user,
 					recipients: listEmailStudent,
 					...getMailTemplate(MailTypes.CV_CHANGE_REQUEST, textNote, link)
 				});
 				break;
 			case 2: // Tiếp nhận CV
 				await sendMail({
+					sender: req.user,
 					recipients: listEmailStudent,
 					...getMailTemplate(MailTypes.RECEIVED_CV, link)
 				});
 				break;
 			case 3: // Thông báo sinh viên trượt thực tập
 				await sendMail({
+					sender: req.user,
 					recipients: listEmailStudent,
 					...getMailTemplate(MailTypes.INTERN_FAILURE, textNote)
 				});
 				break;
 			case 5: // Yêu cầu sửa biên bản
 				await sendMail({
+					sender: req.user,
 					recipients: listEmailStudent,
-					...getMailTemplate(MailTypes.RECORD_CHANGE_REQUEST, textNote)
+					...getMailTemplate(MailTypes.RECORD_CHANGE_REQUEST, textNote, link)
 				});
 				break;
 			case 6: // Tiếp nhận biên bản
 				await sendMail({
+					sender: req.user,
 					recipients: listEmailStudent,
 					...getMailTemplate(MailTypes.RECEIVED_RECORD, link)
 				});
 				break;
 			case 8: // Yêu cầu sửa báo cáo
 				await sendMail({
+					sender: req.user,
 					recipients: listEmailStudent,
 					...getMailTemplate(MailTypes.REPORT_CHANGE_REQUEST, textNote, link)
 				});
 				break;
 			case 9: // Hoàn thành thực tập
 				await sendMail({
+					sender: req.user,
 					recipients: listEmailStudent,
 					...getMailTemplate(MailTypes.INTERN_COMPLETION, link)
 				});

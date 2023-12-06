@@ -137,7 +137,6 @@ export const emailTemplates = {
 	INTERN_FAILURE: {
 		subject: 'Thông báo sinh viên trượt thực tập doanh nghiệp',
 		content: (textNote) => /* html */ `
-    
         <p>
             Xin chào Sinh viên,
             <br>
@@ -251,8 +250,7 @@ export const getMailTemplate = (type, ...args) => {
 		${template.content(...args)}
 		<hr style="width: 100%; border-bottom: 1px; border-color: #e5e7eb" />
 		<span>
-			Lưu ý: đây là email tự động vui lòng không phản hồi lại email này, mọi thắc mắc xin liên hệ phòng QHDN qua số
-			điện thoại: <b>024.6264713</b>
+			Lưu ý: đây là email tự động vui lòng không phản hồi lại email này.
 		</span>
 	</div>`;
 

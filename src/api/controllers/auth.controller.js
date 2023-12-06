@@ -33,12 +33,14 @@ export const loginGoogle = async (req, res) => {
 
 		if (manager) {
 			const accessToken = generateAccessToken(manager);
+
 			res.status(200).json({
 				manager,
 				token,
 				name,
 				picture,
 				isAdmin: true,
+				hasRegisteredAppPassword: Boolean(manager.applicationPassword),
 				message: 'Đăng nhập thành công',
 				accessToken,
 				success: true

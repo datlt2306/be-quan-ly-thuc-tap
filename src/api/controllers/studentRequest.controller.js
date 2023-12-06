@@ -39,8 +39,7 @@ export async function getRequestOfStudent(req, res) {
 
 export async function processStudentRequest(req, res) {
 	try {
-		const result = await studentRequestService.processRequest(req.body, req.params);
-
+		const result = await studentRequestService.processRequest(req.body, req.params, req.user);
 		return res.status(result.status).json(result.data);
 	} catch (error) {
 		const httpException = new HttpException(error);
@@ -67,10 +66,8 @@ export async function resetStudent(req, res) {
 
 	try {
 		const existStudent = await StudentModel.findOneAndUpdate({ _id: req.params.id }, valueReset, { new: true });
-
-		const studentRequest = await StudentRequestModel.findByIdAndUpdate(id, { status: 2 }, { new: true });
-
 		await sendMail({
+			sender: req.user,
 			recipients: existStudent.email,
 			...getMailTemplate(emailType, type, StudentStatusEnum[existStudent.statusCheck])
 		});
@@ -98,6 +95,7 @@ export async function cancelResetStudent(req, res) {
 		const existStudent = await StudentModel.findById(studentRequest.userId);
 
 		await sendMail({
+			sender: req.user,
 			recipients: existStudent.email,
 			...getMailTemplate(emailType, studentRequest.type)
 		});

@@ -87,11 +87,6 @@ const studentSchema = new mongoose.Schema(
 			type: String,
 			default: null
 		},
-		updatedInStage: {
-			type: Number,
-			enum: [1, 2, 3],
-			default: 1
-		},
 		form: {
 			type: String,
 			default: null

@@ -1,15 +1,33 @@
 import nodemailer from 'nodemailer';
 import 'dotenv/config';
 
+// const transporter = nodemailer.createTransport({
+// 	service: 'gmail',
+// 	port: 465,
+// 	auth: {
+// 		user: process.env.USER_EMAIL,
+// 		pass: process.env.PASS_EMAIL
+// 	},
+// 	tls: {
+// 		rejectUnauthorized: false
+// 	}
+// });
+
 const transporter = nodemailer.createTransport({
-	service: 'gmail',
-	port: 465,
-	auth: {
-		user: process.env.USER_EMAIL,
-		pass: process.env.PASS_EMAIL
-	},
+	host: 'smtp-mail.outlook.com',
+	secureConnection: false,
+	port: 587,
+	dnsTimeout: 60 * 1000,
+	connectionTimeout: 60 * 1000,
 	tls: {
+		ciphers: 'SSLv3',
 		rejectUnauthorized: false
+	},
+	debug: true,
+	service: 'hotmail',
+	auth: {
+		user: 'datlt34@fe.edu.vn',
+		pass: 'NQ46Nsl8#6kUu798'
 	}
 });
 

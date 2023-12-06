@@ -20,3 +20,11 @@ export default function getFileExtension(file) {
 	const fileExtension = file.originalname.split('.').pop();
 	return fileExtension.trim().toLowerCase();
 }
+
+export function toCapitalize(value) {
+	if (!value || typeof value === 'undefined') throw new Error('"value" cannot be empty');
+	value = value.trim().replace(/\s+/g, ' ');
+	const subString = value.split(' ');
+	const result = subString.map((str) => str.at(0)?.toUpperCase() + str.slice(1).toLowerCase()).join(' ');
+	return result;
+}

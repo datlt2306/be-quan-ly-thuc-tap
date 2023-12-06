@@ -11,7 +11,8 @@ const updateSchema = Joi.object({
 	campus_id: Joi.string().optional(),
 	name: Joi.string().optional(),
 	email: Joi.string().email().optional(),
-	role: Joi.number().optional()
+	role: Joi.number().optional(),
+	applicationPassword: Joi.string().optional()
 });
 
 export const validateManagerDataCreate = (data) => createSchema.validate(data);
