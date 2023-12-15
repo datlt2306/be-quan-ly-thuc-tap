@@ -18,8 +18,6 @@ import * as StudentService from '../services/student.service';
 import { checkStudentExist } from '../services/student.service';
 import { validateDataImportStudent } from '../validation/student.validation';
 
-// [GET] /api/student?limit=20&page=1
-
 export const listStudent = async (req, res) => {
 	try {
 		const semester = req.query.semester;
@@ -310,7 +308,6 @@ export const importStudents = async (req, res) => {
 		workBookReader.on('worksheet', function (workSheetReader) {
 			if (workSheetReader.id > 1) {
 				// Chỉ muốn lấy sheet đầu tiên
-				console.log('Skip Worksheet:', workSheetReader.id);
 				workSheetReader.skip();
 				return;
 			}

@@ -1,11 +1,8 @@
 import createHttpError from 'http-errors';
 import { isValidObjectId } from 'mongoose';
-import { getMailTemplate } from '../../utils/emailTemplate';
 import { HttpException } from '../../utils/httpException';
-import MailTypes from '../constants/mailTypes';
 import Student from '../models/student.model';
 import { uploadFile } from '../services/googleDrive.service';
-import { sendMail } from '../services/mail.service';
 import { requestSupportValidate, selfFindValidate } from '../validation/internApplicant.validation';
 
 /*
@@ -106,18 +103,8 @@ export const signUpCVForSupport = async (req, res) => {
 
 		await Student.findByIdAndUpdate(_id, update, { new: true });
 
-		let message, emailType;
-
-		if (student.statusCheck === 1) {
-			message = 'Sửa thông tin thành công';
-			emailType = support == 1 ? MailTypes.INTERN_SUPPORT_UPDATE : MailTypes.INTERN_SELF_FINDING_UPDATE;
-		} else {
-			message = 'Đăng ký thành công';
-			emailType = support == 1 ? MailTypes.INTERN_SUPPORT_REGISTRATION : MailTypes.INTERN_SELF_FINDING_REGISTRATION;
-		}
-
-		// Send email
-		await sendMail({ recipients: student.email, campusId: student.campus_id, ...getMailTemplate(emailType) });
+		let message;
+		message = student.statusCheck === 1 ? 'Sửa thông tin thành công' : (message = 'Đăng ký thành công');
 
 		return res.status(200).send({ message, support: update.support });
 	} catch (error) {

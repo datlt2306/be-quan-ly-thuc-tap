@@ -1,13 +1,10 @@
-import moment from 'moment';
 import createHttpError from 'http-errors';
-import { getMailTemplate } from '../../utils/emailTemplate';
+import moment from 'moment';
+import { HttpException } from '../../utils/httpException';
+import getFileExtension from '../../utils/toolkit';
 import studentModel from '../models/student.model';
 import { uploadFile } from '../services/googleDrive.service';
 import { formSchema, reportSchema } from '../validation/reportForm.validation';
-import MailTypes from '../constants/mailTypes';
-import { HttpException } from '../../utils/httpException';
-import { sendMail } from '../services/mail.service';
-import getFileExtension from '../../utils/toolkit';
 
 export const report = async (req, res) => {
 	let data, error, result, uploadedFile;
@@ -58,11 +55,6 @@ export const report = async (req, res) => {
 					new: true
 				});
 
-				await sendMail({
-					recipients: student.email,
-					campusId: student.campus_id,
-					...getMailTemplate(MailTypes.REPORT_REGISTRATION)
-				});
 				return res.status(200).json({ message: 'Nộp báo cáo thành công', result });
 
 			// Đã nộp báo cáo
@@ -97,11 +89,7 @@ export const report = async (req, res) => {
 						new: true
 					}
 				);
-				await sendMail({
-					recipients: email,
-					campusId: student.campus_id,
-					...getMailTemplate(MailTypes.UPDATED_REPORT)
-				});
+
 				return res.status(200).json({ message: 'Sửa báo cáo thành công', result });
 			default:
 				throw createHttpError(400, 'Bạn không đủ điều kiện nộp báo cáo');
@@ -146,12 +134,6 @@ export const submitRecordForm = async (req, res) => {
 					new: true
 				});
 
-				await sendMail({
-					recipients: student.email,
-					campusId: student.campus_id,
-					...getMailTemplate(MailTypes.RECORD_REGISTRATION)
-				});
-
 				return res.status(200).json({ message: 'Nộp biên bản thành công', result });
 			// Không đủ điều kiện
 			case 3:
@@ -178,11 +160,6 @@ export const submitRecordForm = async (req, res) => {
 						new: true
 					}
 				);
-				await sendMail({
-					recipients: student.email,
-					campusId: student.campus_id,
-					...getMailTemplate(MailTypes.UPDATED_RECORD)
-				});
 
 				return res.status(200).json({ message: 'Sửa biên bản thành công', result });
 
@@ -208,11 +185,6 @@ export const submitRecordForm = async (req, res) => {
 					new: true
 				});
 
-				await sendMail({
-					recipients: student.email,
-					campusId: student.campus_id,
-					...getMailTemplate(MailTypes.RECORD_REGISTRATION)
-				});
 				return res.status(200).json({ message: 'Nộp biên bản thành công', result });
 
 			default:

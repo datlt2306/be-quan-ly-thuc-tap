@@ -36,7 +36,6 @@ export const getDefaultSemester = async (campus_id) => {
 			$and: [{ start_time: { $lte: new Date() } }, { end_time: { $gte: new Date() } }],
 			campus_id
 		});
-		console.log(result);
 		return result;
 	} catch (error) {
 		throw error;
