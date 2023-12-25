@@ -1,1332 +1,539 @@
-swagger: "2.0"
+swagger: '2.0'
 info:
-  description: "Đầy là tài liệu mô tả api hệ thống CMS Quản lý thông tin đăng ký thực tập của Phòng quan hệ doanh nghiệp Fpoly."
-  version: "1.0.0"
-  title: "Swagger Quản lý thông tin thực tập sinh viên Fpoly"
-  contact:
-    email: "example@gmail.com"
-  license:
-    name: "Nginx"
-host: "localhost:8000"
-basePath: "/api"
+   description: 'Đầy là tài liệu mô tả api hệ thống CMS Quản lý thông tin đăng ký thực tập của Phòng quan hệ doanh nghiệp Fpoly.'
+   version: '1.0.0'
+   title: 'Swagger Quản lý thông tin thực tập sinh viên Fpoly'
+   contact:
+      email: 'example@gmail.com'
+   license:
+      name: 'Nginx'
+host: 'localhost:8000'
+basePath: '/api'
 tags:
-- name: "Authentication"
-  description: "Đăng nhập/Đăng xuất"
-- name: "Students"
-  description: "Thông tin sinh viên"
-- name: "Majors"
-  description: "Chuyền ngành"
-- name: "Narrows Pecializations"
-  description: "Chuyên ngành hẹp"
-- name: "Semesters"
-  description: "Kỳ học"
-- name: "Managers"
-  description: "Quản lý (Nhân viên)"
-- name: "Campus"
-  description: "Cơ sở"
-- name: "Configtimes"
-  description: "Đặt thời gin mở form chọn doanh nghiệp, nộp CV, nộp biên bản, nộp báo cáo"
-- name: "Businesses"
-  description: "Doanh nghiệp đăng ký tuyển sinh thực tập"
+   - name: 'Authentication'
+     description: 'Đăng nhập/Đăng xuất'
+   - name: 'Semesters'
+     description: 'Kỳ học'
+   - name: 'Campus'
+     description: 'Cơ sở'
 
 schemes:
-- http
-- https
+   - http
+   - https
 securityDefinitions:
-  Bearer:
-    type: apiKey
-    name: Authorization
-    in: header
+   Bearer:
+      type: apiKey
+      name: Authorization
+      in: header
 paths:
-  /login-google:
-    post:
-      tags:
-      - "Authentication"
-      summary: "Đăng nhập xác thực người dùng"
-      description: ""
-      operationId: "loginUser"
-      produces:
-      - "application/json"
-      parameters:
-        - name: "body"
-          in: "body"
-          description: "Xác thực người dùng khi đăng nhâp vào hệ thống"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              token:
-                type: "string"
-                default: "eyJhbGciOiJSUzI1NiIsImtpZCI6IjA3NGI5MjhlZGY2NWE2ZjQ3MGM3MWIwYTI0N2JkMGY3YTRjOWNjYmMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiMTE2MjA1MDgxMzg1LXVtcW03czVxbHNwZjRzMHRjNGprZTd0YWZwdmdqMms3LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiMTE2MjA1MDgxMzg1LXVtcW03czVxbHNwZjRzMHRjNGprZTd0YWZwdmdqMms3LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTAwMjkyMzU1OTY1NDkyNTA3NzQ2IiwiaGQiOiJmcHQuZWR1LnZuIiwiZW1haWwiOiJoYWluZHBoMTMxNThAZnB0LmVkdS52biIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiRk5kbzNiZGY5N0xCQ04tTlUzS09XQSIsIm5hbWUiOiJOZ3V5ZW4gRHVjIEhhaSAoRlBMIEsxNikiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FGZFp1Y3FoOXA1bDVGYTU0a1lRT2lWS1hBYld3SW11cHYzRU56LTBzYzh3eWc9czk2LWMiLCJnaXZlbl9uYW1lIjoiTmd1eWVuIER1YyBIYWkiLCJmYW1pbHlfbmFtZSI6IihGUEwgSzE2KSIsImxvY2FsZSI6InZpIiwiaWF0IjoxNjU4OTkyMTk1LCJleHAiOjE2NTg5OTU3OTUsImp0aSI6Ijg4YTY1MmEzOGM5OGZmZmVkNWY0YTc4YzljNmYyYTU1ZDhkODA5ZmQifQ.incmH62cM3dh6u9xM-XZniRURiAnSXk9Nmdc8jlNTdczjT1Q1Ncv-EVDSj56-yZ9euqcizVMqhPH5M7X6ZxqfFpYVohsfA1AEJPtn_3Me5tlCzfmgIMS0AU-M4-TfxjIBIljHFLuBCT49IW1YuQRyMQh7WTOEPrBjrznFIPLEoI17IBfrGFa7mYkB1OXJR76nbtc9Tw6cGC0T1K7d2ZE9yYE_koNMsljhzlGbllwcvTW6CpjPzwaoRW5EPoRnD1_jvne-3V9FzFQpoP07b5toO0dwtDEh4yQHsbuJtcRWzrUTKK1fusBLE2SxbkGwMG8eLAN91EhjUnjhalURigK4g"
-              cumpusId:
-                type: "string"
-                default: "6247da5ee56ba5e634559901"
-              smester_id:
-                type: "string"
-                default: "62cf870f4858743781d08b27"
-      responses:
-        "200":
-          description: 'successful operation'
-          schema:
-            type: "string"
-          # headers:
-          #   Access-Control-Allow-Headers: Content-Type, api_key, Authorization
-        "400":
-          description: "Invalid user"
-  /student:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Students"
-      summary: "Danh sách sinh viên"
-      description: ""
-      operationId: "getStudents"
-      parameters:
-        - in: "query"
-          name: "limit"
-          default: 10
-        - in: "query"
-          name: "page"
-          default: 1
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid status value"
-    post:
-      security:
-        - Bearer: []
-      tags:
-      - "Students"
-      summary: "Thêm mới sinh viên"
-      description: ""
-      operationId: "addNewStudent"
-      parameters:
-        - name: "data"
-          in: "body"
-          description: "Tham số key/value thêm mới sinh viên"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              campus_id:
-                type: "string"
-                default: "6247da5ee56ba5e634559901"
-                description: "mã cơ sở, VD: cơ sở hà nội"
-              smester_id:
-                type: "string"
-                default: "62cf870f4858743781d08b27"
-                description: "Kỳ học"
-              marjors:
-                type: "string"
-                default: "62cf83eb4858743781d08ad3"
-                description: "Chuyên ngành : Thiết kế website"
-              data:
-                type: "array"
-                items:
-                  properties:
-                    campus_id:
-                      type: "string"
-                      default: "6247da5ee56ba5e634559901"
-                    course:
-                      type: "string"
-                      default: "15.3"
-                    email:
-                      type: "string"
-                      default: "example@fpt.edu.vn"
-                    mssv:
-                      type: "string"
-                      default: "ph1111"
-                    name:
-                      type: "string"
-                      default: "Nguyễn Văn A"
+   /login-google:
+      post:
+         tags:
+            - 'Authentication'
+         summary: 'Đăng nhập xác thực người dùng'
+         description: ''
+         operationId: 'loginUser'
+         produces:
+            - 'application/json'
+         parameters:
+            - name: 'body'
+              in: 'body'
+              description: 'Xác thực người dùng khi đăng nhâp vào hệ thống'
+              required: true
+              schema:
+                 type: 'object'
+                 properties:
+                    token:
+                       type: 'string'
+                       default: 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjA3NGI5MjhlZGY2NWE2ZjQ3MGM3MWIwYTI0N2JkMGY3YTRjOWNjYmMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiMTE2MjA1MDgxMzg1LXVtcW03czVxbHNwZjRzMHRjNGprZTd0YWZwdmdqMms3LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiMTE2MjA1MDgxMzg1LXVtcW03czVxbHNwZjRzMHRjNGprZTd0YWZwdmdqMms3LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTAwMjkyMzU1OTY1NDkyNTA3NzQ2IiwiaGQiOiJmcHQuZWR1LnZuIiwiZW1haWwiOiJoYWluZHBoMTMxNThAZnB0LmVkdS52biIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiRk5kbzNiZGY5N0xCQ04tTlUzS09XQSIsIm5hbWUiOiJOZ3V5ZW4gRHVjIEhhaSAoRlBMIEsxNikiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FGZFp1Y3FoOXA1bDVGYTU0a1lRT2lWS1hBYld3SW11cHYzRU56LTBzYzh3eWc9czk2LWMiLCJnaXZlbl9uYW1lIjoiTmd1eWVuIER1YyBIYWkiLCJmYW1pbHlfbmFtZSI6IihGUEwgSzE2KSIsImxvY2FsZSI6InZpIiwiaWF0IjoxNjU4OTkyMTk1LCJleHAiOjE2NTg5OTU3OTUsImp0aSI6Ijg4YTY1MmEzOGM5OGZmZmVkNWY0YTc4YzljNmYyYTU1ZDhkODA5ZmQifQ.incmH62cM3dh6u9xM-XZniRURiAnSXk9Nmdc8jlNTdczjT1Q1Ncv-EVDSj56-yZ9euqcizVMqhPH5M7X6ZxqfFpYVohsfA1AEJPtn_3Me5tlCzfmgIMS0AU-M4-TfxjIBIljHFLuBCT49IW1YuQRyMQh7WTOEPrBjrznFIPLEoI17IBfrGFa7mYkB1OXJR76nbtc9Tw6cGC0T1K7d2ZE9yYE_koNMsljhzlGbllwcvTW6CpjPzwaoRW5EPoRnD1_jvne-3V9FzFQpoP07b5toO0dwtDEh4yQHsbuJtcRWzrUTKK1fusBLE2SxbkGwMG8eLAN91EhjUnjhalURigK4g'
+                    cumpusId:
+                       type: 'string'
+                       default: '6247da5ee56ba5e634559901'
                     smester_id:
-                      type: "string"
-                      default: "62cf870f4858743781d08b27"
-                      description: "Kỳ học"
-                    status: 
-                      type: "string"
-                      default: "TN21"
-                    supplement:
-                      type: "string"
-                      default: undefined
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid status value"
-  /student/{id}:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Students"
-      summary: "Tìm kiếm sinh viên theo ID"
-      description: ""
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          default: "62d50a097991423d06afac54"
-          in: "path"
-          description: "ID của user"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid status value"
-        "404":
-          description:  "User not found"
-  /student/manager/{id}:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Students"
-      summary: "Tìm kiếm sinh viên theo ID"
-      description: ""
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          default: "62d50a097991423d06afac54"
-          in: "path"
-          description: "ID của user"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid status value"
-        "404":
-          description:  "User not found"
-  /student/reset/{id}:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Students"
-      summary: "Reset thông tin sinh viên theo ID"
-      description: ""
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          default: "62d50a097991423d06afac54"
-          in: "path"
-          description: "ID của user"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid status value"
-        "404":
-          description:  "User not found"
-  /major:
-    get:
-      security:
-        - Bearer: []
-      tags:
-       - "Majors"
-      summary: "Danh sách chuyên ngành"
-      description: ""
-      produces:
-        - "application/json"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description:  "Invalid status value"
-    post:
-      security:
-        - Bearer: []
-      tags:
-      - "Majors"
-      summary: "Tạo mới major"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "body"
-          in: body
-          description: "Tham số key/value"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              name:
-                type: "string"
-                default: "2024"
-              majorCode:
-                type: "string"
-                default: "SP25"
-      responses:
-        "200":
-          description: "successful operation"
-        "201":
-          description: "Already exist major"
-        "400":
-          description: "Invalid major"
-    
-  /major/{id}:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Majors"
-      summary: "Tìm chuyên ngành theo id"
-      description: ""
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "id của user"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description:  "Invalid status value"
-        "404":
-          description: "Major not found"
-    patch:
-      security:
-        - Bearer: []
-      tags:
-      - "Majors"   
-      summary: "Cập nhật thông tin major"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: 'id của major'
-          required: true
-          type: "string"
-        - name: "body"
-          in: "body"
-          description: "Tham số key/value"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              name:
-                type: "string"
-                default: "2024"
-              majorCode:
-                type: "string"
-                default: "SP24"
-      responses:
-        "200":
-          description: "successful operation"
-        "201":
-          description: "Already exist major"
-        "400":
-          description: "Invalid major"
-  /narrows:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Narrows Pecializations"
-      summary: "Danh sách chuyên ngành hẹp"
-      description: ""
-      produces:
-      - "application/json"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-            description: "Invalid major"
-    post:
-      security:
-        - Bearer: []
-      tags:
-      - "Narrows Pecializations"
-      summary: "Thêm mới chuyên ngành hẹp"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "body"
-          in: "body"
-          description: "Tham số key/value, id_major lấy ở phần get majors"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              id_majors:
-                type: "string"
-              name:
-                type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-        "201":
-          description: "Already exit narrow"
-        "400":
-          description: "Invalid narrow"
-  /narrows/{id}:
-    patch:
-      security:
-        - Bearer: []
-      tags:
-      - "Narrows Pecializations"
-      summary: "Cập nhật thông tin chuyên ngành hẹp"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id của chuyên ngành hẹp, lấy ở phần danh sách chuyên ngành hẹp"
-          required: true
-          type: "string"
-        - name: "body"
-          in: "body"
-          description: "Tham số key/value, id_major lấy ở phần get majors"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              id_majors:
-                type: "string"
-              name:
-                type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid narrow"
-  /smester:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Semesters"
-      summary: "Danh sách ckỳ học"
-      description: ""
-      produces:
-      - "application/json"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-            description: "Invalid major"
-  /add-mester:
-    post:
-      security:
-        - Bearer: []
-      tags:
-      - "Semesters"
-      summary: "Thêm mới kỳ học"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "body"
-          in: "body"
-          description: "Tham số key/value"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              name:
-                type: "string"
-              end_time:
-                type: "string"
-                format: "date-time"
-              start_time:
-                type: "string"
-                format: "date-time"
-      responses:
-        "200":
-          description: "successful operation"
-        "201":
-          description: "Already exit narrow"
-        "400":
-          description: "Invalid narrow"
-  /update-mester/{id}:
-    patch:
-      security:
-        - Bearer: []
-      tags:
-      - "Semesters"
-      summary: "Cập nhật thông tin kỳ học"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id của chuyên ngành hẹp, lấy ở phần danh sách chuyên ngành hẹp"
-          required: true
-          type: "string"
-        - name: "body"
-          in: "body"
-          description: "Tham số key/value, id lấy ở phần get semester"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              name:
-                type: "string"
-              end_time:
-                type: "string"
-                format: "date-time"
-              start_time:
-                type: "string"
-                format: "date-time"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid narrow"
-  /manager:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Managers"
-      summary: "Danh sách doanh nghiệp"
-      description: ""
-      produces:
-      - "application/json"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-            description: "Invalid manager"
-    post:
-      security:
-        - Bearer: []
-      tags:
-      - "Managers"
-      summary: "Thêm mới doanh nghiệp"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "body"
-          in: "body"
-          description: "Tham số key/value, 0-nhân viên, 1-quản lý, 2-dev"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              name:
-                type: "string"
-                default: "example swagger"
-              email:
-                type: "string"
-                default: "example@gmail.com"
-              campus_id:
-                type: "string"
-                default: "6247da5ee56ba5e634559901"
-              role:
-                type: "string"
-                default: "0"
-      responses:
-        "201":
-          description: "successful operation"
-        "202":
-          description: "Already exit narrow"
-        "400":
-          description: "Invalid manager"
-  /manager/{id}:
-    patch:
-      security:
-        - Bearer: []
-      tags:
-      - "Managers"
-      summary: "Cập nhật thông tin manager"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id của manager , lấy ở phần danh sách manager"
-          required: true
-          type: "string"
-        - name: "body"
-          in: "body"
-          description: "Tham số key/value, id lấy ở danh sách manager"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              name:
-                type: "string"
-                default: "example swagger"
-              email:
-                type: "string"
-                default: "example@gmail.com"
-              campus_id:
-                type: "string"
-                default: "6247da5ee56ba5e634559901"
-              role:
-                type: "string"
-                default: "0"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid manager"
-    delete:
-      security:
-        - Bearer: []
-      tags:
-      - "Managers"
-      summary: "Xoá manager"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id của manager , lấy ở phần danh sách manager"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid manager"
-  /cumpus:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Campus"
-      summary: "Danh sách cơ sở"
-      description: ""
-      produces:
-      - "application/json"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-            description: "Invalid manager"
-    post:
-      security:
-        - Bearer: []
-      tags:
-      - "Campus"
-      summary: "Thêm mới cơ sở"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "body"
-          in: "body"
-          description: "Tham số key/value"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              name:
-                type: "string"
-                default: "cở sỏ swagger"
-      responses:
-        "201":
-          description: "successful operation"
-        "202":
-          description: "Already exit narrow"
-        "400":
-          description: "Invalid manager"
-  /cumpus/{id}:
-    patch:
-      security:
-        - Bearer: []
-      tags:
-      - "Campus"
-      summary: "Cập nhật thông tin campus"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id của manager , lấy ở phần danh sách campus"
-          required: true
-          type: "string"
-        - name: "body"
-          in: "body"
-          description: "Tham số key/value, id lấy ở danh sách campus"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              name:
-                type: "string"
-                default: "example swagger sửa"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid manager"
-    delete:
-      security:
-        - Bearer: []
-      tags:
-      - "Campus"
-      summary: "Xoá manager"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id của manager , lấy ở phần danh sách manager"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid manager"
-  /settime:
-    post:
-      security:
-        - Bearer: []
-      tags:
-      - "Configtimes"
-      summary: "Thêm time form đăng ký"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "body"
-          in: "body"
-          description: "Tham số key/value,Đinh nghĩa typeNumber-typeName: 1-Form đăng ký nhờ nhà trường hỗ trợ, 0-Form đăng ký sinh viên tự tìm, 2-Form nộp biểu mẫu, 3-Form nộp báo cáo, 4-Form hiển thị thông tin doanh nghiệp"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              endTime:
-                type: "integer"
-                default: "1659884093240"
-              startTime:
-                type: "integer"
-                default: "1656946493240"
-              semester_id:
-                type: "string"
-                default: "62cf870f4858743781d08b27"
-              typeName:
-                type: "string"
-                default: "Form đăng ký nhờ nhà trường hỗ trợ"
-              typeNumber:
-                type: "integer"
-                default: "1"
-      responses:
-        "201":
-          description: "successful operation"
-        "202":
-          description: "Already exit narrow"
-        "400":
-          description: "Invalid manager"
-  /settime/find-one:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Configtimes"
-      summary: "Find thời gian theo typeNumber và semester_id"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - in: "query"
-          name: "typeNumber"
-          default: "0"
-        - in: "query"
-          name: "semester_id"
-          default: "62cf870f4858743781d08b27"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid status value"
-  /settime?semester_id={id}:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Configtimes"
-      summary: "Find thời gian theo typeNumber và semester_id"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "semester_id"
-          default: "62cf870f4858743781d08b27"
-          in: "path"
-          description: "ID của kỳ học"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid status value"
-  /business:
-    get:
-      security:
-        - Bearer: []
-      tags:
-      - "Businesses"
-      summary: "Danh sách doanh nghiệp"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - in: "query"
-          name: "limit"
-          default: 10
-        - in: "query"
-          name: "page"
-          default: 1
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-            description: "Invalid manager"
-    # post:
-    #   security:
-    #     - Bearer: []
-    #   tags:
-    #   - "Businesses"
-    #   summary: "Thêm mới doanh nghiệp"
-    #   description: ""
-    #   operationId: "addNewBusiness"
-    #   parameters:
-    #     - name: "data"
-    #       in: "body"
-    #       description: "Tham số key/value thêm mới doanh nghiệp"
-    #       required: true
-    #       schema:
-    #         type: "object"
-    #         properties:
-    #           campus_id:
-    #             type: "string"
-    #             default: "6247da5ee56ba5e634559901"
-    #             description: "mã cơ sở, VD: cơ sở hà nội"
-    #           smester_id:
-    #             type: "string"
-    #             default: "62cf870f4858743781d08b27"
-    #             description: "Kỳ học"
-    #           marjors:
-    #             type: "string"
-    #             default: "62cf83eb4858743781d08ad3"
-    #             description: "Chuyên ngành : Thiết kế website"
-    #           data:
-    #             type: "array"
-    #             items:
-    #               properties:
-    #                 campus_id:
-    #                   type: "string"
-    #                   default: "6247da5ee56ba5e634559901"
-    #                 course:
-    #                   type: "string"
-    #                   default: "15.3"
-    #                 email:
-    #                   type: "string"
-    #                   default: "example@fpt.edu.vn"
-    #                 mssv:
-    #                   type: "string"
-    #                   default: "ph1111"
-    #                 name:
-    #                   type: "string"
-    #                   default: "Nguyễn Văn A"
-    #                 smester_id:
-    #                   type: "string"
-    #                   default: "62cf870f4858743781d08b27"
-    #                   description: "Kỳ học"
-    #                 status: 
-    #                   type: "string"
-    #                   default: "TN21"
-    #                 supplement:
-    #                   type: "string"
-    #                   default: undefined
-    #   responses:
-    #     "200":
-    #       description: "successful operation"
-    #     "201":
-    #       description: "Already exist major"
-    #     "400":
-    #       description: "Invalid major"    
-  /business/new:
-    post:
-      security:
-        - Bearer: []
-      tags:
-      - "Businesses"
-      summary: "Thêm mới doanh nghiệp"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "data"
-          in: "body"
-          description: "Tham số key/value thêm mới sinh viên"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              campus_id:
-                type: "string"
-                default: "6247da5ee56ba5e634559901"
-                description: "mã cơ sở, VD: cơ sở hà nội"
-              smester_id:
-                type: "string"
-                default: "62cf870f4858743781d08b27"
-                description: "Kỳ học"
-              marjors:
-                type: "string"
-                default: "62cf83eb4858743781d08ad3"
-                description: "Chuyên ngành : Thiết kế website"
-              data:
-                type: "array"
-                items:
-                  properties:
+                       type: 'string'
+                       default: '62cf870f4858743781d08b27'
+         responses:
+            '200':
+               description: 'successful operation'
+               schema:
+                  type: 'string'
+               # headers:
+               #   Access-Control-Allow-Headers: Content-Type, api_key, Authorization
+            '400':
+               description: 'Invalid user'
+   /smester:
+      get:
+         security:
+            - Bearer: []
+         tags:
+            - 'Semesters'
+         summary: 'Danh sách ckỳ học'
+         description: ''
+         produces:
+            - 'application/json'
+         responses:
+            '200':
+               description: 'successful operation'
+            '400':
+               description: 'Invalid major'
+   /add-mester:
+      post:
+         security:
+            - Bearer: []
+         tags:
+            - 'Semesters'
+         summary: 'Thêm mới kỳ học'
+         description: ''
+         produces:
+            - 'application/json'
+         parameters:
+            - name: 'body'
+              in: 'body'
+              description: 'Tham số key/value'
+              required: true
+              schema:
+                 type: 'object'
+                 properties:
                     name:
-                      type: "string"
-                      default: "swagger"
-                      description: "Tên doanh nghiệp"
-                    intershipPosition:
-                      type: "string"
-                      description: "Vị trí thực tập tại doanh nghiệp"
-                    majors:
-                      type: "integer"
-                      description: "Mã chuyên ngành"
-                      default: "62cf83eb4858743781d08ad3"
-                    amount:
-                      type: "integer"
-                      description: "Số lượng sinh viên cần tuyển"
-                    smester_id:
-                      type: "integer"
-                      description: "Mã kỳ học"
-                      default: "62cf870f4858743781d08b27"
-                    campus_id:
-                      type: "integer"
-                      description: "Mã cơ sở, mã này được nối với bảng campus(cumpus)"
-                      default: "6247da5ee56ba5e634559901"
-                    code_request:
-                      type: "string"
-                      description: "Yêu cầu của vị trí thực tập"
-                    description:
-                      type: "string"
-                      description: "Mô tả"
-                    createAt:
-                      type: "string"
-                      format: "date"
-                      description: "Thời gian doanh nghiệp được thêm vào hệ thống"
-      responses:
-        "201":
-          description: "successful operation"
-        "202":
-          description: "Already exit narrow"
-        "400":
-          description: "Invalid manager"
-  /business/{id}:
-    patch:
-      security:
-        - Bearer: []
-      tags:
-      - "Businesses"
-      summary: "Cập nhật thông tin campus"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id của manager , lấy ở phần danh sách campus"
-          required: true
-          type: "string"
-        - name: "data"
-          in: "body"
-          description: "Tham số key/value thêm mới doanh nghiệp"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              campus_id:
-                type: "string"
-                default: "6247da5ee56ba5e634559901"
-                description: "mã cơ sở, VD: cơ sở hà nội"
-              smester_id:
-                type: "string"
-                default: "62cf870f4858743781d08b27"
-                description: "Kỳ học"
-              marjors:
-                type: "string"
-                default: "62cf83eb4858743781d08ad3"
-                description: "Chuyên ngành : Thiết kế website"
-              data:
-                type: "array"
-                items:
-                  properties:
-                    campus_id:
-                      type: "string"
-                      default: "6247da5ee56ba5e634559901"
-                    course:
-                      type: "string"
-                      default: "15.3"
-                    email:
-                      type: "string"
-                      default: "example@fpt.edu.vn"
-                    mssv:
-                      type: "string"
-                      default: "ph1111"
+                       type: 'string'
+                    end_time:
+                       type: 'string'
+                       format: 'date-time'
+                    start_time:
+                       type: 'string'
+                       format: 'date-time'
+         responses:
+            '200':
+               description: 'successful operation'
+            '201':
+               description: 'Already exit narrow'
+            '400':
+               description: 'Invalid narrow'
+   /update-mester/{id}:
+      patch:
+         security:
+            - Bearer: []
+         tags:
+            - 'Semesters'
+         summary: 'Cập nhật thông tin kỳ học'
+         description: ''
+         produces:
+            - 'application/json'
+         parameters:
+            - name: 'id'
+              in: 'path'
+              description: 'Id của chuyên ngành hẹp, lấy ở phần danh sách chuyên ngành hẹp'
+              required: true
+              type: 'string'
+            - name: 'body'
+              in: 'body'
+              description: 'Tham số key/value, id lấy ở phần get semester'
+              required: true
+              schema:
+                 type: 'object'
+                 properties:
                     name:
-                      type: "string"
-                      default: "Nguyễn Văn A"
-                    smester_id:
-                      type: "string"
-                      default: "62cf870f4858743781d08b27"
-                      description: "Kỳ học"
-                    status: 
-                      type: "string"
-                      default: "TN21"
-                    supplement:
-                      type: "string"
-                      default: undefined
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid manager"
-    delete:
-      security:
-        - Bearer: []
-      tags:
-      - "Businesses"
-      summary: "Xoá manager"
-      description: ""
-      produces:
-      - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id của manager , lấy ở phần danh sách manager"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-        "400":
-          description: "Invalid manager"
+                       type: 'string'
+                    end_time:
+                       type: 'string'
+                       format: 'date-time'
+                    start_time:
+                       type: 'string'
+                       format: 'date-time'
+         responses:
+            '200':
+               description: 'successful operation'
+            '400':
+               description: 'Invalid narrow'
+   /cumpus:
+      get:
+         security:
+            - Bearer: []
+         tags:
+            - 'Campus'
+         summary: 'Danh sách cơ sở'
+         description: ''
+         produces:
+            - 'application/json'
+         responses:
+            '200':
+               description: 'successful operation'
+            '400':
+               description: 'Invalid manager'
+      post:
+         security:
+            - Bearer: []
+         tags:
+            - 'Campus'
+         summary: 'Thêm mới cơ sở'
+         description: ''
+         produces:
+            - 'application/json'
+         parameters:
+            - name: 'body'
+              in: 'body'
+              description: 'Tham số key/value'
+              required: true
+              schema:
+                 type: 'object'
+                 properties:
+                    name:
+                       type: 'string'
+                       default: 'cở sỏ swagger'
+         responses:
+            '201':
+               description: 'successful operation'
+            '202':
+               description: 'Already exit narrow'
+            '400':
+               description: 'Invalid manager'
+   /cumpus/{id}:
+      patch:
+         security:
+            - Bearer: []
+         tags:
+            - 'Campus'
+         summary: 'Cập nhật thông tin campus'
+         description: ''
+         produces:
+            - 'application/json'
+         parameters:
+            - name: 'id'
+              in: 'path'
+              description: 'Id của manager , lấy ở phần danh sách campus'
+              required: true
+              type: 'string'
+            - name: 'body'
+              in: 'body'
+              description: 'Tham số key/value, id lấy ở danh sách campus'
+              required: true
+              schema:
+                 type: 'object'
+                 properties:
+                    name:
+                       type: 'string'
+                       default: 'example swagger sửa'
+         responses:
+            '200':
+               description: 'successful operation'
+            '400':
+               description: 'Invalid manager'
+      delete:
+         security:
+            - Bearer: []
+         tags:
+            - 'Campus'
+         summary: 'Xoá manager'
+         description: ''
+         produces:
+            - 'application/json'
+         parameters:
+            - name: 'id'
+              in: 'path'
+              description: 'Id của manager , lấy ở phần danh sách manager'
+              required: true
+              type: 'string'
+         responses:
+            '200':
+               description: 'successful operation'
+            '400':
+               description: 'Invalid manager'
 definitions:
-  students:
-    type: "object"
-    properties:
-      _id:
-        type: "integer"
-        description: "Mã tự tắng"
-      mssv:
-        type: "string"
-        description: "Mã số sinh viên"
-      name:
-        type: "string"
-        description: "Họ và tên sinh viên"
-      course: 
-        type: "string"
-        description: "Khoá sinh viên nhập học"
-      majors:
-        type: "integer"
-        description: "Mã chuyên ngành, mã này nối với bảng majors"
-      narrow:
-        type: "integer"
-        description: "Mã ngành hẹp, mã này nối với bảng narrowspecializations"
-      email:
-        type: "string"
-        description: "Email của sinh viên định dạng @fpt.edu.vn"
-      checkUpdate:
-        type: "integer"
-        default: true
-        description: "Chưa rõ mô tả"
-      checkMulti:
-        type: "integer"
-        default: false
-        description: "Chưa rõ mô tả"
-      supplement:
-        type: "string"
-        default: null 
-        description: "Chưa rõ mô tả"
-      statusCheck:
-        type: "integer"
-        default: 10
-        description: "Trạng thái của sinh viên 0-Chờ kiểm trả, 1-Sửa lại CV, 2-Nhận CV, 3-Trượt, 4-Đã nộp biên bản, 5-Sửa biên bản, 6-Đang thực tập, 7-Đã nộp báo cáo, 8-Sửa báo cáo, 9-Hoàn thành, 10-Chưa đăng ký"
-      statusStudent:
-        type: "string"
-        description: "Chưa rõ mô tả"
-      support:
-        type: "integer"
-        description: "Chưa rõ mô tả"
-      phoneNumber:
-        type: "integer"
-        default: null
-        description: "Số điện thoại của sinh viên"
-      address:
-        type: "string"
-        default: null
-        description: "Địa chỉ của sinh viên"
-      CV:
-        type: "string"
-        default: null
-        description: "Đường link cv từ google drive"
-      campus_id:
-        type: "integer"
-        description: "Mã cơ sở đang học của sinh viên, mã này nối với bảng campus(cumpus)"
-      business:
-        type: "integer"
-        default: null
-        description: "Mã của doanh nghiệp được gắn khi sinh viên chọn doanh nghiệp thực tập"
-      smester_id:
-        type: "integer"
-        description: "Mã kỳ học hiện tại của sinh viên, mã này nối với bảng semester"
-      reviewer:
-        type: "integer"
-        default: null
-        description: "Email của nhân viên review sinh viên, được gắn khi chọn chức năng asign"
-      form:
-        type: "string"
-        default: null
-        description: "Đường link biên bản từ google drive"
-      report:
-        type: "string"
-        default: null
-        description: "Đường link báo cáo từ google drive"
-      note:
-        type: "string"
-        default: null
-        description: "Ghi chú của phòng quan hệ doanh nghiệp khi gửi về sinh viên khi sửa thông tin"
-      numberOfTime:
-        type: "integer"
-        default: 0
-        description: "+1 mỗi lần hõ trợ sinh viên"
-      nameCompany:
-        type: "string"
-        default: null
-        description: "Tên Doanh nghiệp"
-      addressCompany:
-        type: "string"
-        default: null
-        description: "Địa chỉ của Doanh nghiệp"
-      taxCode:
-        type: "integer"
-        default: null
-        description: "Mã số thuế của doanh nghiệp"
-      position:
-        type: "string"
-        default: null
-        description: "Chứ vụ người giám sát thực tập"
-      phoneNumberCompany:
-        type: "integer"
-        default: null
-        description: "Số điện thoại liên hệ doanh nghiệp thực tập"
-      emailEnterprise:
-        type: "string"
-        default: null
-        description: "Email của doanh nghiệp"
-      intershipTime:
-        type: "string"
-        format: "date"
-        default: null
-        description: "Thời gian bắt đầu thực tập"
-      enInterShipTime:
-        type: "string"
-        format: ""
-        default: null
-        description: "Thời gian kết thúc thực tập"
-      attitudePoint:
-        type: "number"
-        format: "double"
-        default: null
-        description: "Điểm thái độ thực tập"
-      resultScore:
-        type: "number"
-        format: "double"
-        default: null
-        description: "Điểm kết quả thực tập"
-      listTimeForm:
-        type: "array"
-        description: "Chưa list thời gian theo form"
-      create_at:
-        type: "string"
-        format: "date"
-        description: "Thời gian thông tin được tạo trên hệ thống"
-  majors:
-    type: "object"
-    properties:
-      _id:
-        type: "integer"
-        description: "Mã tự tắng"
-      name:
-        type: "string"
-        description: "Tên chuyên ngành"
-      campus_id:
-        type: "integer"
-        description: "Mã cơ sở đang học của sinh viên, mã này nối với bảng campus(cumpus)"
-      create_at:
-        type: "string"
-        format: "date"
-        description: "Thời gian chuyên ngành được tạo trên hệ thống"
-  narrowspecializations:
-    type: "object"
-    properties:
-      _id:
-        type: "integer"
-        description: "Mã tự tắng"
-      name:
-        type: "string"
-        description: "Tên chuyên ngành hẹp"
-      id_majors:
-        type: "integer"
-        description: "Mã chuyên ngành, mã này được nối với bảng majors"
-      createAt:
-        type: "string"
-        format: "date"
-        description: "Ngày chuyên ngành hẹp được thêm vào hệ thống"
-  semesters:
-    type: "object"
-    properties:
-      _id:
-        type: "integer"
-        description: "Mã tự tăng"
-      name: 
-        type: "string"
-        description: "Tên kỳ học"
-      start_time:
-        type: "string"
-        format: "date"
-        description: "Thời gian bắt đầu của kỳ học"
-      end_time:
-        type: "string"
-        format: "date"
-        description: "Thời gian kết thúc kỳ học"
-      createAt:
-        type: "string"
-        format: "date"
-        description: "Thời gian kỳ học được thêm vào hệ thống"
-  managers:
-    type: "object"
-    properties:
-      _id:
-        type: "integer"
-        description: "Mã tự tăng"
-      name: 
-        type: "string"
-        description: "Tên của quản lý"
-      campus_id:
-        type: "integer"
-        description: "Mã cơ sở, mã này được nối với bảng campus(cumpus)"
-      role:
-        type: "integer"
-        description: "Vai trò của quản lý"
-      createAt:
-        type: "string"
-        format: "date"
-        description: "Thời gian manager được thêm vào hệ thống"
-  campus:
-    type: "object"
-    properties:
-      _id:
-        type: "integer"
-        description: "Mã tự tăng"
-      name:
-        type: "string"
-        description: "Tên của cơ sở"
-      createAt:
-        type: "string"
-        format: "date"
-        description: "Thời gian cơ sở được thêm vào hệ thống"
-  configtimes:
-    type: "object"
-    properties:
-      _id:
-        type: "integer"
-        description: "Mã tự tắng"
-      typeNumber:
-        type: "integer"
-        description: "Số biểu diễn kiểu của thời gian: 1-Form đăng ký nhờ nhà trường hỗ trợ, 0-Form đăng ký sinh viên tự tìm, 3-Form báo cáo, 4-Form hiện thị thông tin doanh nghiệp, 2-Form nộp biên bản"
-      typeName:
-        type: "string"
-        description: "Số biểu diễn kiểu của thời gian: 1-Form đăng ký nhờ nhà trường hỗ trợ, 0-Form đăng ký sinh viên tự tìm, 3-Form báo cáo, 4-Form hiện thị thông tin doanh nghiệp, 2-Form nộp biên bản"
-      startTime:
-        type: "integer"
-        description: "Thời gian mở form"
-      endTime:
-        type: "integer"
-        description: "Thời gian đóng form"
-      semester_id:
-        type: "integer"
-        description: "Mã của kỳ học, mã này được nối với bảng semester"
-      createAt:
-        type: "string"
-        format: "date"
-        description: "Thời gian mở form được tạo vào hệ thống"
-  businesses:
-    type: "object"
-    properties:
-      _id:
-        type: "integer"
-        description: "Mã tự tắng"
-      name:
-        type: "string"
-        description: "Tên doanh nghiệp"
-      intershipPosition:
-        type: "string"
-        description: "Vị trí thực tập tại doanh nghiệp"
-      majors:
-        type: "integer"
-        description: "Mã chuyên ngành, mã này được nối với bảng marjors"
-      amount:
-        type: "integer"
-        description: "Số lượng sinh viên cần tuyển"
-      smester_id:
-        type: "integer"
-        description: "Mã kỳ học, mã này được nối với bảng semesters"
-      campus_id:
-        type: "integer"
-        description: "Mã cơ sở, mã này được nối với bảng campus(cumpus)"
-      code_request:
-        type: "string"
-        description: "Yêu cầu của vị trí thực tập"
-      description:
-        type: "string"
-        description: "Mô tả"
-      createAt:
-        type: "string"
-        format: "date"
-        description: "Thời gian doanh nghiệp được thêm vào hệ thống"
-  authenticaiton:
-    type: "object"
-    properties:
-      token:
-        type: "string"
-        default: ""
-        description: "Token được lấy khi login oauth2 google trả về"
-      cumpusId:
-        type: "string"
-        default: "6247da5ee56ba5e634559901"
-        description: "Mã cơ sở, lấy theo bảng campus(cumpust)"
-      smester_id:
-        type: "string"
-        default: "62cf870f4858743781d08b27"
-        description: "Mã kỳ học, lấy theo bảng semester"
+   students:
+      type: 'object'
+      properties:
+         _id:
+            type: 'integer'
+            description: 'Mã tự tắng'
+         mssv:
+            type: 'string'
+            description: 'Mã số sinh viên'
+         name:
+            type: 'string'
+            description: 'Họ và tên sinh viên'
+         course:
+            type: 'string'
+            description: 'Khoá sinh viên nhập học'
+         majors:
+            type: 'integer'
+            description: 'Mã chuyên ngành, mã này nối với bảng majors'
+         narrow:
+            type: 'integer'
+            description: 'Mã ngành hẹp, mã này nối với bảng narrowspecializations'
+         email:
+            type: 'string'
+            description: 'Email của sinh viên định dạng @fpt.edu.vn'
+         checkUpdate:
+            type: 'integer'
+            default: true
+            description: 'Chưa rõ mô tả'
+         checkMulti:
+            type: 'integer'
+            default: false
+            description: 'Chưa rõ mô tả'
+         supplement:
+            type: 'string'
+            default: null
+            description: 'Chưa rõ mô tả'
+         statusCheck:
+            type: 'integer'
+            default: 10
+            description: 'Trạng thái của sinh viên 0-Chờ kiểm trả, 1-Sửa lại CV, 2-Nhận CV, 3-Trượt, 4-Đã nộp biên bản, 5-Sửa biên bản, 6-Đang thực tập, 7-Đã nộp báo cáo, 8-Sửa báo cáo, 9-Hoàn thành, 10-Chưa đăng ký'
+         statusStudent:
+            type: 'string'
+            description: 'Chưa rõ mô tả'
+         support:
+            type: 'integer'
+            description: 'Chưa rõ mô tả'
+         phoneNumber:
+            type: 'integer'
+            default: null
+            description: 'Số điện thoại của sinh viên'
+         address:
+            type: 'string'
+            default: null
+            description: 'Địa chỉ của sinh viên'
+         CV:
+            type: 'string'
+            default: null
+            description: 'Đường link cv từ google drive'
+         campus_id:
+            type: 'integer'
+            description: 'Mã cơ sở đang học của sinh viên, mã này nối với bảng campus(cumpus)'
+         business:
+            type: 'integer'
+            default: null
+            description: 'Mã của doanh nghiệp được gắn khi sinh viên chọn doanh nghiệp thực tập'
+         smester_id:
+            type: 'integer'
+            description: 'Mã kỳ học hiện tại của sinh viên, mã này nối với bảng semester'
+         reviewer:
+            type: 'integer'
+            default: null
+            description: 'Email của nhân viên review sinh viên, được gắn khi chọn chức năng asign'
+         form:
+            type: 'string'
+            default: null
+            description: 'Đường link biên bản từ google drive'
+         report:
+            type: 'string'
+            default: null
+            description: 'Đường link báo cáo từ google drive'
+         note:
+            type: 'string'
+            default: null
+            description: 'Ghi chú của phòng quan hệ doanh nghiệp khi gửi về sinh viên khi sửa thông tin'
+         numberOfTime:
+            type: 'integer'
+            default: 0
+            description: '+1 mỗi lần hõ trợ sinh viên'
+         nameCompany:
+            type: 'string'
+            default: null
+            description: 'Tên Doanh nghiệp'
+         addressCompany:
+            type: 'string'
+            default: null
+            description: 'Địa chỉ của Doanh nghiệp'
+         taxCode:
+            type: 'integer'
+            default: null
+            description: 'Mã số thuế của doanh nghiệp'
+         position:
+            type: 'string'
+            default: null
+            description: 'Chứ vụ người giám sát thực tập'
+         phoneNumberCompany:
+            type: 'integer'
+            default: null
+            description: 'Số điện thoại liên hệ doanh nghiệp thực tập'
+         emailEnterprise:
+            type: 'string'
+            default: null
+            description: 'Email của doanh nghiệp'
+         intershipTime:
+            type: 'string'
+            format: 'date'
+            default: null
+            description: 'Thời gian bắt đầu thực tập'
+         enInterShipTime:
+            type: 'string'
+            format: ''
+            default: null
+            description: 'Thời gian kết thúc thực tập'
+         attitudePoint:
+            type: 'number'
+            format: 'double'
+            default: null
+            description: 'Điểm thái độ thực tập'
+         resultScore:
+            type: 'number'
+            format: 'double'
+            default: null
+            description: 'Điểm kết quả thực tập'
+         listTimeForm:
+            type: 'array'
+            description: 'Chưa list thời gian theo form'
+         create_at:
+            type: 'string'
+            format: 'date'
+            description: 'Thời gian thông tin được tạo trên hệ thống'
+   majors:
+      type: 'object'
+      properties:
+         _id:
+            type: 'integer'
+            description: 'Mã tự tắng'
+         name:
+            type: 'string'
+            description: 'Tên chuyên ngành'
+         campus_id:
+            type: 'integer'
+            description: 'Mã cơ sở đang học của sinh viên, mã này nối với bảng campus(cumpus)'
+         create_at:
+            type: 'string'
+            format: 'date'
+            description: 'Thời gian chuyên ngành được tạo trên hệ thống'
+   narrowspecializations:
+      type: 'object'
+      properties:
+         _id:
+            type: 'integer'
+            description: 'Mã tự tắng'
+         name:
+            type: 'string'
+            description: 'Tên chuyên ngành hẹp'
+         id_majors:
+            type: 'integer'
+            description: 'Mã chuyên ngành, mã này được nối với bảng majors'
+         createAt:
+            type: 'string'
+            format: 'date'
+            description: 'Ngày chuyên ngành hẹp được thêm vào hệ thống'
+   semesters:
+      type: 'object'
+      properties:
+         _id:
+            type: 'integer'
+            description: 'Mã tự tăng'
+         name:
+            type: 'string'
+            description: 'Tên kỳ học'
+         start_time:
+            type: 'string'
+            format: 'date'
+            description: 'Thời gian bắt đầu của kỳ học'
+         end_time:
+            type: 'string'
+            format: 'date'
+            description: 'Thời gian kết thúc kỳ học'
+         createAt:
+            type: 'string'
+            format: 'date'
+            description: 'Thời gian kỳ học được thêm vào hệ thống'
+   managers:
+      type: 'object'
+      properties:
+         _id:
+            type: 'integer'
+            description: 'Mã tự tăng'
+         name:
+            type: 'string'
+            description: 'Tên của quản lý'
+         campus_id:
+            type: 'integer'
+            description: 'Mã cơ sở, mã này được nối với bảng campus(cumpus)'
+         role:
+            type: 'integer'
+            description: 'Vai trò của quản lý'
+         createAt:
+            type: 'string'
+            format: 'date'
+            description: 'Thời gian manager được thêm vào hệ thống'
+   campus:
+      type: 'object'
+      properties:
+         _id:
+            type: 'integer'
+            description: 'Mã tự tăng'
+         name:
+            type: 'string'
+            description: 'Tên của cơ sở'
+         createAt:
+            type: 'string'
+            format: 'date'
+            description: 'Thời gian cơ sở được thêm vào hệ thống'
+   configtimes:
+      type: 'object'
+      properties:
+         _id:
+            type: 'integer'
+            description: 'Mã tự tắng'
+         typeNumber:
+            type: 'integer'
+            description: 'Số biểu diễn kiểu của thời gian: 1-Form đăng ký nhờ nhà trường hỗ trợ, 0-Form đăng ký sinh viên tự tìm, 3-Form báo cáo, 4-Form hiện thị thông tin doanh nghiệp, 2-Form nộp biên bản'
+         typeName:
+            type: 'string'
+            description: 'Số biểu diễn kiểu của thời gian: 1-Form đăng ký nhờ nhà trường hỗ trợ, 0-Form đăng ký sinh viên tự tìm, 3-Form báo cáo, 4-Form hiện thị thông tin doanh nghiệp, 2-Form nộp biên bản'
+         startTime:
+            type: 'integer'
+            description: 'Thời gian mở form'
+         endTime:
+            type: 'integer'
+            description: 'Thời gian đóng form'
+         semester_id:
+            type: 'integer'
+            description: 'Mã của kỳ học, mã này được nối với bảng semester'
+         createAt:
+            type: 'string'
+            format: 'date'
+            description: 'Thời gian mở form được tạo vào hệ thống'
+   businesses:
+      type: 'object'
+      properties:
+         _id:
+            type: 'integer'
+            description: 'Mã tự tắng'
+         name:
+            type: 'string'
+            description: 'Tên doanh nghiệp'
+         intershipPosition:
+            type: 'string'
+            description: 'Vị trí thực tập tại doanh nghiệp'
+         majors:
+            type: 'integer'
+            description: 'Mã chuyên ngành, mã này được nối với bảng marjors'
+         amount:
+            type: 'integer'
+            description: 'Số lượng sinh viên cần tuyển'
+         smester_id:
+            type: 'integer'
+            description: 'Mã kỳ học, mã này được nối với bảng semesters'
+         campus_id:
+            type: 'integer'
+            description: 'Mã cơ sở, mã này được nối với bảng campus(cumpus)'
+         business_code:
+            type: 'string'
+            description: 'Yêu cầu của vị trí thực tập'
+         description:
+            type: 'string'
+            description: 'Mô tả'
+         createAt:
+            type: 'string'
+            format: 'date'
+            description: 'Thời gian doanh nghiệp được thêm vào hệ thống'
+   authenticaiton:
+      type: 'object'
+      properties:
+         token:
+            type: 'string'
+            default: ''
+            description: 'Token được lấy khi login oauth2 google trả về'
+         cumpusId:
+            type: 'string'
+            default: '6247da5ee56ba5e634559901'
+            description: 'Mã cơ sở, lấy theo bảng campus(cumpust)'
+         smester_id:
+            type: 'string'
+            default: '62cf870f4858743781d08b27'
+            description: 'Mã kỳ học, lấy theo bảng semester'

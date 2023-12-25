@@ -1,0 +1,229 @@
+paths:
+   /settime:
+      post:
+         tags:
+            - ConfigTimes
+         description: Tạo mới 1 time
+         summary: Đăng nhập với vai trò mannager (role = 1)
+
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        typeName:
+                           type: string
+                           required: true
+                           description: ' Tiêu đề của thời gian mở form (VD: Nhờ nhà trường hỗ trợ)'
+                        startTime:
+                           type: number
+                           required: true
+                           description: Thời gian bắt đầu ( cách lấy date.getTime() )
+                        endTime:
+                           type: number
+                           required: true
+                           description: Thời gian kết thúc ( cách lấy date.getTime() )
+                  example:
+                     {
+                        'typeName': 'Form đăng ký nhờ nhà trường hỗ trợ',
+                        'startTime': '1681028036293',
+                        'endTime': '1681632702000'
+                     }
+
+         responses:
+            201:
+               description: Tạo time thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/ConfigTime'
+                     example:
+                        {
+                           'typeName': 'Form đăng ký nhờ nhà trường hỗ trợ',
+                           'startTime': 1681028036293,
+                           'endTime': 1681632702001,
+                           'semester_id': '640abe7e4ed73d86530a5ed3',
+                           'campus_id': '63eef716c9ef6d077f1f1deb',
+                           '_id': '6432749e24b30e77706b145e'
+                        }
+
+            204:
+               description: Data gửi lên rỗng
+
+            400:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 400, 'message': '"endTime" must be a number' }
+            409:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 409, 'message': 'Tài liệu đã tồn tại' }
+
+      get:
+         tags:
+            - ConfigTimes
+         description: Lấy ra tất cả time đã tạo
+         summary: Đăng nhập với vai trò mannager (role = 1)
+
+         responses:
+            200:
+               description: OK
+               content:
+                  application/json:
+                     schema:
+                        type: array
+                        items:
+                           $ref: '#/components/schemas/ConfigTime'
+                     example:
+                        [
+                           {
+                              'typeName': 'Form đăng ký nhờ nhà trường hỗ trợ',
+                              'startTime': 1681028036293,
+                              'endTime': 1681632702001,
+                              'semester_id': '640abe7e4ed73d86530a5ed3',
+                              'campus_id': '63eef716c9ef6d077f1f1deb',
+                              '_id': '6432749e24b30e77706b145e'
+                           }
+                        ]
+
+   /settime/:id:
+      patch:
+         tags:
+            - ConfigTimes
+         description: Update 1 time
+         summary: Đăng nhập với vai trò mannager (role = 1)
+
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        typeName:
+                           type: string
+                           description: ' Tiêu đề của thời gian mở form (VD: Nhờ nhà trường hỗ trợ)'
+                        startTime:
+                           type: number
+                           description: Thời gian bắt đầu ( cách lấy date.getTime() )
+                        endTime:
+                           type: number
+                           description: Thời gian kết thúc ( cách lấy date.getTime() )
+                  example: { 'typeName': 'Form đăng ký nhờ nhà trường hỗ trợ' }
+
+         responses:
+            201:
+               description: update time thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/ConfigTime'
+                     example:
+                        {
+                           'typeName': 'Form đăng ký nhờ nhà trường hỗ trợ',
+                           'startTime': 1681028036293,
+                           'endTime': 1681632702001,
+                           'semester_id': '640abe7e4ed73d86530a5ed3',
+                           'campus_id': '63eef716c9ef6d077f1f1deb',
+                           '_id': '6432749e24b30e77706b145e'
+                        }
+
+            304:
+               description: Data gửi lên rỗng
+
+            400:
+               description: Không thỏa mãn validate hoặc id không phải type objectId
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 400, 'message': '"endTime" must be a number' }
+            404:
+               description: Time không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 404, 'message': 'Tài liệu không tồn tại' }
+
+      delete:
+         tags:
+            - ConfigTimes
+         description: Xóa vĩnh viễn 1 time
+         summary: Đăng nhập với vai trò mannager (role = 1)
+
+         responses:
+            200:
+               description: Xóa time thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/ConfigTime'
+                     example:
+                        {
+                           'typeName': 'Form đăng ký nhờ nhà trường hỗ trợ',
+                           'startTime': 1681028036293,
+                           'endTime': 1681632702001,
+                           'semester_id': '640abe7e4ed73d86530a5ed3',
+                           'campus_id': '63eef716c9ef6d077f1f1deb',
+                           '_id': '6432749e24b30e77706b145e'
+                        }
+
+            400:
+               description: id không phải type objectId
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 400, 'message': 'id không phải type ObjectId' }
+            404:
+               description: Time không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 404, 'message': 'Tài liệu không tồn tại' }
+
+      get:
+         tags:
+            - ConfigTimes
+         description: Lấy thông tin chi tiết 1 time
+         summary: Đăng nhập với vai trò mannager (role = 1)
+
+         responses:
+            200:
+               description: OK
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/ConfigTime'
+                     example:
+                        {
+                           'typeName': 'Form đăng ký nhờ nhà trường hỗ trợ',
+                           'startTime': 1681028036293,
+                           'endTime': 1681632702001,
+                           'semester_id': '640abe7e4ed73d86530a5ed3',
+                           'campus_id': '63eef716c9ef6d077f1f1deb',
+                           '_id': '6432749e24b30e77706b145e'
+                        }
+
+            400:
+               description: id không phải type objectId
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 400, 'message': 'id không phải type ObjectId' }
+            404:
+               description: Time không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 404, 'message': 'Tài liệu không tồn tại' }

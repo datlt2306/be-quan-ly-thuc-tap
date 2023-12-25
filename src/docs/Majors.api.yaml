@@ -1,0 +1,206 @@
+paths:
+   /major:
+      post:
+         tags:
+            - Majors
+         description: api thêm chuyên ngành, thêm nhiều hay thêm 1 phụ thuộc vào data là { } || [ ]
+         summary: Đăng nhập
+
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        name:
+                           type: string
+                           required: true
+                        majorCode:
+                           type: string
+                           required: true
+                  example: { name: 'Thiết kê website', majorCode: 'TKW' }
+
+         responses:
+            201:
+               description: THêm chuyên ngành thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Major'
+                     example:
+                        {
+                           'name': 'Thiết kê website',
+                           'majorCode': 'TKW2',
+                           'campus': '63eef716c9ef6d077f1f1deb',
+                           '_id': '64301a7bb8aa88c5d34d068c',
+                           'createdAt': '2023-04-07T13:28:27.951Z'
+                        }
+
+            204:
+               description: Data gửi lên rỗng
+            400:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 400, 'message': '"[0].majorCode" must be a string' }
+            409:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 409, 'message': 'Mã ngành học đã tồn tại' }
+
+      get:
+         tags:
+            - Majors
+         description: Lấy ra tất cả các chuyên ngành của cơ sở
+         summary: Đăng nhập
+
+         responses:
+            200:
+               description: OK
+               content:
+                  application/json:
+                     schema:
+                        type: array
+                        items:
+                           $ref: '#/components/schemas/Major'
+                     example:
+                        [
+                           {
+                              '_id': '64301a0f504d83b99c7a26b6',
+                              'name': 'Thiết kê website',
+                              'majorCode': 'TKW',
+                              'campus': '63eef716c9ef6d077f1f1deb',
+                              'createdAt': '2023-04-07T13:26:39.260Z',
+                              '__v': 0
+                           },
+                           {
+                              '_id': '64301a7bb8aa88c5d34d068c',
+                              'name': 'Thiết kê website',
+                              'majorCode': 'TKW2',
+                              'campus': '63eef716c9ef6d077f1f1deb',
+                              'createdAt': '2023-04-07T13:28:27.951Z',
+                              '__v': 0
+                           }
+                        ]
+
+   /major/:id:
+      get:
+         tags:
+            - Majors
+         summary: Đăng nhập
+         description: Api lấy ra thông tin chi tiết 1 chuyên ngành
+
+         responses:
+            200:
+               description: OK
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Major'
+                     example:
+                        {
+                           '_id': '64301a0f504d83b99c7a26b6',
+                           'name': 'Thiết kê website',
+                           'majorCode': 'TKW',
+                           'campus':
+                              {
+                                 '_id': '63eef716c9ef6d077f1f1deb',
+                                 'name': 'Cơ sở Hà Nội',
+                                 'createdAt': '2023-02-17T03:40:06.247Z'
+                              },
+                           'createdAt': '2023-04-07T13:26:39.260Z'
+                        }
+            400:
+               description: Id không phải type objectId
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 400, 'message': 'Id phải là type objectId' }
+            404:
+               description: Id không phải type objectId
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 404, 'message': 'Ngành học không tồn tại' }
+
+      patch:
+         tags:
+            - Majors
+         description: Api sửa thông tin 1 chuyên ngành
+         summary: Đăng nhập với vai trò quản lí (role = 2)
+
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        name:
+                           type: string
+                        majorCode:
+                           type: string
+                  example: { name: 'Thiết kê website' }
+
+         responses:
+            201:
+               description: Sửa thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Major'
+                     example:
+                        {
+                           '_id': '64301a0f504d83b99c7a26b6',
+                           'name': 'Thiết kê website',
+                           'majorCode': 'TKW',
+                           'campus': '63eef716c9ef6d077f1f1deb',
+                           'createdAt': '2023-04-07T13:26:39.260Z'
+                        }
+
+            304:
+               description: Data gửi lên rỗng
+
+            400:
+               description: Id không phải type objectId hoặc không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 400, 'message': 'Id phải là type objectId' }
+
+      delete:
+         tags:
+            - Majors
+         description: Api xóa vĩnh viễn 1 chuyên ngành
+         summary: Đăng nhập với vai trò quản lí (role = 2)
+
+         responses:
+            200:
+               description: Xóa thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Major'
+                     example:
+                        {
+                           '_id': '64301a0f504d83b99c7a26b6',
+                           'name': 'Thiết kê website',
+                           'majorCode': 'TKW',
+                           'campus': '63eef716c9ef6d077f1f1deb',
+                           'createdAt': '2023-04-07T13:26:39.260Z'
+                        }
+
+            400:
+               description: Id không phải type objectId
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 400, 'message': 'Id phải là type objectId' }

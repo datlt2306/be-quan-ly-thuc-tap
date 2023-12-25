@@ -1,0 +1,691 @@
+paths:
+   /student:
+      get:
+         tags:
+            - Students
+         summary: Đăng nhập với vai trò manager (role = 1)
+         description: Api lấy ra tất cả các học sinh đăng ký thực tập
+         parameters:
+            - in: query
+              name: page
+              default: 1
+              schema:
+                 type: number
+            - in: query
+              name: limit
+              default: 10
+              schema:
+                 type: number
+
+         responses:
+            200:
+               content:
+                  application/json:
+                     schema:
+                        type: object
+                        properties:
+                           list:
+                              type: array
+                              items:
+                                 $ref: '#/components/schemas/Student'
+                           total:
+                              type: number
+                           limit:
+                              type: number
+                           totalPages:
+                              type: number
+                           page:
+                              type: number
+                           pagingCounter:
+                              type: number
+                           nextPage:
+                              type: number
+                     example:
+                        {
+                           'list':
+                              [
+                                 {
+                                    '_id': '640abe9e4ed73d86530a5f04',
+                                    'mssv': 'ph14253',
+                                    'name': 'Trần Văn Giang',
+                                    'majors': '640abe8d4ed73d86530a5ee7',
+                                    'dream': null,
+                                    'email': 'giangtvph14253@fpt.edu.vn',
+                                    'checkUpdate': true,
+                                    'checkMulti': true,
+                                    'supplement': null,
+                                    'statusCheck': 3,
+                                    'support': null,
+                                    'phoneNumber': null,
+                                    'address': null,
+                                    'CV': null,
+                                    'campus_id':
+                                       {
+                                          '_id': '63eef716c9ef6d077f1f1deb',
+                                          'name': 'Cơ sở Hà Nội',
+                                          'createdAt': '2023-02-17T03:40:06.247Z',
+                                          '__v': 0
+                                       },
+                                    'business': null,
+                                    'smester_id':
+                                       {
+                                          '_id': '640abe7e4ed73d86530a5ed3',
+                                          'name': 'asds',
+                                          'start_time': '2023-03-10T05:22:01.805Z',
+                                          'end_time': '2023-04-21T05:22:01.805Z',
+                                          'campus_id': '63eef716c9ef6d077f1f1deb',
+                                          'createdAt': '2023-03-10T05:22:06.875Z',
+                                          '__v': 0
+                                       },
+                                    'reviewer': 'axhaltz@gmail.com',
+                                    'form': null,
+                                    'report': null,
+                                    'note': null,
+                                    'numberOfTime': 0,
+                                    'nameCompany': null,
+                                    'addressCompany': null,
+                                    'taxCode': null,
+                                    'position': null,
+                                    'phoneNumberCompany': null,
+                                    'emailEnterprise': null,
+                                    'internshipTime': null,
+                                    'endInternShipTime': null,
+                                    'attitudePoint': null,
+                                    'resultScore': null,
+                                    'signTheContract': null,
+                                    'listTimeForm': [],
+                                    'createdAt': '2023-03-10T05:22:38.614Z',
+                                    '__v': 0,
+                                    'updatedAt': '2023-04-01T19:15:23.793Z'
+                                 }
+                              ],
+                           'total': 93,
+                           'limit': 20,
+                           'totalPages': 5,
+                           'page': 1,
+                           'pagingCounter': 1,
+                           'hasPrevPage': false,
+                           'hasNextPage': true,
+                           'prevPage': null,
+                           'nextPage': 2
+                        }
+
+      post:
+         tags:
+            - Students
+         summary: Đăng nhập với vai trò manager
+         description: Thêm mới nhiều học sinh (nếu kỳ hiện tại đã nhập thì chỉ nhập những học sinh chưa tồn tại)
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: array
+                     items:
+                        type: object
+                        properties:
+                           mssv:
+                              type: string
+                              required: true
+                              description: Mã số sinh viên
+                           name:
+                              type: string
+                              required: true
+                              description: Họ tên đầy đủ của sinh viên
+                           course:
+                              type: number
+                              required: true
+                              description: Khóa của sinh viên
+                           majorCode:
+                              type: string
+                              required: true
+                              description: Mã chuyên ngành của sinh viên
+                           email:
+                              type: string
+                              required: true
+                              description: email sinh viên
+                  example:
+                     [
+                        {
+                           'mssv': 'PH24870',
+                           'name': 'Lê Ngọc Đức',
+                           'course': 2021,
+                           'majorCode': 'UDPM',
+                           'email': 'duclnph24870@fpt.edu.vn'
+                        }
+                     ]
+
+         responses:
+            201:
+               description: Import sinh viên thành công
+               content:
+                  application/json:
+                     schema:
+                        type: object
+                        properties:
+                           message:
+                              type: string
+                     example: { message: '1 sinh viên đã được thêm vào hệ thống, 1 sinh viên đã tồn tại' }
+
+            204:
+               description: Data gửi lên rỗng
+
+            400:
+               description: Data gửi lên type không phải là array hoặc không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 400, 'message': 'Body data type phải là array' }
+
+            404:
+               description: Chuyên ngành gửi lên có chuyên ngành không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 404, 'message': 'Chuyên ngành không tồn tại', 'error': ['TKW1'] }
+
+      patch:
+         tags:
+            - Students
+         summary: Đăng nhập với vai trò manager
+         description: Thêm người review cho nhiều student
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        listIdStudent:
+                           type: array
+                           items:
+                              type: objectId
+                              description: Id các học sinh cần thêm người review
+                        email:
+                           type: string
+                           required: true
+                           description: Email người review
+                  example:
+                     {
+                        'listIdStudent': ['640abe9e4ed73d86530a5f54', '640abe9e4ed73d86530a5f12'],
+                        'email': 'duclnph24870@fpt.edu.vn'
+                     }
+
+         responses:
+            201:
+               description: Thêm người review thành công
+               content:
+                  application/json:
+                     schema:
+                        type: object
+                        properties:
+                           listIdStudent:
+                              type: array
+                              items:
+                                 type: objectId
+                                 description: Id các học sinh cần thêm người review
+                           email:
+                              type: string
+                              required: true
+                              description: Email người review
+                     example:
+                        {
+                           'listIdStudent': ['640abe9e4ed73d86530a5f54', '640abe9e4ed73d86530a5f12'],
+                           'email': 'duclnph24870@fpt.edu.vn'
+                        }
+
+            404:
+               description: Admin không có quyền sửa học sinh hoặc học sinh không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example:
+                        {
+                           statusCode: 404,
+                           message: 'Học sinh không tồn tại',
+                           error: ['640abe9e4ed73d86530a5f54', '640abe9e4ed73d86530a5f12']
+                        }
+
+   /student/reviewcv:
+      get:
+         tags:
+            - Students
+         summary: Đăng nhập với vai trò manager (role = 1)
+         description: Api để lấy các sinh viên đã nộp cv
+
+         responses:
+            200:
+               description: Lấy thành công
+               content:
+                  application/json:
+                     schema:
+                        type: array
+                        items:
+                           $ref: '#/components/schemas/Student'
+                     example:
+                        [
+                           {
+                              '_id': '640abe9e4ed73d86530a5f5a',
+                              'mssv': 'ph14252',
+                              'name': 'Test',
+                              'majors':
+                                 {
+                                    '_id': '640abe8d4ed73d86530a5ee7',
+                                    'name': 'asdsa',
+                                    'majorCode': 'asdd',
+                                    'createdAt': '2023-03-10T05:22:21.938Z',
+                                    '__v': 0
+                                 },
+                              'dream': 'sffdfsdf',
+                              'email': 'phuongvmph14252@fpt.edu.vn',
+                              'checkUpdate': true,
+                              'checkMulti': true,
+                              'supplement': null,
+                              'statusCheck': 0,
+                              'support': 1,
+                              'phoneNumber': 358282316,
+                              'address': 'sdfsdf',
+                              'CV': 'https://drive.google.com/file/d/1iBr7soZigfEB1Nl9iEqYKFpnOYa5nEch/view?usp=drivesdk',
+                              'campus_id':
+                                 {
+                                    '_id': '63eef716c9ef6d077f1f1deb',
+                                    'name': 'Cơ sở Hà Nội',
+                                    'createdAt': '2023-02-17T03:40:06.247Z',
+                                    '__v': 0
+                                 },
+                              'business':
+                                 {
+                                    '_id': '640abf214ed73d86530a6018',
+                                    'name': 'fgdfgf',
+                                    'internshipPosition': 'dfgdfg',
+                                    'majors': '640abe8d4ed73d86530a5ee7',
+                                    'amount': 13,
+                                    'address': 'gdgdfg',
+                                    'smester_id': '640abe7e4ed73d86530a5ed3',
+                                    'campus_id': '63eef716c9ef6d077f1f1deb',
+                                    'business_code': 'dgsgfd12',
+                                    'request': 'dfgdfg',
+                                    'description': 'dfgfd',
+                                    'status': 1,
+                                    'createAt': '2023-03-10T05:24:49.081Z',
+                                    '__v': 0
+                                 },
+                              'smester_id':
+                                 {
+                                    '_id': '640abe7e4ed73d86530a5ed3',
+                                    'name': 'asds',
+                                    'start_time': '2023-03-10T05:22:01.805Z',
+                                    'end_time': '2023-04-21T05:22:01.805Z',
+                                    'campus_id': '63eef716c9ef6d077f1f1deb',
+                                    'createdAt': '2023-03-10T05:22:06.875Z',
+                                    '__v': 0
+                                 },
+                              'reviewer': 'axhaltz@gmail.com',
+                              'form': null,
+                              'report': null,
+                              'note': null,
+                              'numberOfTime': 0,
+                              'nameCompany': null,
+                              'addressCompany': null,
+                              'taxCode': null,
+                              'position': null,
+                              'phoneNumberCompany': null,
+                              'emailEnterprise': null,
+                              'internshipTime': null,
+                              'endInternShipTime': null,
+                              'attitudePoint': null,
+                              'resultScore': null,
+                              'signTheContract': null,
+                              'listTimeForm': [],
+                              'createdAt': '2023-03-10T05:22:38.651Z',
+                              '__v': 0,
+                              'updatedAt': '2023-04-01T19:15:23.706Z',
+                              'narrow': '640abeed4ed73d86530a5fcf'
+                           }
+                        ]
+
+   /student/:id:
+      get:
+         tags:
+            - Students
+         summary: Đăng nhập
+         description: Lấy ra thông tin chi tiết 1 học sinh
+         responses:
+            200:
+               description: Lấy thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Students'
+                     example:
+                        {
+                           '_id': '640abe9e4ed73d86530a5f5a',
+                           'mssv': 'ph14252',
+                           'name': 'Test',
+                           'majors':
+                              {
+                                 '_id': '640abe8d4ed73d86530a5ee7',
+                                 'name': 'asdsa',
+                                 'majorCode': 'asdd',
+                                 'createdAt': '2023-03-10T05:22:21.938Z',
+                                 '__v': 0
+                              },
+                           'dream': 'sffdfsdf',
+                           'email': 'phuongvmph14252@fpt.edu.vn',
+                           'checkUpdate': true,
+                           'checkMulti': true,
+                           'supplement': null,
+                           'statusCheck': 0,
+                           'support': 1,
+                           'phoneNumber': 358282316,
+                           'address': 'sdfsdf',
+                           'CV': 'https://drive.google.com/file/d/1iBr7soZigfEB1Nl9iEqYKFpnOYa5nEch/view?usp=drivesdk',
+                           'campus_id':
+                              {
+                                 '_id': '63eef716c9ef6d077f1f1deb',
+                                 'name': 'Cơ sở Hà Nội',
+                                 'createdAt': '2023-02-17T03:40:06.247Z',
+                                 '__v': 0
+                              },
+                           'business':
+                              {
+                                 '_id': '640abf214ed73d86530a6018',
+                                 'name': 'fgdfgf',
+                                 'internshipPosition': 'dfgdfg',
+                                 'majors': '640abe8d4ed73d86530a5ee7',
+                                 'amount': 13,
+                                 'address': 'gdgdfg',
+                                 'smester_id': '640abe7e4ed73d86530a5ed3',
+                                 'campus_id': '63eef716c9ef6d077f1f1deb',
+                                 'business_code': 'dgsgfd12',
+                                 'request': 'dfgdfg',
+                                 'description': 'dfgfd',
+                                 'status': 1,
+                                 'createAt': '2023-03-10T05:24:49.081Z',
+                                 '__v': 0
+                              },
+                           'smester_id':
+                              {
+                                 '_id': '640abe7e4ed73d86530a5ed3',
+                                 'name': 'asds',
+                                 'start_time': '2023-03-10T05:22:01.805Z',
+                                 'end_time': '2023-04-21T05:22:01.805Z',
+                                 'campus_id': '63eef716c9ef6d077f1f1deb',
+                                 'createdAt': '2023-03-10T05:22:06.875Z',
+                                 '__v': 0
+                              },
+                           'reviewer': 'axhaltz@gmail.com',
+                           'form': null,
+                           'report': null,
+                           'note': null,
+                           'numberOfTime': 0,
+                           'nameCompany': null,
+                           'addressCompany': null,
+                           'taxCode': null,
+                           'position': null,
+                           'phoneNumberCompany': null,
+                           'emailEnterprise': null,
+                           'internshipTime': null,
+                           'endInternShipTime': null,
+                           'attitudePoint': null,
+                           'resultScore': null,
+                           'signTheContract': null,
+                           'listTimeForm': [],
+                           'createdAt': '2023-03-10T05:22:38.651Z',
+                           '__v': 0,
+                           'updatedAt': '2023-04-01T19:15:23.706Z',
+                           'narrow':
+                              {
+                                 '_id': '640abeed4ed73d86530a5fcf',
+                                 'name': 'ddsf',
+                                 'id_majors': '640abe8d4ed73d86530a5ee7',
+                                 'createAt': '2023-03-10T05:23:57.103Z',
+                                 '__v': 0
+                              }
+                        }
+
+            404:
+               description: Học sinh không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 404, message: 'Học sinh không tồn tại' }
+
+      patch:
+         tags:
+            - Students
+         summary: Đăng nhập với vai trò manager (role = 1)
+         description: API sửa thông tin học sinh
+
+         responses:
+            201:
+               description: Sửa thông tin thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Student'
+                     example:
+                        {
+                           '_id': '640abe9e4ed73d86530a5f5a',
+                           'mssv': 'ph14252',
+                           'name': 'Nguyễn Văn A',
+                           'majors': '640abe8d4ed73d86530a5ee7',
+                           'dream': 'sffdfsdf',
+                           'email': 'phuongvmph14252@fpt.edu.vn',
+                           'checkUpdate': true,
+                           'checkMulti': true,
+                           'supplement': null,
+                           'statusCheck': 0,
+                           'support': 1,
+                           'phoneNumber': 358282316,
+                           'address': 'sdfsdf',
+                           'CV': 'https://drive.google.com/file/d/1iBr7soZigfEB1Nl9iEqYKFpnOYa5nEch/view?usp=drivesdk',
+                           'campus_id': '63eef716c9ef6d077f1f1deb',
+                           'business': '640abf214ed73d86530a6018',
+                           'smester_id': '640abe7e4ed73d86530a5ed3',
+                           'reviewer': 'axhaltz@gmail.com',
+                           'form': null,
+                           'report': null,
+                           'note': null,
+                           'numberOfTime': 0,
+                           'nameCompany': null,
+                           'addressCompany': null,
+                           'taxCode': null,
+                           'position': null,
+                           'phoneNumberCompany': null,
+                           'emailEnterprise': null,
+                           'internshipTime': null,
+                           'endInternShipTime': null,
+                           'attitudePoint': null,
+                           'resultScore': null,
+                           'signTheContract': null,
+                           'listTimeForm': [],
+                           'createdAt': '2023-03-10T05:22:38.651Z',
+                           '__v': 0,
+                           'updatedAt': '2023-04-04T04:37:36.687Z',
+                           'narrow': '640abeed4ed73d86530a5fcf'
+                        }
+
+            404:
+               description: Học sinh không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 404, message: 'Học sinh không tồn tại' }
+
+      delete:
+         tags:
+            - Students
+         summary: Đăng nhập với vai trò manager (role = 1)
+         description: Xóa vĩnh viễn 1 học sinh
+
+         responses:
+            200:
+               description: Xóa thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/Student'
+                     example:
+                        {
+                           '_id': '640abe9e4ed73d86530a5f5a',
+                           'mssv': 'ph14252',
+                           'name': 'Nguyễn Văn A',
+                           'majors': '640abe8d4ed73d86530a5ee7',
+                           'dream': 'sffdfsdf',
+                           'email': 'phuongvmph14252@fpt.edu.vn',
+                           'checkUpdate': true,
+                           'checkMulti': true,
+                           'supplement': null,
+                           'statusCheck': 0,
+                           'support': 1,
+                           'phoneNumber': 358282316,
+                           'address': 'sdfsdf',
+                           'CV': 'https://drive.google.com/file/d/1iBr7soZigfEB1Nl9iEqYKFpnOYa5nEch/view?usp=drivesdk',
+                           'campus_id': '63eef716c9ef6d077f1f1deb',
+                           'business': '640abf214ed73d86530a6018',
+                           'smester_id': '640abe7e4ed73d86530a5ed3',
+                           'reviewer': 'axhaltz@gmail.com',
+                           'form': null,
+                           'report': null,
+                           'note': null,
+                           'numberOfTime': 0,
+                           'nameCompany': null,
+                           'addressCompany': null,
+                           'taxCode': null,
+                           'position': null,
+                           'phoneNumberCompany': null,
+                           'emailEnterprise': null,
+                           'internshipTime': null,
+                           'endInternShipTime': null,
+                           'attitudePoint': null,
+                           'resultScore': null,
+                           'signTheContract': null,
+                           'listTimeForm': [],
+                           'createdAt': '2023-03-10T05:22:38.651Z',
+                           '__v': 0,
+                           'updatedAt': '2023-04-04T04:37:36.687Z',
+                           'narrow': '640abeed4ed73d86530a5fcf'
+                        }
+
+            404:
+               description: Học sinh không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 404, message: 'Học sinh không tồn tại' }
+
+   /student/status:
+      patch:
+         tags:
+            - Students
+         summary: Đăng nhập với vai trò manager
+         description: Update trạng thái sinh viên (Cái này sẽ gửi mail cho sinh viên)
+
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        listIdStudent:
+                           type: array
+                           items:
+                              type: objectId
+                              description: id student cần chuyển trạng thái
+                        status:
+                           type: number
+                           description: Mã trạng thái cần chuyển
+                        textNote:
+                           type: string
+                           description: Note cho student (ví dụ như lý do cần sửa cv hoặc lý do trượt)
+                  example: { listIdStudent: [], status: 9, textNote: 'Test node' }
+
+         responses:
+            201:
+               description: Chuyển trạng thái thành công
+               content:
+                  application/json:
+                     schema:
+                        type: object
+                        properties:
+                           message:
+                              type: string
+
+                     example: { message: Thay đổi trạng thái sinh viên thành công }
+
+            204:
+               description: listIdStudent rỗng
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example:
+                        { statusCode: 204, message: 'Học sinh không tồn tại', error: ['640abe7e4ed73d86530a5ed3'] }
+
+            400:
+               description: listIdStudent không phải type array hoặc lỗi validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example:
+                        { statusCode: 400, message: 'Học sinh không tồn tại', error: ['640abe7e4ed73d86530a5ed3'] }
+
+            404:
+               description: Học sinh không tồn tại ở cơ sở hoặc trạng thái cần chuyển chưa tồn tại trên server
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example:
+                        { statusCode: 404, message: 'Học sinh không tồn tại', error: ['640abe7e4ed73d86530a5ed3'] }
+
+   /student/business:
+      patch:
+         tags:
+            - Students
+         summary: Đăng nhập với vai trò manager
+         description: Api thêm thêm công ty thực tập vào cho user
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        listIdStudent:
+                           type: array
+                           items:
+                              type: objectId
+                     business:
+                        type: objectId
+                        description: Id công ty học sinh đăng ký thực tập
+                  example: { listIdStudent: [], business: '640abe7e4ed73d86530a5ed3' }
+         responses:
+            201:
+               description: Đăng ký thực tập thành công
+               content:
+                  application/json:
+                     schema:
+                        type: object
+                        properties:
+                           listIdStudent:
+                              type: array
+                              items:
+                                 type: objectId
+                        business:
+                           type: objectId
+                           description: Id công ty học sinh đăng ký thực tập
+                     example: { listIdStudent: [], business: '640abe7e4ed73d86530a5ed3' }
+
+            404:
+               description: Doanh nghiệp không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { statusCode: 404, message: 'Công ty không tồn tại!' }

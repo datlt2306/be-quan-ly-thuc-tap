@@ -1,0 +1,176 @@
+paths:
+   /statusStudent:
+      get:
+         tags:
+            - StatusStudents
+         summary: Đăng nhập
+         description: Api lấy ra tất cả các trạng thái của sinh viên
+
+         responses:
+            200:
+               description: ok
+               content:
+                  application/json:
+                     schema:
+                        type: array
+                        items:
+                           $ref: '#/components/schemas/StatusStudent'
+                     example: [{ value: 0, title: 'Chờ kiểm tra CV' }]
+
+      post:
+         tags:
+            - StatusStudents
+         summary: Đăng nhập với vai trò manager (role = 1)
+         description: 'Api tạo trạng thái sinh viên; Lưu ý các keyword đặc biệt sau: ${note},${statusTitle},${hostname} với ý nghĩa lần lượt là note cho sinh viên, tên trạng thái sinh viên hiện tại và domain hiện tại'
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        value:
+                           type: number
+                           unique: true
+                           required: true
+                           description: Mã trạng thái
+                        title:
+                           type: string
+                           required: true
+                           description: Tiêu đề trạng thái sinh viên
+                        contentMail:
+                           type: string
+                           required: true
+                           description: Nội dung dùng để gửi mail
+                        titleMail:
+                           type: string
+                           required: true
+                           description: Title dùng để gửi mail
+
+         responses:
+            201:
+               description: ok
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/StatusStudent'
+                     example:
+                        {
+                           value: 0,
+                           title: 'Chờ kiểm tra CV',
+                           contentMail: 'Chào em <br/> Trạng thái CV hiện tại của em là: ${statusTitle}, Lý do trượt là: ${note}, Để biết thêm chi tiết em vào <a href="${hostname}">${hostname}</a> để biết thêm thông tin chi tiết'
+                        }
+
+            204:
+               description: Data gửi lên rỗng
+            409:
+               description: Status đã tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 409, 'message': 'Status đã tồn tại' }
+            400:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 400, 'message': '"value" must be a number' }
+
+   /statusStudent/:id:
+      patch:
+         tags:
+            - StatusStudents
+         summary: Đăng nhập với vai trò mannager (role = 1)
+         description: Api sửa trạng thái học sinh
+
+         requestBody:
+            content:
+               application/json:
+                  schema:
+                     type: object
+                     properties:
+                        value:
+                           type: number
+                           unique: true
+                           description: Mã trạng thái
+                        title:
+                           type: string
+                           description: Tiêu đề trạng thái sinh viên
+                        contentMail:
+                           type: string
+                           required: true
+                           description: Nội dung dùng để gửi mail
+                        titleMail:
+                           type: string
+                           required: true
+                           description: Title dùng để gửi mail
+
+         responses:
+            201:
+               description: Sửa thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/StatusStudent'
+                     example:
+                        {
+                           '_id': '642e5fc83b61ee6c20d39116',
+                           'value': 10,
+                           'title': 'Chờ kiểm tra CV',
+                           'campus': '63eef716c9ef6d077f1f1deb',
+                           'createdAt': '2023-04-06T05:59:36.046Z',
+                           'updatedAt': '2023-04-06T06:09:23.613Z',
+                           '__v': 0
+                        }
+
+            304:
+               description: Data gửi lên rỗng
+
+            400:
+               description: Không thỏa mãn validate
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 400, 'message': '"value" must be a number' }
+
+            404:
+               description: Status không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 404, 'message': 'Status không tồn tại' }
+
+      delete:
+         tags:
+            - StatusStudents
+         summary: Đăng nhập với vai trò mannager (role = 1)
+         description: Api xóa vĩnh viễn trạng thái
+
+         responses:
+            200:
+               description: Xóa thành công
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/StatusStudent'
+                     example:
+                        {
+                           '_id': '642e5fc83b61ee6c20d39116',
+                           'value': 10,
+                           'title': 'Chờ kiểm tra CV',
+                           'campus': '63eef716c9ef6d077f1f1deb',
+                           'createdAt': '2023-04-06T05:59:36.046Z',
+                           'updatedAt': '2023-04-06T06:09:23.613Z',
+                           '__v': 0
+                        }
+
+            404:
+               description: Status không tồn tại
+               content:
+                  application/json:
+                     schema:
+                        $ref: '#/components/schemas/HttpError'
+                     example: { 'statusCode': 404, 'message': 'Status không tồn tại' }
