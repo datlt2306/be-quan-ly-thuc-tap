@@ -48,7 +48,7 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 		const excludeStudents = instanceStudentsList.filter(
 			(student) =>
 				!data.some((std) => std.email === student.email) &&
-				[StudentStatusCodeEnum.NOT_REGISTERED, StudentStatusCodeEnum.NOT_QUALIFIED].includes(+student.statusCheck)
+				StudentStatusCodeEnum.NOT_QUALIFIED === +student.statusCheck
 		);
 
 		return await Promise.all([
