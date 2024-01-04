@@ -11,16 +11,16 @@ export const checkValidSemesterTime = async (data) => {
 		const currentSemesterEndTime = new Date(data.end_time).getTime();
 		switch (currentSemesterIndex) {
 			case -1: // thêm mới
-				return currentSemesterStartTime > new Date(semestersByCampus.at(0)?.end_time);
+				return currentSemesterStartTime > new Date(semestersByCampus[0]?.end_time);
 			case 0:
 				return semestersByCampus
 					.slice(1)
 					.every((semester) => new Date(semester.start_time).getTime() > currentSemesterEndTime);
 			case semestersByCampus.length - 1:
-				return currentSemesterStartTime > new Date(semestersByCampus.at(1).end_time).getTime();
+				return currentSemesterStartTime > new Date(semestersByCampus[1].end_time).getTime();
 			default:
-				const previousSemesterEndTime = new Date(semestersByCampus.at(currentSemesterIndex - 1).end_time).getTime();
-				const nextSemesterStartTime = new Date(semestersByCampus.at(currentSemesterIndex + 1).start_time).getTime();
+				const previousSemesterEndTime = new Date(semestersByCampus[currentSemesterIndex - 1]?.end_time).getTime();
+				const nextSemesterStartTime = new Date(semestersByCampus[currentSemesterIndex + 1]?.start_time).getTime();
 				return currentSemesterStartTime > previousSemesterEndTime && currentSemesterEndTime < nextSemesterStartTime;
 		}
 	} catch (error) {
