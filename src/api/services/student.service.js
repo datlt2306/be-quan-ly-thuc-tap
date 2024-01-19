@@ -33,23 +33,22 @@ export const createListStudent = async ({ semesterId, campusId, data }) => {
 		 * 	-> List sinh viên kỳ hiện tại
 		 * 	-> List sinh viên không đủ điều kiện từ trước đến nay nhung co trong danh sach tai len
 		 */
-		const [instanceStudentsList, qualifiedStudents] = await Promise.all([
-			StudentModel.find({
-				smester_id: semesterId,
-				campus_id: campusId
-			}),
+
+		const [qualifiedStudents, excludeStudents] = await Promise.all([
 			StudentModel.find({
 				campus_id: campusId,
 				statusCheck: { $in: [StudentStatusCodeEnum.NOT_QUALIFIED, StudentStatusCodeEnum.NOT_PASS] },
 				email: { $in: data.map((student) => student.email) }
+			}),
+			StudentModel.find({
+				smester_id: semesterId,
+				campus_id: campusId,
+				$or: [
+					{ email: { $nin: data.map((student) => student.email) } },
+					{ statusCheck: StudentStatusCodeEnum.NOT_QUALIFIED }
+				]
 			})
 		]);
-
-		const excludeStudents = instanceStudentsList.filter(
-			(student) =>
-				!data.some((std) => std.email === student.email) &&
-				StudentStatusCodeEnum.NOT_QUALIFIED === +student.statusCheck
-		);
 
 		return await Promise.all([
 			upsertStudents(data),

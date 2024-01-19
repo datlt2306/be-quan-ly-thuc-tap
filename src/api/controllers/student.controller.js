@@ -318,10 +318,8 @@ export const importStudents = async (req, res) => {
 			});
 			workSheetReader.on('end', async function () {
 				const newStudentList = [];
-				const batchPromises = [];
 				const keys = importedData[0];
 				const dataLength = importedData.length;
-				const batchSize = 1200;
 
 				for (let i = 1; i < dataLength; i++) {
 					const array = importedData[i];
@@ -350,19 +348,11 @@ export const importStudents = async (req, res) => {
 						.json({ message: error.message, statusCode: HttpStatusCode.BAD_REQUEST });
 				}
 
-				for (let i = 0; i < dataLength; i += batchSize) {
-					const endIndex = Math.min(i + batchSize, dataLength);
-					const requests = value.slice(i, endIndex);
-					const batchPromise = StudentService.createListStudent({
-						semesterId: smester_id,
-						campusId: campus_id,
-						data: requests
-					}).catch((error) => {
-						throw error;
-					});
-					batchPromises.push(batchPromise);
-				}
-				const importResult = await Promise.all(batchPromises);
+				const importResult = await StudentService.createListStudent({
+					semesterId: smester_id,
+					campusId: campus_id,
+					data: value
+				});
 				return res.status(201).json(importResult);
 			});
 

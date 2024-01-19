@@ -25,7 +25,7 @@ export const report = async (req, res) => {
 		const endTimeReport = moment(endInternShipTime).valueOf();
 		const checkTimeReport = endTimeReport > startTimeReport;
 		const [file] = req.files;
-		if (file.size > 1000000) throw createHttpError.PayloadTooLarge('Kích thước file quá lớn');
+		if (file.size > 5000000) throw createHttpError.PayloadTooLarge('Kích thước file quá lớn');
 		if (getFileExtension(file) !== 'pdf')
 			throw createHttpError.UnsupportedMediaType('File tải lên phải có định dạng PDF');
 		if (!checkTimeReport) throw createHttpError(400, 'Thời gian kết thúc thực tập phải lớn hơn thời gian bắt đầu!');
@@ -106,7 +106,7 @@ export const submitRecordForm = async (req, res) => {
 		const { nameCompany, internshipTime, mssv, email, _id } = req.body;
 		const filter = { mssv, email, _id };
 		const [file] = req.files;
-		if (file.size > 1000000) throw createHttpError.PayloadTooLarge('Kích thước file quá lớn');
+		if (file.size > 5000000) throw createHttpError.PayloadTooLarge('Kích thước file quá lớn');
 		if (getFileExtension(file) !== 'pdf')
 			throw createHttpError.UnsupportedMediaType('File tải lên phải có định dạng PDF');
 		const student = await studentModel.findOne(filter);
